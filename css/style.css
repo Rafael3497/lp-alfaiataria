@@ -118,7 +118,7 @@ header{
 .btn-ghost:hover{ background:var(--ink); color:var(--cream);}
 .btn-sm{ padding:11px 18px; font-size:12px;}
 
-/* ===== hero ===== */
+/* ===== hero (homepage) ===== */
 #hero{
   min-height:100vh; display:flex; align-items:flex-end;
   padding:0 0 100px; margin-left:34px;
@@ -146,6 +146,22 @@ header{
 .scroll-cue .line::after{ content:''; position:absolute; top:-100%; left:0; width:100%; height:100%; background:var(--stone-light); animation:cueMove 2.2s ease-in-out infinite;}
 @keyframes cueMove{ 0%{top:-100%;} 60%{top:100%;} 100%{top:100%;} }
 @media (max-width:880px){ .scroll-cue{display:none;} }
+
+/* ===== hero de sub-páginas (ex.: camisaria.html) — mesma estrutura do #hero,
+   mas com foto própria via variável CSS --hero-img definida inline no HTML ===== */
+#hero.page-hero{
+  background-image: linear-gradient(180deg, rgba(21,19,15,.45) 0%, rgba(21,19,15,.6) 50%, rgba(21,19,15,.92) 100%), var(--hero-img);
+  background-size: cover;
+  background-position: center;
+}
+.page-hero .hero-eyebrow{ color: var(--stone-light); }
+#hero p:first-of-type{ margin-bottom:14px; }
+#hero .accent-note{
+  color: var(--stone-light);
+  font-size: 0.95rem;
+  letter-spacing: .02em;
+  margin-bottom: 30px;
+}
 
 /* ===== stitch divider ===== */
 .stitch{ height:34px; margin-left:34px; }
@@ -201,7 +217,7 @@ header{
 @media (max-width:880px){ .banner{margin-left:0;} }
 .banner img{ width:100%; max-height:640px; object-fit:cover; object-position:center 20%; }
 
-/* ===== processo ===== */
+/* ===== processo / FAQ (mesma grade reaproveitada) ===== */
 .process-list{ display:flex; flex-direction:column;}
 .process-row{
   display:grid; grid-template-columns:120px 1fr 1fr; gap:40px; align-items:center;
@@ -219,6 +235,14 @@ header{
 .tag{
   font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; font-weight:700;
   border:1px solid var(--line); padding:6px 10px; color:var(--ink-soft);
+}
+
+/* Linhas de FAQ não têm process-img (só 2 colunas: número + texto),
+   então a coluna do meio ganha o espaço que sobraria em branco */
+#faq-camisaria .process-row{ grid-template-columns: 120px 1fr; }
+#faq-camisaria .process-num{ color: var(--navy); font-size: 44px; }
+@media (max-width:880px){
+  #faq-camisaria .process-row{ grid-template-columns: 1fr; }
 }
 
 /* ===== sobre mim (Quem assina) ===== */
@@ -329,6 +353,11 @@ header{
 .final-cta .eyebrow{ justify-content:center; margin-bottom:26px;}
 .final-cta h2{ font-size:clamp(2.2rem,5vw,3.4rem); max-width:720px; margin:0 auto 36px; line-height:1.1;}
 .final-cta .btn{ font-size:15px; padding:18px 40px;}
+.cta-note{
+  color: var(--stone-light);
+  margin-top: 14px;
+  font-size: 0.9rem;
+}
 
 footer{ margin-left:34px; background:var(--charcoal); color:rgba(251,247,238,.5); padding:34px 0; font-size:12.5px;}
 @media (max-width:880px){ footer{margin-left:0;} }
@@ -363,4 +392,31 @@ footer a.domain-link:hover { color: var(--cream); border-bottom: 1px solid var(-
   #wa-float::before{animation:none;}
   .scroll-cue .line::after{animation:none;}
   .process-row:hover .process-img img, .media-item:hover img, .media-item:hover video{transform:none;}
+}
+
+/* ==============================================================
+   Ajustes gerais de responsividade mobile (afetam o site inteiro)
+   ============================================================== */
+
+/* Em telas pequenas, 32px de padding lateral fixo come muito espaço
+   útil de conteúdo (num iPhone SE de 375px isso é ~17% da tela) */
+@media (max-width:480px){
+  .wrap{ padding:0 20px; }
+}
+
+/* Botões com white-space:nowrap podem estourar a largura da tela em
+   telas muito estreitas quando o texto do CTA é mais longo
+   (ex.: "Quero agendar minha medição"). Libera a quebra de linha
+   só no mobile, sem afetar o visual em telas maiores. */
+@media (max-width:480px){
+  .btn{ white-space:normal; text-align:center; }
+}
+
+/* No cabeçalho mobile, logo + "Voltar ao Início" + CTA não cabem
+   numa linha só sem apertar. "Voltar ao Início" é redundante no
+   celular (a logo já leva pra index.html), então escondemos só
+   esse botão e deixamos o CTA principal com mais espaço ao lado
+   da marca. */
+@media (max-width:480px){
+  .header-actions .btn-ghost{ display:none; }
 }
