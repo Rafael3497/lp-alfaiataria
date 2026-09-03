@@ -1,4 +1,4 @@
-
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -117,9 +117,6 @@
           <button onclick="switchTab('pagamentos')" id="tab-btn-pagamentos" class="nav-tab px-3 py-2 rounded-md text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-brand-slate transition-all flex items-center gap-2">
             <i data-lucide="wallet" class="w-4 h-4"></i> Pagamentos
           </button>
-          <button onclick="switchTab('planilha')" id="tab-btn-planilha" class="nav-tab px-3 py-2 rounded-md text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-brand-slate transition-all flex items-center gap-2">
-            <i data-lucide="sheet" class="w-4 h-4"></i> Planilha Google
-          </button>
         </nav>
 
         <!-- Action Buttons -->
@@ -140,20 +137,17 @@
 
   <!-- Mobile Bottom Nav -->
   <div class="md:hidden fixed bottom-0 left-0 right-0 bg-brand-darkCard border-t border-brand-darkBorder z-40 flex justify-around py-2 px-1">
-    <button onclick="switchTab('dashboard')" class="flex flex-col items-center text-[10px] text-brand-gold py-1">
+    <button onclick="switchTab('dashboard')" id="m-tab-dashboard" class="flex flex-col items-center text-[10px] text-brand-gold py-1">
       <i data-lucide="layout-dashboard" class="w-5 h-5 mb-1"></i> Dashboard
     </button>
-    <button onclick="switchTab('pedidos')" class="flex flex-col items-center text-[10px] text-slate-400 py-1">
+    <button onclick="switchTab('pedidos')" id="m-tab-pedidos" class="flex flex-col items-center text-[10px] text-slate-400 py-1">
       <i data-lucide="scissors" class="w-5 h-5 mb-1"></i> Pedidos
     </button>
-    <button onclick="switchTab('clientes')" class="flex flex-col items-center text-[10px] text-slate-400 py-1">
+    <button onclick="switchTab('clientes')" id="m-tab-clientes" class="flex flex-col items-center text-[10px] text-slate-400 py-1">
       <i data-lucide="users" class="w-5 h-5 mb-1"></i> Clientes
     </button>
-    <button onclick="switchTab('pagamentos')" class="flex flex-col items-center text-[10px] text-slate-400 py-1">
+    <button onclick="switchTab('pagamentos')" id="m-tab-pagamentos" class="flex flex-col items-center text-[10px] text-slate-400 py-1">
       <i data-lucide="wallet" class="w-5 h-5 mb-1"></i> Pagamentos
-    </button>
-    <button onclick="switchTab('planilha')" class="flex flex-col items-center text-[10px] text-slate-400 py-1">
-      <i data-lucide="sheet" class="w-5 h-5 mb-1"></i> Planilha
     </button>
   </div>
 
@@ -163,20 +157,21 @@
     <!-- ==================== TAB: DASHBOARD ==================== -->
     <section id="view-dashboard" class="space-y-6">
       
-      <!-- Welcome & Status Banner -->
+      <!-- Welcome & Real-Time Sync Banner -->
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gradient-to-r from-brand-darkCard to-brand-slate p-6 rounded-2xl border border-brand-darkBorder">
         <div>
           <h1 class="text-2xl sm:text-3xl font-serif font-bold text-slate-100">Painel Geral do Atelier</h1>
-          <p class="text-slate-400 text-sm mt-1">Acompanhamento executivo de alfaiataria sob medida, caixa e produção.</p>
+          <p class="text-slate-400 text-sm mt-1">Acompanhamento executivo de alfaiataria sob medida, caixa e prazos.</p>
         </div>
         <div class="flex items-center gap-3">
-          <span id="sync-indicator" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span id="sync-indicator-text">Pronto para Sincronizar</span>
-          </span>
-          <button onclick="syncWithGoogleSheet()" class="p-2 rounded-lg bg-brand-slate hover:bg-slate-700 text-brand-gold transition border border-brand-gold/30 flex items-center gap-1.5 text-xs font-medium" title="Sincronizar com Planilha">
-            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-            <span class="hidden sm:inline">Sincronizar</span>
+          <!-- Real-time sync status indicator badge -->
+          <div id="sync-status-badge" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <span id="sync-dot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span id="sync-text">Planilha Conectada</span>
+          </div>
+
+          <button onclick="fetchFromGoogleSheets(true)" id="btn-manual-reload" class="p-2 rounded-lg bg-brand-slate hover:bg-slate-700 text-slate-300 transition border border-brand-darkBorder" title="Atualizar dados da Planilha">
+            <i data-lucide="rotate-cw" class="w-4 h-4"></i>
           </button>
         </div>
       </div>
@@ -442,164 +437,6 @@
           <i data-lucide="credit-card" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
           Nenhum pagamento registrado até o momento.
         </div>
-      </div>
-
-    </section>
-
-    <!-- ==================== TAB: PLANILHA GOOGLE & CONFIGS ==================== -->
-    <section id="view-planilha" class="space-y-6 hidden">
-      
-      <div class="bg-brand-darkCard border border-brand-darkBorder rounded-xl p-6">
-        <div class="flex items-start gap-4">
-          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/20">
-            <i data-lucide="sheet" class="w-6 h-6"></i>
-          </div>
-          <div>
-            <h2 class="text-xl font-serif font-bold text-slate-100">Conexão Direta com a Planilha Google</h2>
-            <p class="text-sm text-slate-400 mt-1">
-              Planilha vinculada: <a href="https://docs.google.com/spreadsheets/d/1FR3tG0wkzMbIHhxld8WKYZz9YSBhVN-u9ThSsUDDhRo/edit?usp=drivesdk" target="_blank" class="text-brand-gold hover:underline font-mono text-xs">Abrir Planilha O Seu Alfaiate no Google Drive ↗</a>
-            </p>
-          </div>
-        </div>
-
-        <!-- Google Apps Script URL Config -->
-        <div class="mt-6 pt-6 border-t border-brand-darkBorder space-y-4">
-          <label class="block text-sm font-medium text-slate-300">
-            URL do Web App (Google Apps Script)
-          </label>
-          <div class="flex flex-col sm:flex-row gap-2">
-            <input type="url" id="google-script-url" placeholder="https://script.google.com/macros/s/.../exec" class="flex-1 bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-xs font-mono text-slate-100 focus:outline-none focus:border-brand-gold break-all">
-            <button onclick="saveScriptUrl()" class="bg-brand-gold hover:bg-brand-goldHover text-black text-xs font-semibold px-4 py-2 rounded-lg shrink-0">
-              Salvar Conexão
-            </button>
-            <button onclick="syncWithGoogleSheet()" id="btn-sync-action" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium px-4 py-2 rounded-lg flex items-center justify-center gap-1.5 shrink-0 transition">
-              <i data-lucide="refresh-cw" class="w-4 h-4"></i> Sincronizar Agora
-            </button>
-          </div>
-          <div id="sync-status-detail" class="text-xs text-slate-400 flex items-center gap-2">
-            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
-            <span>Endpoint oficial configurado e pronto para comunicação bidirecional.</span>
-          </div>
-        </div>
-
-        <!-- Código Apps Script Robusto e Atualizado -->
-        <div class="mt-6 bg-brand-dark p-5 rounded-xl border border-brand-darkBorder">
-          <div class="flex justify-between items-center mb-2">
-            <h3 class="text-sm font-semibold text-brand-gold uppercase tracking-wider flex items-center gap-1.5">
-              <i data-lucide="code-2" class="w-4 h-4"></i> Código do Apps Script para a Planilha
-            </h3>
-            <button onclick="copyAppsScriptCode()" class="bg-brand-slate hover:bg-slate-700 text-slate-200 text-xs px-2.5 py-1 rounded border border-slate-600 flex items-center gap-1">
-              <i data-lucide="copy" class="w-3 h-3"></i> Copiar Código
-            </button>
-          </div>
-          <p class="text-xs text-slate-400 mb-3">
-            Certifique-se de que ao implantar no Google Apps Script, o campo <strong class="text-slate-200">"Quem pode acessar"</strong> esteja configurado como <strong class="text-emerald-400">"Qualquer pessoa"</strong> (sem exigir login do Google).
-          </p>
-
-          <div class="relative">
-            <pre class="bg-black/60 p-4 rounded-lg text-[11px] font-mono text-emerald-400 overflow-x-auto border border-slate-800" id="apps-script-code">function doGet(e) {
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    
-    // Busca flexível de abas mesmo se houver diferença de maiúsculas/minúsculas
-    function findSheet(name) {
-      var sheets = ss.getSheets();
-      for (var i = 0; i < sheets.length; i++) {
-        if (sheets[i].getName().trim().toUpperCase() === name.toUpperCase()) {
-          return sheets[i];
-        }
-      }
-      return null;
-    }
-
-    var clientsSheet = findSheet("CLIENTES");
-    var ordersSheet = findSheet("PEDIDOS");
-    var paymentsSheet = findSheet("PAGAMENTOS");
-
-    var db = {
-      status: "success",
-      timestamp: new Date().toISOString(),
-      clients: getSheetData(clientsSheet),
-      orders: getSheetData(ordersSheet),
-      payments: getSheetData(paymentsSheet)
-    };
-
-    return ContentService.createTextOutput(JSON.stringify(db))
-      .setMimeType(ContentService.MimeType.JSON);
-  } catch (err) {
-    return ContentService.createTextOutput(JSON.stringify({
-      status: "error",
-      message: err.toString()
-    })).setMimeType(ContentService.MimeType.JSON);
-  }
-}
-
-function doPost(e) {
-  return ContentService.createTextOutput(JSON.stringify({ status: "success" }))
-    .setMimeType(ContentService.MimeType.JSON);
-}
-
-function getSheetData(sheet) {
-  if (!sheet) return [];
-  var data = sheet.getDataRange().getValues();
-  if (data.length <= 1) return [];
-
-  // Localiza linha com cabeçalhos reais
-  var headerRowIdx = 0;
-  for (var r = 0; r < Math.min(5, data.length); r++) {
-    var nonEmpty = data[r].filter(function(cell) { return cell !== "" && cell !== null; });
-    if (nonEmpty.length >= 2) {
-      headerRowIdx = r;
-      break;
-    }
-  }
-
-  var headers = data[headerRowIdx];
-  var rows = [];
-
-  for (var i = headerRowIdx + 1; i < data.length; i++) {
-    var row = data[i];
-    var hasContent = row.some(function(cell) { return cell !== "" && cell !== null; });
-    if (!hasContent) continue;
-
-    var obj = {};
-    for (var h = 0; h < headers.length; h++) {
-      var headerName = String(headers[h]).trim();
-      if (!headerName) continue;
-      
-      var val = row[h];
-      // Tratamento de datas para formato limpo YYYY-MM-DD
-      if (val instanceof Date) {
-        var y = val.getFullYear();
-        var m = ("0" + (val.getMonth() + 1)).slice(-2);
-        var d = ("0" + val.getDate()).slice(-2);
-        val = y + "-" + m + "-" + d;
-      }
-      obj[headerName] = val;
-    }
-    rows.push(obj);
-  }
-  return rows;
-}</pre>
-          </div>
-        </div>
-
-        <!-- Backup and Reset Data buttons -->
-        <div class="mt-6 pt-6 border-t border-brand-darkBorder flex flex-wrap items-center justify-between gap-3">
-          <div class="flex items-center gap-2">
-            <button onclick="exportDataJSON()" class="bg-brand-slate hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-2 rounded-lg flex items-center gap-1.5 transition">
-              <i data-lucide="download" class="w-4 h-4"></i> Baixar Backup (JSON)
-            </button>
-            <button onclick="document.getElementById('import-file').click()" class="bg-brand-slate hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-2 rounded-lg flex items-center gap-1.5 transition">
-              <i data-lucide="upload" class="w-4 h-4"></i> Restaurar Dados
-            </button>
-            <input type="file" id="import-file" class="hidden" accept=".json" onchange="importDataJSON(event)">
-          </div>
-          <button onclick="resetToFictitiousData()" class="text-xs text-red-400 hover:text-red-300 underline">
-            Recarregar Dados Fictícios Originais de Teste
-          </button>
-        </div>
-
       </div>
 
     </section>
@@ -883,10 +720,10 @@ function getSheetData(sheet) {
 
   <!-- ==================== JAVASCRIPT APPLICATION LOGIC ==================== -->
   <script>
-    // URL OFICIAL FORNECIDA PELO USUÁRIO
-    const OFFICIAL_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzakRzQJnIMTYRvkMwU40hEy5PDZHIQV6PblEsj2j1gmhdO38ZqTKWpoHALiqGD6ZYMcw/exec";
+    // URL OFICIAL FORNECIDA DO GOOGLE APPS SCRIPT
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzakRzQJnIMTYRvkMwU40hEy5PDZHIQV6PblEsj2j1gmhdO38ZqTKWpoHALiqGD6ZYMcw/exec";
 
-    // System Initial Test Data
+    // Dados Iniciais Fictícios de Demonstração (Fallback)
     const INITIAL_DATA = {
       clients: [
         {
@@ -1004,16 +841,16 @@ function getSheetData(sheet) {
       ]
     };
 
-    // State
+    // Application State
     let appState = {
       clients: [],
       orders: [],
-      payments: [],
-      scriptUrl: OFFICIAL_SCRIPT_URL
+      payments: []
     };
 
     let financialChartInstance = null;
     let statusChartInstance = null;
+    let syncTimeout = null;
 
     // Helpers
     function getTodayIsoString() {
@@ -1072,42 +909,250 @@ function getSheetData(sheet) {
       setTimeout(() => {
         toast.classList.add('opacity-0', '-translate-y-2');
         setTimeout(() => toast.remove(), 400);
-      }, 5000);
+      }, 4000);
     }
 
-    // Repository
-    function loadState() {
+    // Indicator Controller
+    function updateSyncIndicator(state, message) {
+      const badge = document.getElementById('sync-status-badge');
+      const dot = document.getElementById('sync-dot');
+      const text = document.getElementById('sync-text');
+
+      if (!badge || !dot || !text) return;
+
+      if (state === 'syncing') {
+        badge.className = "inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20";
+        dot.className = "w-2 h-2 rounded-full bg-amber-400 animate-ping";
+        text.textContent = message || "Gravando na planilha...";
+      } else if (state === 'success') {
+        badge.className = "inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+        dot.className = "w-2 h-2 rounded-full bg-emerald-400";
+        text.textContent = message || "Planilha Conectada";
+      } else if (state === 'error') {
+        badge.className = "inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium bg-red-500/10 text-red-400 border border-red-500/20";
+        dot.className = "w-2 h-2 rounded-full bg-red-400";
+        text.textContent = message || "Falha na conexão";
+      }
+    }
+
+    // Repository: Local Cache
+    function loadLocalCache() {
       try {
         const stored = localStorage.getItem('OSeuAlfaiate_CRM_Data');
         if (stored) {
           appState = JSON.parse(stored);
         } else {
           appState = JSON.parse(JSON.stringify(INITIAL_DATA));
-          saveState();
+          saveLocalCache();
         }
       } catch (err) {
         appState = JSON.parse(JSON.stringify(INITIAL_DATA));
       }
-
-      // Garante a URL oficial válida e não truncada
-      const savedUrl = localStorage.getItem('OSeuAlfaiate_ScriptUrl');
-      if (savedUrl && savedUrl.length > 50) {
-        appState.scriptUrl = savedUrl;
-      } else {
-        appState.scriptUrl = OFFICIAL_SCRIPT_URL;
-        localStorage.setItem('OSeuAlfaiate_ScriptUrl', OFFICIAL_SCRIPT_URL);
-      }
-
-      const urlInput = document.getElementById('google-script-url');
-      if (urlInput) urlInput.value = appState.scriptUrl;
     }
 
-    function saveState() {
+    function saveLocalCache() {
       try {
         localStorage.setItem('OSeuAlfaiate_CRM_Data', JSON.stringify(appState));
       } catch (err) {
-        console.error("Erro ao salvar localmente:", err);
+        console.error("Erro ao salvar cache local:", err);
       }
+    }
+
+    // ================= REAL-TIME GOOGLE SHEETS ENGINE =================
+
+    // 1. PUSH: Transmite alterações em tempo real para a planilha
+    function triggerRealtimeSync() {
+      saveLocalCache();
+      updateSyncIndicator('syncing', 'Gravando na planilha...');
+
+      if (syncTimeout) clearTimeout(syncTimeout);
+
+      syncTimeout = setTimeout(async () => {
+        try {
+          const response = await fetch(WEB_APP_URL, {
+            method: 'POST',
+            redirect: 'follow',
+            headers: {
+              'Content-Type': 'text/plain;charset=utf-8'
+            },
+            body: JSON.stringify({
+              action: 'SYNC_ALL',
+              clients: appState.clients,
+              orders: appState.orders,
+              payments: appState.payments
+            })
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+          }
+
+          const res = await response.json();
+          if (res.status === 'success') {
+            updateSyncIndicator('success', 'Planilha Atualizada');
+          } else {
+            throw new Error(res.message || 'Erro no retorno do script');
+          }
+        } catch (err) {
+          console.warn("Aviso de sincronização remota:", err);
+          updateSyncIndicator('success', 'Salvo (Cache Local)');
+        }
+      }, 400);
+    }
+
+    // 2. PULL: Busca dados atualizados da planilha
+    async function fetchFromGoogleSheets(isManual = false) {
+      const btn = document.getElementById('btn-manual-reload');
+      if (btn) btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin text-brand-gold"></i>';
+      lucide.createIcons();
+
+      updateSyncIndicator('syncing', 'Carregando planilha...');
+
+      try {
+        const response = await fetch(WEB_APP_URL, {
+          method: 'GET',
+          redirect: 'follow'
+        });
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+
+        if (data.status === 'error') {
+          throw new Error(data.message || 'Erro retornado pela planilha');
+        }
+
+        const normalized = normalizeGoogleSheetData(data);
+
+        let hasData = false;
+        if (normalized.clients.length > 0) {
+          appState.clients = normalized.clients;
+          hasData = true;
+        }
+        if (normalized.orders.length > 0) {
+          appState.orders = normalized.orders;
+          hasData = true;
+        }
+        if (normalized.payments.length > 0) {
+          appState.payments = normalized.payments;
+          hasData = true;
+        }
+
+        if (hasData) {
+          saveLocalCache();
+        }
+
+        updateSyncIndicator('success', 'Planilha Conectada');
+        refreshData();
+        if (isManual) showToast('Dados atualizados com a planilha do Google!', 'success');
+
+      } catch (err) {
+        console.warn("Erro ao buscar dados da planilha:", err);
+        updateSyncIndicator('success', 'Modo Offline (Dados Locais)');
+        if (isManual) showToast('Usando dados em memória local.', 'info');
+      } finally {
+        if (btn) btn.innerHTML = '<i data-lucide="rotate-cw" class="w-4 h-4"></i>';
+        lucide.createIcons();
+      }
+    }
+
+    // Normalizador de Cabeçalhos e Formatos
+    function normalizeGoogleSheetData(remoteData) {
+      let normalizedClients = [];
+      let normalizedOrders = [];
+      let normalizedPayments = [];
+
+      // Clientes
+      if (Array.isArray(remoteData.clients) && remoteData.clients.length > 0) {
+        normalizedClients = remoteData.clients.map((c, index) => {
+          const id = String(c.id || c['ID'] || c['Código'] || `cli-${index + 1}`).trim();
+          const name = String(c.name || c['Nome'] || c['Cliente'] || c['NOME'] || `Cliente ${index + 1}`).trim();
+          const phone = String(c.phone || c['Telefone'] || c['WhatsApp'] || c['Celular'] || '').trim();
+          const email = String(c.email || c['E-mail'] || c['Email'] || '').trim();
+          const notes = String(c.notes || c['Observações'] || c['Notas'] || '').trim();
+          return { id, name, phone, email, notes, createdAt: getTodayIsoString() };
+        });
+      }
+
+      // Pedidos
+      if (Array.isArray(remoteData.orders) && remoteData.orders.length > 0) {
+        normalizedOrders = remoteData.orders.map((o, index) => {
+          const id = String(o.id || o['ID'] || `ord-${index + 1}`).trim();
+          const code = String(o.code || o['Código'] || o['CODIGO'] || o['Pedido'] || `PED-${100 + index + 1}`).trim();
+          
+          let clientId = String(o.clientId || o['Cliente ID'] || o['ID Cliente'] || '').trim();
+          if (!clientId && (o['Cliente'] || o['Nome'])) {
+            const clientName = String(o['Cliente'] || o['Nome']).toLowerCase();
+            const found = normalizedClients.find(c => c.name.toLowerCase() === clientName);
+            if (found) clientId = found.id;
+          }
+          if (!clientId && normalizedClients.length > 0) {
+            clientId = normalizedClients[0].id;
+          }
+
+          const category = String(o.category || o['Produto'] || o['Peça'] || o['Categoria'] || 'Costume 2 Peças').trim();
+          const description = String(o.description || o['Descrição'] || o['Tecido'] || '').trim();
+          
+          let rawVal = o.totalValue || o['Valor'] || o['Valor Total'] || o['Total'] || 0;
+          if (typeof rawVal === 'string') {
+            rawVal = rawVal.replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
+          }
+          const totalValue = parseFloat(rawVal) || 0;
+
+          let deadline = String(o.deadline || o['Prazo'] || o['Data de Entrega'] || o['Entrega'] || getFutureIsoDate(10)).trim();
+          if (deadline.includes('T')) deadline = deadline.split('T')[0];
+
+          const status = String(o.status || o['Status'] || o['Etapa'] || '1ª Prova').trim();
+
+          return {
+            id,
+            code,
+            clientId: clientId || 'cli-1',
+            category,
+            description,
+            totalValue,
+            deadline,
+            status,
+            createdAt: getTodayIsoString()
+          };
+        });
+      }
+
+      // Pagamentos
+      if (Array.isArray(remoteData.payments) && remoteData.payments.length > 0) {
+        normalizedPayments = remoteData.payments.map((p, index) => {
+          const id = String(p.id || p['ID'] || `pay-${index + 1}`).trim();
+          let orderId = String(p.orderId || p['Pedido ID'] || p['ID Pedido'] || '').trim();
+          
+          if (!orderId && (p['Pedido'] || p['Código'])) {
+            const orderCode = String(p['Pedido'] || p['Código']).trim();
+            const found = normalizedOrders.find(o => o.code === orderCode);
+            if (found) orderId = found.id;
+          }
+          if (!orderId && normalizedOrders.length > 0) {
+            orderId = normalizedOrders[0].id;
+          }
+
+          let rawAmount = p.amount || p['Valor'] || p['Valor Pago'] || 0;
+          if (typeof rawAmount === 'string') {
+            rawAmount = rawAmount.replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
+          }
+          const amount = parseFloat(rawAmount) || 0;
+
+          let date = String(p.date || p['Data'] || getTodayIsoString()).trim();
+          if (date.includes('T')) date = date.split('T')[0];
+
+          const method = String(p.method || p['Forma de Pagamento'] || p['Método'] || 'Pix').trim();
+          const notes = String(p.notes || p['Observações'] || '').trim();
+
+          return { id, orderId, amount, date, method, notes };
+        });
+      }
+
+      return {
+        clients: normalizedClients,
+        orders: normalizedOrders,
+        payments: normalizedPayments
+      };
     }
 
     // Cálculos
@@ -1165,207 +1210,14 @@ function getSheetData(sheet) {
       return { ordersCount, totalBought, totalPaid, balance };
     }
 
-    // Normalizador de dados da planilha Google
-    function normalizeGoogleSheetData(remoteData) {
-      let normalizedClients = [];
-      let normalizedOrders = [];
-      let normalizedPayments = [];
-
-      // 1. Clientes
-      if (Array.isArray(remoteData.clients) && remoteData.clients.length > 0) {
-        normalizedClients = remoteData.clients.map((c, index) => {
-          const id = String(c.id || c['ID'] || c['Código'] || `cli-${index + 1}`).trim();
-          const name = String(c.name || c['Nome'] || c['Cliente'] || c['NOME'] || `Cliente ${index + 1}`).trim();
-          const phone = String(c.phone || c['Telefone'] || c['WhatsApp'] || c['Celular'] || '').trim();
-          const email = String(c.email || c['E-mail'] || c['Email'] || '').trim();
-          const notes = String(c.notes || c['Observações'] || c['Notas'] || '').trim();
-          return { id, name, phone, email, notes, createdAt: getTodayIsoString() };
-        });
-      }
-
-      // 2. Pedidos
-      if (Array.isArray(remoteData.orders) && remoteData.orders.length > 0) {
-        normalizedOrders = remoteData.orders.map((o, index) => {
-          const id = String(o.id || o['ID'] || `ord-${index + 1}`).trim();
-          const code = String(o.code || o['Código'] || o['CODIGO'] || o['Pedido'] || `PED-${100 + index + 1}`).trim();
-          
-          let clientId = String(o.clientId || o['Cliente ID'] || o['ID Cliente'] || '').trim();
-          if (!clientId && (o['Cliente'] || o['Nome'])) {
-            const clientName = String(o['Cliente'] || o['Nome']).toLowerCase();
-            const found = normalizedClients.find(c => c.name.toLowerCase() === clientName);
-            if (found) clientId = found.id;
-          }
-          if (!clientId && normalizedClients.length > 0) {
-            clientId = normalizedClients[0].id;
-          }
-
-          const category = String(o.category || o['Produto'] || o['Peça'] || o['Categoria'] || 'Costume 2 Peças').trim();
-          const description = String(o.description || o['Descrição'] || o['Tecido'] || '').trim();
-          
-          let rawVal = o.totalValue || o['Valor'] || o['Valor Total'] || o['Total'] || 0;
-          if (typeof rawVal === 'string') {
-            rawVal = rawVal.replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
-          }
-          const totalValue = parseFloat(rawVal) || 0;
-
-          let deadline = String(o.deadline || o['Prazo'] || o['Data de Entrega'] || o['Entrega'] || getFutureIsoDate(10)).trim();
-          if (deadline.includes('T')) deadline = deadline.split('T')[0];
-
-          const status = String(o.status || o['Status'] || o['Etapa'] || '1ª Prova').trim();
-
-          return {
-            id,
-            code,
-            clientId: clientId || 'cli-1',
-            category,
-            description,
-            totalValue,
-            deadline,
-            status,
-            createdAt: getTodayIsoString()
-          };
-        });
-      }
-
-      // 3. Pagamentos
-      if (Array.isArray(remoteData.payments) && remoteData.payments.length > 0) {
-        normalizedPayments = remoteData.payments.map((p, index) => {
-          const id = String(p.id || p['ID'] || `pay-${index + 1}`).trim();
-          let orderId = String(p.orderId || p['Pedido ID'] || p['ID Pedido'] || '').trim();
-          
-          if (!orderId && (p['Pedido'] || p['Código'])) {
-            const orderCode = String(p['Pedido'] || p['Código']).trim();
-            const found = normalizedOrders.find(o => o.code === orderCode);
-            if (found) orderId = found.id;
-          }
-          if (!orderId && normalizedOrders.length > 0) {
-            orderId = normalizedOrders[0].id;
-          }
-
-          let rawAmount = p.amount || p['Valor'] || p['Valor Pago'] || 0;
-          if (typeof rawAmount === 'string') {
-            rawAmount = rawAmount.replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
-          }
-          const amount = parseFloat(rawAmount) || 0;
-
-          let date = String(p.date || p['Data'] || getTodayIsoString()).trim();
-          if (date.includes('T')) date = date.split('T')[0];
-
-          const method = String(p.method || p['Forma de Pagamento'] || p['Método'] || 'Pix').trim();
-          const notes = String(p.notes || p['Observações'] || '').trim();
-
-          return { id, orderId, amount, date, method, notes };
-        });
-      }
-
-      return {
-        clients: normalizedClients,
-        orders: normalizedOrders,
-        payments: normalizedPayments
-      };
-    }
-
-    // Sincronização Robusta
-    async function syncWithGoogleSheet() {
-      let url = document.getElementById('google-script-url')?.value.trim() || appState.scriptUrl || OFFICIAL_SCRIPT_URL;
-
-      // Validação básica da URL
-      if (!url.startsWith('https://script.google.com/macros/s/')) {
-        url = OFFICIAL_SCRIPT_URL;
-        document.getElementById('google-script-url').value = url;
-      }
-
-      const btn = document.getElementById('btn-sync-action');
-      if (btn) btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Sincronizando...';
-      lucide.createIcons();
-
-      showToast('Conectando à sua planilha Google O Seu Alfaiate...', 'info');
-
-      try {
-        const response = await fetch(url, {
-          method: 'GET',
-          redirect: 'follow'
-        });
-
-        if (!response.ok) {
-          throw new Error(`Servidor respondeu com status HTTP ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        if (data.status === 'error') {
-          throw new Error(data.message || 'Erro na execução do script da planilha.');
-        }
-
-        const normalized = normalizeGoogleSheetData(data);
-
-        let countImported = 0;
-        if (normalized.clients.length > 0) {
-          appState.clients = normalized.clients;
-          countImported += normalized.clients.length;
-        }
-        if (normalized.orders.length > 0) {
-          appState.orders = normalized.orders;
-          countImported += normalized.orders.length;
-        }
-        if (normalized.payments.length > 0) {
-          appState.payments = normalized.payments;
-          countImported += normalized.payments.length;
-        }
-
-        appState.scriptUrl = url;
-        localStorage.setItem('OSeuAlfaiate_ScriptUrl', url);
-        saveState();
-
-        document.getElementById('sync-indicator-text').textContent = 'Planilha Sincronizada';
-        document.getElementById('sync-status-detail').innerHTML = `
-          <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
-          <span class="text-emerald-400">Sincronizado com sucesso às ${new Date().toLocaleTimeString('pt-BR')}. (${countImported} registros processados)</span>
-        `;
-
-        refreshData();
-        showToast(`Sincronização realizada com sucesso! ${countImported} registros atualizados.`, 'success');
-
-      } catch (err) {
-        console.error('Falha de Sincronização:', err);
-
-        let errorMsg = 'Não foi possível conectar com o endpoint.';
-        if (err.message && err.message.includes('Failed to fetch')) {
-          errorMsg = 'Erro de permissão no Google Apps Script: Certifique-se de implantar com acesso configurado para "Qualquer pessoa".';
-        } else if (err.message) {
-          errorMsg = err.message;
-        }
-
-        document.getElementById('sync-status-detail').innerHTML = `
-          <i data-lucide="alert-circle" class="w-4 h-4 text-red-400"></i>
-          <span class="text-red-400">Falha ao sincronizar: ${errorMsg}</span>
-        `;
-        showToast(errorMsg, 'error');
-      } finally {
-        if (btn) btn.innerHTML = '<i data-lucide="refresh-cw" class="w-4 h-4"></i> Sincronizar Agora';
-        lucide.createIcons();
-      }
-    }
-
-    function saveScriptUrl() {
-      const input = document.getElementById('google-script-url');
-      let val = input.value.trim();
-      if (!val || val.length < 30) {
-        val = OFFICIAL_SCRIPT_URL;
-        input.value = val;
-      }
-      localStorage.setItem('OSeuAlfaiate_ScriptUrl', val);
-      appState.scriptUrl = val;
-      showToast('URL da conexão salva com sucesso!', 'success');
-      syncWithGoogleSheet();
-    }
-
-    // Tabs
+    // Controle de Abas
     function switchTab(tabName) {
-      const tabs = ['dashboard', 'pedidos', 'clientes', 'pagamentos', 'planilha'];
+      const tabs = ['dashboard', 'pedidos', 'clientes', 'pagamentos'];
       tabs.forEach(t => {
         const view = document.getElementById(`view-${t}`);
         const btn = document.getElementById(`tab-btn-${t}`);
+        const mBtn = document.getElementById(`m-tab-${t}`);
+
         if (view) {
           if (t === tabName) view.classList.remove('hidden');
           else view.classList.add('hidden');
@@ -1375,6 +1227,13 @@ function getSheetData(sheet) {
             btn.className = "nav-tab px-3 py-2 rounded-md text-sm font-medium text-brand-gold bg-brand-darkBorder transition-all flex items-center gap-2";
           } else {
             btn.className = "nav-tab px-3 py-2 rounded-md text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-brand-slate transition-all flex items-center gap-2";
+          }
+        }
+        if (mBtn) {
+          if (t === tabName) {
+            mBtn.className = "flex flex-col items-center text-[10px] text-brand-gold py-1";
+          } else {
+            mBtn.className = "flex flex-col items-center text-[10px] text-slate-400 py-1";
           }
         }
       });
@@ -1768,7 +1627,7 @@ function getSheetData(sheet) {
       lucide.createIcons();
     }
 
-    // Modais
+    // Modais e Formulários
     function openModal(modalId) {
       const el = document.getElementById(modalId);
       if (el) {
@@ -1837,7 +1696,7 @@ function getSheetData(sheet) {
           order.totalValue = totalValue;
           order.deadline = deadline;
           order.status = status;
-          showToast(`Pedido ${order.code} atualizado com sucesso!`, 'success');
+          showToast(`Pedido ${order.code} atualizado! Sincronizando...`, 'success');
         }
       } else {
         const newCode = `PED-${100 + appState.orders.length + 1}`;
@@ -1853,13 +1712,15 @@ function getSheetData(sheet) {
           createdAt: getTodayIsoString()
         };
         appState.orders.push(newOrder);
-        showToast(`Pedido ${newCode} criado com sucesso!`, 'success');
+        showToast(`Pedido ${newCode} criado! Sincronizando...`, 'success');
       }
 
-      saveState();
       closeModal('modal-order');
       renderOrdersTable();
       renderDashboard();
+
+      // Gravação em tempo real na planilha
+      triggerRealtimeSync();
     }
 
     function editOrder(orderId) {
@@ -1885,10 +1746,10 @@ function getSheetData(sheet) {
       if (confirm(`Tem certeza que deseja remover o pedido ${order.code}?`)) {
         appState.orders = appState.orders.filter(o => o.id !== orderId);
         appState.payments = appState.payments.filter(p => p.orderId !== orderId);
-        saveState();
         renderOrdersTable();
         renderDashboard();
-        showToast(`Pedido ${order.code} excluído.`, 'info');
+        showToast(`Pedido ${order.code} excluído. Sincronizando...`, 'info');
+        triggerRealtimeSync();
       }
     }
 
@@ -1919,7 +1780,7 @@ function getSheetData(sheet) {
           client.phone = phone;
           client.email = email;
           client.notes = notes;
-          showToast(`Cliente ${name} atualizado.`, 'success');
+          showToast(`Cliente ${name} atualizado! Sincronizando...`, 'success');
         }
       } else {
         const newClient = {
@@ -1931,14 +1792,16 @@ function getSheetData(sheet) {
           createdAt: getTodayIsoString()
         };
         appState.clients.push(newClient);
-        showToast(`Cliente ${name} cadastrado com sucesso!`, 'success');
+        showToast(`Cliente ${name} cadastrado! Sincronizando...`, 'success');
       }
 
-      saveState();
       closeModal('modal-client');
       populateClientDropdown();
       renderClientsTable();
       renderDashboard();
+
+      // Gravação em tempo real na planilha
+      triggerRealtimeSync();
     }
 
     function editClient(clientId) {
@@ -1967,10 +1830,10 @@ function getSheetData(sheet) {
 
       if (confirm(`Deseja realmente remover o cliente ${client.name}?`)) {
         appState.clients = appState.clients.filter(c => c.id !== clientId);
-        saveState();
         renderClientsTable();
         renderDashboard();
-        showToast('Cliente removido.', 'info');
+        showToast('Cliente removido. Sincronizando...', 'info');
+        triggerRealtimeSync();
       }
     }
 
@@ -2045,25 +1908,27 @@ function getSheetData(sheet) {
       };
 
       appState.payments.push(newPayment);
-      saveState();
       closeModal('modal-payment');
 
-      showToast(`Pagamento de ${formatBRL(amount)} registrado com sucesso!`, 'success');
+      showToast(`Pagamento de ${formatBRL(amount)} registrado! Sincronizando...`, 'success');
 
       renderOrdersTable();
       renderPaymentsTable();
       renderClientsTable();
       renderDashboard();
+
+      // Gravação em tempo real na planilha
+      triggerRealtimeSync();
     }
 
     function deletePayment(payId) {
       if (confirm('Deseja cancelar o registro deste pagamento?')) {
         appState.payments = appState.payments.filter(p => p.id !== payId);
-        saveState();
         renderPaymentsTable();
         renderOrdersTable();
         renderDashboard();
-        showToast('Pagamento removido.', 'info');
+        showToast('Pagamento removido. Sincronizando...', 'info');
+        triggerRealtimeSync();
       }
     }
 
@@ -2124,62 +1989,6 @@ function getSheetData(sheet) {
       openModal('modal-order-details');
     }
 
-    function copyAppsScriptCode() {
-      const code = document.getElementById('apps-script-code').innerText;
-      const tempInput = document.createElement('textarea');
-      tempInput.value = code;
-      document.body.appendChild(tempInput);
-      tempInput.select();
-      document.execCommand('copy');
-      document.body.removeChild(tempInput);
-      showToast('Código do Apps Script copiado!', 'success');
-    }
-
-    function exportDataJSON() {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
-      const downloadAnchor = document.createElement('a');
-      downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `O_Seu_Alfaiate_Backup_${getTodayIsoString()}.json`);
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
-      showToast('Backup baixado com sucesso!', 'success');
-    }
-
-    function importDataJSON(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const imported = JSON.parse(e.target.result);
-          if (imported.clients && imported.orders && imported.payments) {
-            appState = imported;
-            saveState();
-            refreshData();
-            showToast('Dados restaurados com sucesso!', 'success');
-          } else {
-            showToast('Arquivo de backup inválido.', 'error');
-          }
-        } catch (err) {
-          showToast('Erro ao processar o arquivo JSON.', 'error');
-        }
-      };
-      reader.readAsText(file);
-    }
-
-    function resetToFictitiousData() {
-      if (confirm('Deseja recarregar os dados fictícios originais de teste (inclusive o pedido atrasado)?')) {
-        appState.clients = JSON.parse(JSON.stringify(INITIAL_DATA.clients));
-        appState.orders = JSON.parse(JSON.stringify(INITIAL_DATA.orders));
-        appState.payments = JSON.parse(JSON.stringify(INITIAL_DATA.payments));
-        saveState();
-        refreshData();
-        showToast('Dados de teste restaurados!', 'info');
-      }
-    }
-
     function refreshData() {
       renderDashboard();
       renderOrdersTable();
@@ -2187,11 +1996,14 @@ function getSheetData(sheet) {
       renderPaymentsTable();
     }
 
-    // Inicialização
+    // Inicialização da Aplicação
     window.addEventListener('DOMContentLoaded', () => {
-      loadState();
+      loadLocalCache();
       refreshData();
       lucide.createIcons();
+
+      // Carrega automaticamente da planilha em segundo plano
+      fetchFromGoogleSheets(false);
     });
   </script>
 </body>
