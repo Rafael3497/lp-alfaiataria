@@ -1,0 +1,2061 @@
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>O Seu Alfaiate — Sistema de Gestão & CRM</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Google Fonts: Playfair Display + Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              gold: '#C5A059',
+              goldHover: '#B38F46',
+              goldLight: '#F4EBD9',
+              dark: '#0B0F19',
+              darkCard: '#131A2B',
+              darkBorder: '#1E293B',
+              slate: '#1E2433'
+            }
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'serif'],
+            cinzel: ['Cinzel', 'serif'],
+            sans: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0B0F19;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1E293B;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #C5A059;
+    }
+    .badge-atrasado {
+      background-color: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    .badge-hoje {
+      background-color: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    .badge-prazo {
+      background-color: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+    .badge-entregue {
+      background-color: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+  </style>
+</head>
+
+<body class="bg-brand-dark text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-brand-gold selection:text-black">
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Header / Navigation Bar -->
+  <header class="bg-brand-darkCard border-b border-brand-darkBorder sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        
+        <!-- Brand Monogram & Title -->
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-gold to-brand-goldHover flex items-center justify-center shadow-lg shadow-brand-gold/10">
+            <span class="font-cinzel text-black font-bold text-lg">OA</span>
+          </div>
+          <div>
+            <span class="font-cinzel tracking-wider text-base sm:text-lg font-bold text-slate-100 block leading-tight">O SEU ALFAIATE</span>
+            <span class="text-[10px] tracking-widest text-brand-gold uppercase font-medium">Atelier & Alta Alfaiataria</span>
+          </div>
+        </div>
+
+        <!-- Desktop Navigation Items -->
+        <nav class="hidden md:flex items-center space-x-1 lg:space-x-2">
+          <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="nav-tab px-3 py-2 rounded-md text-sm font-medium text-brand-gold bg-brand-darkBorder transition-all flex items-center gap-2">
+            <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
+          </button>
+          <button onclick="switchTab('pedidos')" id="tab-btn-pedidos" class="nav-tab px-3 py-2 rounded-md text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-brand-slate transition-all flex items-center gap-2">
+            <i data-lucide="scissors" class="w-4 h-4"></i> Pedidos
+          </button>
+          <button onclick="switchTab('clientes')" id="tab-btn-clientes" class="nav-tab px-3 py-2 rounded-md text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-brand-slate transition-all flex items-center gap-2">
+            <i data-lucide="users" class="w-4 h-4"></i> Clientes
+          </button>
+          <button onclick="switchTab('pagamentos')" id="tab-btn-pagamentos" class="nav-tab px-3 py-2 rounded-md text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-brand-slate transition-all flex items-center gap-2">
+            <i data-lucide="wallet" class="w-4 h-4"></i> Pagamentos
+          </button>
+          <button onclick="switchTab('planilha')" id="tab-btn-planilha" class="nav-tab px-3 py-2 rounded-md text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-brand-slate transition-all flex items-center gap-2">
+            <i data-lucide="sheet" class="w-4 h-4"></i> Planilha Google
+          </button>
+        </nav>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-2">
+          <button onclick="openNewOrderModal()" class="bg-brand-gold hover:bg-brand-goldHover text-black text-xs sm:text-sm font-semibold px-3 sm:px-4 py-2 rounded-lg shadow-md flex items-center gap-1.5 transition-all">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+            <span class="hidden sm:inline">Novo</span> Pedido
+          </button>
+          <button onclick="openNewPaymentModal()" class="border border-brand-gold/40 hover:bg-brand-gold/10 text-brand-gold text-xs sm:text-sm font-medium px-3 sm:px-4 py-2 rounded-lg transition-all flex items-center gap-1.5">
+            <i data-lucide="receipt" class="w-4 h-4"></i>
+            <span class="hidden sm:inline">Receber</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Bottom Nav -->
+  <div class="md:hidden fixed bottom-0 left-0 right-0 bg-brand-darkCard border-t border-brand-darkBorder z-40 flex justify-around py-2 px-1">
+    <button onclick="switchTab('dashboard')" class="flex flex-col items-center text-[10px] text-brand-gold py-1">
+      <i data-lucide="layout-dashboard" class="w-5 h-5 mb-1"></i> Dashboard
+    </button>
+    <button onclick="switchTab('pedidos')" class="flex flex-col items-center text-[10px] text-slate-400 py-1">
+      <i data-lucide="scissors" class="w-5 h-5 mb-1"></i> Pedidos
+    </button>
+    <button onclick="switchTab('clientes')" class="flex flex-col items-center text-[10px] text-slate-400 py-1">
+      <i data-lucide="users" class="w-5 h-5 mb-1"></i> Clientes
+    </button>
+    <button onclick="switchTab('pagamentos')" class="flex flex-col items-center text-[10px] text-slate-400 py-1">
+      <i data-lucide="wallet" class="w-5 h-5 mb-1"></i> Pagamentos
+    </button>
+    <button onclick="switchTab('planilha')" class="flex flex-col items-center text-[10px] text-slate-400 py-1">
+      <i data-lucide="sheet" class="w-5 h-5 mb-1"></i> Planilha
+    </button>
+  </div>
+
+  <!-- Main Content Wrapper -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 pb-20 md:pb-8">
+
+    <!-- ==================== TAB: DASHBOARD ==================== -->
+    <section id="view-dashboard" class="space-y-6">
+      
+      <!-- Welcome & Status Banner -->
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gradient-to-r from-brand-darkCard to-brand-slate p-6 rounded-2xl border border-brand-darkBorder">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-serif font-bold text-slate-100">Painel Geral do Atelier</h1>
+          <p class="text-slate-400 text-sm mt-1">Acompanhamento executivo de alfaiataria sob medida, caixa e produção.</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <span id="sync-indicator" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            Banco Sincronizado
+          </span>
+          <button onclick="refreshData()" class="p-2 rounded-lg bg-brand-slate hover:bg-slate-700 text-slate-300 transition" title="Atualizar Indicadores">
+            <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Financial Metrics Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <!-- Total Faturado -->
+        <div class="bg-brand-darkCard p-5 rounded-xl border border-brand-darkBorder shadow-sm relative overflow-hidden">
+          <div class="flex items-center justify-between text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">
+            <span>Faturamento Total</span>
+            <i data-lucide="trending-up" class="w-4 h-4 text-brand-gold"></i>
+          </div>
+          <div id="metric-faturamento" class="text-2xl font-bold text-white tracking-tight">R$ 0,00</div>
+          <p class="text-xs text-slate-500 mt-1">Total bruto em pedidos fechados</p>
+          <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-brand-gold to-amber-300"></div>
+        </div>
+
+        <!-- Total Recebido -->
+        <div class="bg-brand-darkCard p-5 rounded-xl border border-brand-darkBorder shadow-sm relative overflow-hidden">
+          <div class="flex items-center justify-between text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">
+            <span>Total Recebido</span>
+            <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
+          </div>
+          <div id="metric-recebido" class="text-2xl font-bold text-emerald-400 tracking-tight">R$ 0,00</div>
+          <p id="metric-taxa-recebimento" class="text-xs text-slate-500 mt-1">0% já liquidado em caixa</p>
+          <div class="absolute bottom-0 left-0 right-0 h-1 bg-emerald-500"></div>
+        </div>
+
+        <!-- Saldo em Aberto -->
+        <div class="bg-brand-darkCard p-5 rounded-xl border border-brand-darkBorder shadow-sm relative overflow-hidden">
+          <div class="flex items-center justify-between text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">
+            <span>A Receber (Restante)</span>
+            <i data-lucide="clock" class="w-4 h-4 text-amber-400"></i>
+          </div>
+          <div id="metric-aberto" class="text-2xl font-bold text-amber-400 tracking-tight">R$ 0,00</div>
+          <p class="text-xs text-slate-500 mt-1">Saldo pendente de quitação</p>
+          <div class="absolute bottom-0 left-0 right-0 h-1 bg-amber-500"></div>
+        </div>
+
+        <!-- Clientes Ativos -->
+        <div class="bg-brand-darkCard p-5 rounded-xl border border-brand-darkBorder shadow-sm relative overflow-hidden">
+          <div class="flex items-center justify-between text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">
+            <span>Clientes & Alfaiataria</span>
+            <i data-lucide="users" class="w-4 h-4 text-blue-400"></i>
+          </div>
+          <div id="metric-clientes" class="text-2xl font-bold text-white tracking-tight">0</div>
+          <p id="metric-pedidos-count" class="text-xs text-slate-500 mt-1">0 pedidos cadastrados</p>
+          <div class="absolute bottom-0 left-0 right-0 h-1 bg-blue-500"></div>
+        </div>
+
+      </div>
+
+      <!-- Operational Status Cards (Deadlines) -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        <div class="bg-brand-darkCard/60 border border-brand-darkBorder rounded-xl p-4 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center shrink-0">
+            <i data-lucide="calendar-check" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div id="metric-no-prazo" class="text-xl font-bold text-slate-100">0</div>
+            <div class="text-xs text-slate-400">No Prazo</div>
+          </div>
+        </div>
+
+        <div class="bg-brand-darkCard/60 border border-brand-darkBorder rounded-xl p-4 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0">
+            <i data-lucide="bell-ring" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div id="metric-hoje" class="text-xl font-bold text-amber-400">0</div>
+            <div class="text-xs text-slate-400">Entrega Hoje</div>
+          </div>
+        </div>
+
+        <div class="bg-brand-darkCard/60 border border-brand-darkBorder rounded-xl p-4 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-red-500/10 text-red-400 flex items-center justify-center shrink-0">
+            <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div id="metric-atrasado" class="text-xl font-bold text-red-400">0</div>
+            <div class="text-xs text-slate-400">Atrasados</div>
+          </div>
+        </div>
+
+        <div class="bg-brand-darkCard/60 border border-brand-darkBorder rounded-xl p-4 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
+            <i data-lucide="check" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div id="metric-entregues" class="text-xl font-bold text-emerald-400">0</div>
+            <div class="text-xs text-slate-400">Entregues</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Chart 1: Financial Balance -->
+        <div class="lg:col-span-2 bg-brand-darkCard border border-brand-darkBorder rounded-xl p-5 shadow-sm">
+          <h2 class="text-base font-semibold text-slate-200 mb-4 flex items-center gap-2">
+            <i data-lucide="bar-chart-3" class="w-4 h-4 text-brand-gold"></i>
+            Balanço Financeiro por Pedido (Top 6 Recentes)
+          </h2>
+          <div class="h-64 sm:h-72">
+            <canvas id="chartFinancial"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 2: Status Breakdown -->
+        <div class="bg-brand-darkCard border border-brand-darkBorder rounded-xl p-5 shadow-sm">
+          <h2 class="text-base font-semibold text-slate-200 mb-4 flex items-center gap-2">
+            <i data-lucide="pie-chart" class="w-4 h-4 text-brand-gold"></i>
+            Situação dos Prazos
+          </h2>
+          <div class="h-64 flex items-center justify-center">
+            <canvas id="chartStatus"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Action Alert Box for Overdue or Delivery Today -->
+      <div id="alert-box-container"></div>
+
+    </section>
+
+    <!-- ==================== TAB: PEDIDOS ==================== -->
+    <section id="view-pedidos" class="space-y-4 hidden">
+      
+      <!-- Header with filters & search -->
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-brand-darkCard p-4 rounded-xl border border-brand-darkBorder">
+        <div>
+          <h2 class="text-xl font-serif font-bold text-slate-100">Controle de Pedidos & Provas</h2>
+          <p class="text-xs text-slate-400">Acompanhamento dos ternos, camisas e ajustes em confecção.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+          <!-- Search input -->
+          <div class="relative flex-1 md:w-64">
+            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input type="text" id="order-search" oninput="renderOrdersTable()" placeholder="Buscar cliente ou peça..." class="w-full pl-9 pr-3 py-1.5 bg-brand-dark border border-brand-darkBorder rounded-lg text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-brand-gold">
+          </div>
+          <!-- Filter by Deadline Status -->
+          <select id="order-filter-deadline" onchange="renderOrdersTable()" class="bg-brand-dark border border-brand-darkBorder rounded-lg text-xs py-2 px-3 text-slate-300 focus:outline-none focus:border-brand-gold">
+            <option value="ALL">Todos os Prazos</option>
+            <option value="Atrasado">Apenas Atrasados</option>
+            <option value="Entrega hoje">Entrega Hoje</option>
+            <option value="No prazo">No Prazo</option>
+            <option value="Entregue">Entregues</option>
+          </select>
+          <!-- Filter by Payment Status -->
+          <select id="order-filter-payment" onchange="renderOrdersTable()" class="bg-brand-dark border border-brand-darkBorder rounded-lg text-xs py-2 px-3 text-slate-300 focus:outline-none focus:border-brand-gold">
+            <option value="ALL">Todos Pagamentos</option>
+            <option value="Em aberto">Em Aberto</option>
+            <option value="Parcial">Parcial</option>
+            <option value="Pago">Quitados</option>
+          </select>
+          <!-- Button New Order -->
+          <button onclick="openNewOrderModal()" class="bg-brand-gold hover:bg-brand-goldHover text-black text-xs font-semibold px-3 py-2 rounded-lg flex items-center gap-1">
+            <i data-lucide="plus" class="w-4 h-4"></i> Novo
+          </button>
+        </div>
+      </div>
+
+      <!-- Orders Table -->
+      <div class="bg-brand-darkCard border border-brand-darkBorder rounded-xl overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-brand-dark/80 text-[11px] uppercase tracking-wider text-slate-400 border-b border-brand-darkBorder">
+              <tr>
+                <th class="py-3 px-4">Código / Peça</th>
+                <th class="py-3 px-4">Cliente</th>
+                <th class="py-3 px-4">Etapa Produção</th>
+                <th class="py-3 px-4">Prazo / Entrega</th>
+                <th class="py-3 px-4 text-right">Valor Total</th>
+                <th class="py-3 px-4 text-right">Valor Pago</th>
+                <th class="py-3 px-4 text-right">Saldo Restante</th>
+                <th class="py-3 px-4 text-center">Pagamento</th>
+                <th class="py-3 px-4 text-center">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="orders-table-body" class="divide-y divide-brand-darkBorder text-slate-300">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+        <div id="orders-empty-state" class="py-12 text-center text-slate-500 hidden">
+          <i data-lucide="package-open" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+          Nenhum pedido encontrado para os filtros selecionados.
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==================== TAB: CLIENTES ==================== -->
+    <section id="view-clientes" class="space-y-4 hidden">
+      
+      <!-- Top header -->
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-brand-darkCard p-4 rounded-xl border border-brand-darkBorder">
+        <div>
+          <h2 class="text-xl font-serif font-bold text-slate-100">Carteira de Clientes</h2>
+          <p class="text-xs text-slate-400">Consolidação automática de compras, histórico e saldos em aberto.</p>
+        </div>
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <div class="relative flex-1 sm:w-64">
+            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input type="text" id="client-search" oninput="renderClientsTable()" placeholder="Buscar por nome, telefone..." class="w-full pl-9 pr-3 py-1.5 bg-brand-dark border border-brand-darkBorder rounded-lg text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-brand-gold">
+          </div>
+          <button onclick="openNewClientModal()" class="bg-brand-gold hover:bg-brand-goldHover text-black text-xs font-semibold px-3 py-2 rounded-lg flex items-center gap-1 shrink-0">
+            <i data-lucide="user-plus" class="w-4 h-4"></i> Novo Cliente
+          </button>
+        </div>
+      </div>
+
+      <!-- Clients List / Cards Table -->
+      <div class="bg-brand-darkCard border border-brand-darkBorder rounded-xl overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-brand-dark/80 text-[11px] uppercase tracking-wider text-slate-400 border-b border-brand-darkBorder">
+              <tr>
+                <th class="py-3 px-4">Cliente / Contato</th>
+                <th class="py-3 px-4 text-center">Pedidos</th>
+                <th class="py-3 px-4 text-right">Total Comprado</th>
+                <th class="py-3 px-4 text-right">Total Pago</th>
+                <th class="py-3 px-4 text-right">Saldo em Aberto</th>
+                <th class="py-3 px-4 text-center">Contato Rápido</th>
+                <th class="py-3 px-4 text-center">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="clients-table-body" class="divide-y divide-brand-darkBorder text-slate-300">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+        <div id="clients-empty-state" class="py-12 text-center text-slate-500 hidden">
+          <i data-lucide="user-x" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+          Nenhum cliente cadastrado.
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==================== TAB: PAGAMENTOS ==================== -->
+    <section id="view-pagamentos" class="space-y-4 hidden">
+      
+      <!-- Top Bar -->
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-brand-darkCard p-4 rounded-xl border border-brand-darkBorder">
+        <div>
+          <h2 class="text-xl font-serif font-bold text-slate-100">Livro de Pagamentos & Entradas</h2>
+          <p class="text-xs text-slate-400">Registro detalhado de cada sinal, parcela ou quitação de pedidos.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="openNewPaymentModal()" class="bg-brand-gold hover:bg-brand-goldHover text-black text-xs font-semibold px-3 py-2 rounded-lg flex items-center gap-1.5 shadow">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i> Registrar Pagamento
+          </button>
+        </div>
+      </div>
+
+      <!-- Payments Table -->
+      <div class="bg-brand-darkCard border border-brand-darkBorder rounded-xl overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-brand-dark/80 text-[11px] uppercase tracking-wider text-slate-400 border-b border-brand-darkBorder">
+              <tr>
+                <th class="py-3 px-4">Data</th>
+                <th class="py-3 px-4">Pedido Vinculado</th>
+                <th class="py-3 px-4">Cliente</th>
+                <th class="py-3 px-4">Forma de Pagamento</th>
+                <th class="py-3 px-4">Observações</th>
+                <th class="py-3 px-4 text-right">Valor Pago</th>
+                <th class="py-3 px-4 text-center">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="payments-table-body" class="divide-y divide-brand-darkBorder text-slate-300">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+        <div id="payments-empty-state" class="py-12 text-center text-slate-500 hidden">
+          <i data-lucide="credit-card" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+          Nenhum pagamento registrado até o momento.
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==================== TAB: PLANILHA GOOGLE & CONFIGS ==================== -->
+    <section id="view-planilha" class="space-y-6 hidden">
+      
+      <div class="bg-brand-darkCard border border-brand-darkBorder rounded-xl p-6">
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/20">
+            <i data-lucide="sheet" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h2 class="text-xl font-serif font-bold text-slate-100">Conexão com a Planilha Google</h2>
+            <p class="text-sm text-slate-400 mt-1">
+              Planilha vinculada: <a href="https://docs.google.com/spreadsheets/d/1FR3tG0wkzMbIHhxld8WKYZz9YSBhVN-u9ThSsUDDhRo/edit?usp=drivesdk" target="_blank" class="text-brand-gold hover:underline font-mono text-xs">Abrir Planilha O Seu Alfaiate no Google Drive ↗</a>
+            </p>
+          </div>
+        </div>
+
+        <!-- Google Apps Script URL Config -->
+        <div class="mt-6 pt-6 border-t border-brand-darkBorder space-y-4">
+          <label class="block text-sm font-medium text-slate-300">
+            URL do Web App (Google Apps Script)
+          </label>
+          <div class="flex flex-col sm:flex-row gap-2">
+            <input type="url" id="google-script-url" placeholder="https://script.google.com/macros/s/.../exec" class="flex-1 bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 font-mono focus:outline-none focus:border-brand-gold">
+            <button onclick="saveScriptUrl()" class="bg-brand-gold hover:bg-brand-goldHover text-black text-xs font-semibold px-4 py-2 rounded-lg shrink-0">
+              Salvar Conexão
+            </button>
+            <button onclick="syncWithGoogleSheet()" class="border border-brand-gold/40 text-brand-gold hover:bg-brand-gold/10 text-xs font-medium px-4 py-2 rounded-lg flex items-center justify-center gap-1.5 shrink-0">
+              <i data-lucide="refresh-cw" class="w-4 h-4"></i> Sincronizar Agora
+            </button>
+          </div>
+          <p class="text-xs text-slate-400">
+            Dica: Enquanto o Web App não estiver configurado, seus dados ficam salvos de forma segura e imediata no armazenamento do seu navegador.
+          </p>
+        </div>
+
+        <!-- How to connect step-by-step -->
+        <div class="mt-6 bg-brand-dark p-5 rounded-xl border border-brand-darkBorder">
+          <h3 class="text-sm font-semibold text-brand-gold uppercase tracking-wider mb-2 flex items-center gap-1.5">
+            <i data-lucide="code-2" class="w-4 h-4"></i> Como Ativar a Sincronização em 2 Minutos
+          </h3>
+          <ol class="text-xs text-slate-400 space-y-2 list-decimal list-inside leading-relaxed">
+            <li>Abra sua planilha do Google no link acima.</li>
+            <li>No menu superior, clique em <strong class="text-slate-200">Extensões → Apps Script</strong>.</li>
+            <li>Apague o código existente e cole o script abaixo.</li>
+            <li>Clique no botão azul <strong class="text-slate-200">Implantar → Nova implantação</strong>.</li>
+            <li>Selecione tipo <strong class="text-slate-200">Aplicativo da Web</strong>, configure acesso para <strong class="text-slate-200">"Qualquer pessoa"</strong> e clique em Implantar.</li>
+            <li>Copie a URL fornecida e cole no campo acima!</li>
+          </ol>
+
+          <!-- Code Box -->
+          <div class="mt-4 relative">
+            <pre class="bg-black/60 p-4 rounded-lg text-xs font-mono text-emerald-400 overflow-x-auto border border-slate-800" id="apps-script-code">function doGet(e) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var db = {
+    clients: getSheetData(ss.getSheetByName("CLIENTES")),
+    orders: getSheetData(ss.getSheetByName("PEDIDOS")),
+    payments: getSheetData(ss.getSheetByName("PAGAMENTOS"))
+  };
+  return ContentService.createTextOutput(JSON.stringify(db))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  var data = JSON.parse(e.postData.contents);
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  // Sincroniza dados enviados
+  return ContentService.createTextOutput(JSON.stringify({status: "success"}))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function getSheetData(sheet) {
+  if (!sheet) return [];
+  var data = sheet.getDataRange().getValues();
+  if (data.length <= 1) return [];
+  var headers = data[0];
+  var rows = [];
+  for (var i = 1; i < data.length; i++) {
+    var obj = {};
+    for (var h = 0; h < headers.length; h++) {
+      obj[headers[h]] = data[i][h];
+    }
+    rows.push(obj);
+  }
+  return rows;
+}</pre>
+            <button onclick="copyAppsScriptCode()" class="absolute top-2 right-2 bg-brand-slate hover:bg-slate-700 text-slate-200 text-xs px-2.5 py-1 rounded border border-slate-600 flex items-center gap-1">
+              <i data-lucide="copy" class="w-3 h-3"></i> Copiar Código
+            </button>
+          </div>
+        </div>
+
+        <!-- Backup and Reset Data buttons -->
+        <div class="mt-6 pt-6 border-t border-brand-darkBorder flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-2">
+            <button onclick="exportDataJSON()" class="bg-brand-slate hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-2 rounded-lg flex items-center gap-1.5 transition">
+              <i data-lucide="download" class="w-4 h-4"></i> Baixar Backup (JSON)
+            </button>
+            <button onclick="document.getElementById('import-file').click()" class="bg-brand-slate hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-2 rounded-lg flex items-center gap-1.5 transition">
+              <i data-lucide="upload" class="w-4 h-4"></i> Restaurar Dados
+            </button>
+            <input type="file" id="import-file" class="hidden" accept=".json" onchange="importDataJSON(event)">
+          </div>
+          <button onclick="resetToFictitiousData()" class="text-xs text-red-400 hover:text-red-300 underline">
+            Recarregar Dados Fictícios Originais de Teste
+          </button>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- MODAL: NOVO / EDITAR PEDIDO -->
+  <div id="modal-order" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-brand-darkCard border border-brand-darkBorder rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl">
+      <div class="p-5 border-b border-brand-darkBorder flex justify-between items-center">
+        <h3 id="modal-order-title" class="font-serif font-bold text-lg text-slate-100">Novo Pedido de Alfaiataria</h3>
+        <button onclick="closeModal('modal-order')" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="order-form" onsubmit="handleSaveOrder(event)" class="p-5 space-y-4">
+        <input type="hidden" id="order-id">
+
+        <!-- Cliente -->
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label class="text-xs font-medium text-slate-300">Cliente *</label>
+            <button type="button" onclick="openNewClientModal(true)" class="text-[11px] text-brand-gold hover:underline flex items-center gap-0.5">
+              + Cadastrar Novo
+            </button>
+          </div>
+          <select id="order-client-id" required class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
+            <!-- options inserted by JS -->
+          </select>
+        </div>
+
+        <!-- Peça / Descrição -->
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Peça / Produto *</label>
+          <select id="order-category" required class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
+            <option value="Costume 2 Peças">Costume 2 Peças (Paletó e Calça)</option>
+            <option value="Terno 3 Peças">Terno 3 Peças (Paletó, Colete e Calça)</option>
+            <option value="Blazer Sob Medida">Blazer Sob Medida</option>
+            <option value="Camisa Sob Medida">Camisa Sob Medida (Puro Algodão)</option>
+            <option value="Calça de Alfaiataria">Calça de Alfaiataria Avulsa</option>
+            <option value="Colete Social">Colete Social</option>
+            <option value="Smoking / Gala">Smoking / Traje de Gala</option>
+            <option value="Ajustes / Reformas">Ajustes & Reformas Premium</option>
+          </select>
+        </div>
+
+        <!-- Descrição Detalhada / Tecido -->
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Especificações do Tecido / Detalhes</label>
+          <input type="text" id="order-description" placeholder="Ex: Lã Fria Super 130s Marinho, Forro Bemberg, Pesponto manual" class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
+        </div>
+
+        <!-- Grid 2 col: Valor e Prazo -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Valor Total (R$) *</label>
+            <input type="number" step="0.01" min="0" id="order-total" required placeholder="0.00" class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Data Prometida de Entrega *</label>
+            <input type="date" id="order-deadline" required class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
+          </div>
+        </div>
+
+        <!-- Etapa Atual de Produção -->
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Etapa de Produção</label>
+          <select id="order-status" class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
+            <option value="Medição">1. Medição & Escolha de Tecido</option>
+            <option value="Corte & Modelagem">2. Corte & Modelagem Individual</option>
+            <option value="1ª Prova">3. 1ª Prova (Estrutura)</option>
+            <option value="2ª Prova">4. 2ª Prova (Acabamento)</option>
+            <option value="Ajustes Finais">5. Ajustes Finais & Passadoria</option>
+            <option value="Pronto p/ Entrega">6. Pronto para Entrega / Retirada</option>
+            <option value="Entregue">7. Entregue ao Cliente</option>
+          </select>
+        </div>
+
+        <!-- Actions -->
+        <div class="pt-4 border-t border-brand-darkBorder flex justify-end gap-3">
+          <button type="button" onclick="closeModal('modal-order')" class="px-4 py-2 text-xs font-medium text-slate-400 hover:text-slate-200">
+            Cancelar
+          </button>
+          <button type="submit" class="bg-brand-gold hover:bg-brand-goldHover text-black text-xs font-semibold px-5 py-2.5 rounded-lg">
+            Salvar Pedido
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: NOVO CLIENTE -->
+  <div id="modal-client" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-brand-darkCard border border-brand-darkBorder rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
+      <div class="p-5 border-b border-brand-darkBorder flex justify-between items-center">
+        <h3 id="modal-client-title" class="font-serif font-bold text-lg text-slate-100">Cadastrar Cliente</h3>
+        <button onclick="closeModal('modal-client')" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="client-form" onsubmit="handleSaveClient(event)" class="p-5 space-y-4">
+        <input type="hidden" id="client-id">
+
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Nome Completo *</label>
+          <input type="text" id="client-name" required placeholder="Ex: Dr. Roberto Guimarães" class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">WhatsApp / Telefone *</label>
+          <input type="tel" id="client-phone" required placeholder="(11) 98765-4321" class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">E-mail</label>
+          <input type="email" id="client-email" placeholder="cliente@email.com" class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Observações de Medidas / Preferências</label>
+          <textarea id="client-notes" rows="2" placeholder="Ex: Preferência por ombros desestruturados, corte slim, forro monogramado." class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold"></textarea>
+        </div>
+
+        <div class="pt-4 border-t border-brand-darkBorder flex justify-end gap-3">
+          <button type="button" onclick="closeModal('modal-client')" class="px-4 py-2 text-xs font-medium text-slate-400 hover:text-slate-200">
+            Cancelar
+          </button>
+          <button type="submit" class="bg-brand-gold hover:bg-brand-goldHover text-black text-xs font-semibold px-5 py-2.5 rounded-lg">
+            Salvar Cliente
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: REGISTRAR PAGAMENTO -->
+  <div id="modal-payment" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-brand-darkCard border border-brand-darkBorder rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
+      <div class="p-5 border-b border-brand-darkBorder flex justify-between items-center">
+        <h3 class="font-serif font-bold text-lg text-slate-100">Registrar Pagamento</h3>
+        <button onclick="closeModal('modal-payment')" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="payment-form" onsubmit="handleSavePayment(event)" class="p-5 space-y-4">
+        
+        <!-- Pedido Selection -->
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Vincular ao Pedido *</label>
+          <select id="payment-order-id" onchange="updatePaymentHelperInfo()" required class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
+            <!-- options inserted by JS -->
+          </select>
+        </div>
+
+        <!-- Helper Box: Shows remaining balance -->
+        <div id="payment-order-summary" class="bg-brand-dark p-3 rounded-lg border border-brand-darkBorder text-xs space-y-1">
+          <div class="flex justify-between text-slate-400">
+            <span>Valor do Pedido:</span>
+            <span id="pay-sum-total" class="font-semibold text-slate-200">R$ 0,00</span>
+          </div>
+          <div class="flex justify-between text-slate-400">
+            <span>Já Pago anteriormente:</span>
+            <span id="pay-sum-paid" class="font-semibold text-emerald-400">R$ 0,00</span>
+          </div>
+          <div class="flex justify-between pt-1 border-t border-brand-darkBorder">
+            <span class="text-brand-gold font-medium">Saldo a Pagar:</span>
+            <span id="pay-sum-remaining" class="font-bold text-brand-gold">R$ 0,00</span>
+          </div>
+        </div>
+
+        <!-- Valor do Pagamento -->
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Valor Deste Pagamento (R$) *</label>
+          <input type="number" step="0.01" min="0.01" id="payment-amount" required placeholder="0.00" class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
+        </div>
+
+        <!-- Data -->
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Data do Recebimento *</label>
+          <input type="date" id="payment-date" required class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
+        </div>
+
+        <!-- Forma de Pagamento -->
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Forma de Pagamento</label>
+          <select id="payment-method" class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
+            <option value="Pix">Pix (Instantâneo)</option>
+            <option value="Cartão de Crédito">Cartão de Crédito</option>
+            <option value="Cartão de Débito">Cartão de Débito</option>
+            <option value="Dinheiro">Dinheiro em Espécie</option>
+            <option value="Transferência Bancária">Transferência / TED</option>
+          </select>
+        </div>
+
+        <!-- Observações -->
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Observações (Opcional)</label>
+          <input type="text" id="payment-notes" placeholder="Ex: Entrada de 50% / Parcela 1 de 2" class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
+        </div>
+
+        <div class="pt-4 border-t border-brand-darkBorder flex justify-end gap-3">
+          <button type="button" onclick="closeModal('modal-payment')" class="px-4 py-2 text-xs font-medium text-slate-400 hover:text-slate-200">
+            Cancelar
+          </button>
+          <button type="submit" class="bg-brand-gold hover:bg-brand-goldHover text-black text-xs font-semibold px-5 py-2.5 rounded-lg">
+            Confirmar Pagamento
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: DETALHES DO PEDIDO -->
+  <div id="modal-order-details" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-brand-darkCard border border-brand-darkBorder rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+      <div class="p-5 border-b border-brand-darkBorder flex justify-between items-center bg-brand-dark">
+        <div>
+          <span id="detail-order-code" class="text-xs font-mono font-bold text-brand-gold">PED-000</span>
+          <h3 id="detail-order-title" class="font-serif font-bold text-lg text-slate-100">Detalhes do Pedido</h3>
+        </div>
+        <button onclick="closeModal('modal-order-details')" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-6 overflow-y-auto flex-1">
+        <!-- Client & Product Info Card -->
+        <div class="grid grid-cols-2 gap-4 bg-brand-dark p-4 rounded-xl border border-brand-darkBorder text-xs">
+          <div>
+            <span class="text-slate-500 uppercase tracking-wider block text-[10px]">Cliente</span>
+            <span id="detail-client-name" class="font-semibold text-slate-200 text-sm block mt-0.5">-</span>
+            <span id="detail-client-phone" class="text-slate-400 block">-</span>
+          </div>
+          <div>
+            <span class="text-slate-500 uppercase tracking-wider block text-[10px]">Peça / Tecido</span>
+            <span id="detail-category" class="font-semibold text-brand-gold text-sm block mt-0.5">-</span>
+            <span id="detail-description" class="text-slate-400 block">-</span>
+          </div>
+          <div>
+            <span class="text-slate-500 uppercase tracking-wider block text-[10px]">Prazo de Entrega</span>
+            <span id="detail-deadline" class="font-medium text-slate-200 block mt-0.5">-</span>
+            <span id="detail-deadline-badge" class="mt-1 inline-block">-</span>
+          </div>
+          <div>
+            <span class="text-slate-500 uppercase tracking-wider block text-[10px]">Etapa de Alfaiataria</span>
+            <span id="detail-status" class="font-semibold text-slate-200 block mt-0.5">-</span>
+          </div>
+        </div>
+
+        <!-- Financial Breakdown -->
+        <div class="bg-brand-slate/40 p-4 rounded-xl border border-brand-darkBorder">
+          <h4 class="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+            <i data-lucide="receipt" class="w-4 h-4 text-brand-gold"></i>
+            Resumo Financeiro do Pedido
+          </h4>
+          <div class="grid grid-cols-3 gap-2 text-center">
+            <div class="bg-brand-dark p-2.5 rounded-lg border border-brand-darkBorder">
+              <span class="text-[10px] text-slate-400 block">Total do Pedido</span>
+              <span id="detail-total-val" class="font-bold text-sm text-slate-100">R$ 0,00</span>
+            </div>
+            <div class="bg-brand-dark p-2.5 rounded-lg border border-brand-darkBorder">
+              <span class="text-[10px] text-slate-400 block">Total Já Pago</span>
+              <span id="detail-paid-val" class="font-bold text-sm text-emerald-400">R$ 0,00</span>
+            </div>
+            <div class="bg-brand-dark p-2.5 rounded-lg border border-brand-darkBorder">
+              <span class="text-[10px] text-slate-400 block">Saldo Restante</span>
+              <span id="detail-remaining-val" class="font-bold text-sm text-amber-400">R$ 0,00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- History of payments for this order -->
+        <div>
+          <div class="flex justify-between items-center mb-2">
+            <h4 class="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+              Histórico de Pagamentos Deste Pedido
+            </h4>
+            <button id="btn-add-payment-to-this-order" class="text-xs text-brand-gold hover:underline flex items-center gap-1">
+              <i data-lucide="plus" class="w-3 h-3"></i> Adicionar Pagamento
+            </button>
+          </div>
+          <div id="detail-payments-list" class="space-y-2">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </div>
+
+      <div class="p-4 border-t border-brand-darkBorder flex justify-end gap-2 bg-brand-dark">
+        <button onclick="closeModal('modal-order-details')" class="bg-brand-slate hover:bg-slate-700 text-slate-200 text-xs font-medium px-4 py-2 rounded-lg">
+          Fechar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== JAVASCRIPT APPLICATION LOGIC ==================== -->
+  <script>
+    // System Seed / Initial Test Data matching your actual spreadsheet structure
+    const INITIAL_DATA = {
+      clients: [
+        {
+          id: "cli-1",
+          name: "Dr. Eduardo Alencar",
+          phone: "11998765432",
+          email: "eduardo.alencar@advocacia.com.br",
+          notes: "Gosta de corte clássico inglês, ombro estruturado.",
+          createdAt: "2026-02-15"
+        },
+        {
+          id: "cli-2",
+          name: "Gabriel Vasconcelos",
+          phone: "11987651234",
+          email: "gabriel.v@invest.com.br",
+          notes: "Noivo. Casamento em maio. Detalhe bordado no bolso interno.",
+          createdAt: "2026-02-20"
+        },
+        {
+          id: "cli-3",
+          name: "Carlos Henrique Siqueira",
+          phone: "21991234567",
+          email: "carlos.siqueira@construtora.com",
+          notes: "Cliente de camisaria sob medida frequente. Gola italiana.",
+          createdAt: "2026-02-28"
+        },
+        {
+          id: "cli-4",
+          name: "Marcos Vinicius Prado",
+          phone: "11977778888",
+          email: "marcos.prado@tech.io",
+          notes: "Blazer informal desestruturado e calças de sarja.",
+          createdAt: "2026-03-01"
+        }
+      ],
+      orders: [
+        {
+          id: "ord-1",
+          code: "PED-101",
+          clientId: "cli-1",
+          category: "Costume 2 Peças",
+          description: "Lã Fria Super 130s Azul Marinho Pinstripe",
+          totalValue: 5800.00,
+          deadline: "2026-03-01", // Pedido intencionalmente atrasado para teste do sistema
+          status: "Ajustes Finais",
+          createdAt: "2026-02-16"
+        },
+        {
+          id: "ord-2",
+          code: "PED-102",
+          clientId: "cli-2",
+          category: "Terno 3 Peças",
+          description: "Terno de Gala Cinza Chumbo com Colete Seda e Forro Jacquard",
+          totalValue: 7500.00,
+          deadline: getTodayIsoString(), // Entrega Hoje
+          status: "Pronto p/ Entrega",
+          createdAt: "2026-02-20"
+        },
+        {
+          id: "ord-3",
+          code: "PED-103",
+          clientId: "cli-3",
+          category: "Camisa Sob Medida",
+          description: "Kit com 3 Camisas Puro Algodão Egípcio 200 fios Branco e Azul Céu",
+          totalValue: 2400.00,
+          deadline: getFutureIsoDate(10), // No prazo
+          status: "1ª Prova",
+          createdAt: "2026-02-28"
+        },
+        {
+          id: "ord-4",
+          code: "PED-104",
+          clientId: "cli-4",
+          category: "Blazer Sob Medida",
+          description: "Blazer Italiano Verde Oliva em Linho com Seda",
+          totalValue: 3900.00,
+          deadline: getFutureIsoDate(15), // No prazo
+          status: "Corte & Modelagem",
+          createdAt: "2026-03-02"
+        }
+      ],
+      payments: [
+        // Pedido 1: Total 5800. Pagou sinal de 3000. Falta 2800.
+        {
+          id: "pay-1",
+          orderId: "ord-1",
+          amount: 3000.00,
+          date: "2026-02-16",
+          method: "Pix",
+          notes: "Sinal de 50% no fechamento do corte"
+        },
+        // Pedido 2: Total 7500. Pagou em 2 vezes: 4000 e 3500. Quitado (Pago)
+        {
+          id: "pay-2",
+          orderId: "ord-2",
+          amount: 4000.00,
+          date: "2026-02-20",
+          method: "Cartão de Crédito",
+          notes: "Entrada na medição"
+        },
+        {
+          id: "pay-3",
+          orderId: "ord-2",
+          amount: 3500.00,
+          date: getTodayIsoString(),
+          method: "Pix",
+          notes: "Quitação final no ato da liberação"
+        },
+        // Pedido 3: Total 2400. Pagou sinal de 1200.
+        {
+          id: "pay-4",
+          orderId: "ord-3",
+          amount: 1200.00,
+          date: "2026-02-28",
+          method: "Pix",
+          notes: "Entrada"
+        }
+      ]
+    };
+
+    // State Variables
+    let appState = {
+      clients: [],
+      orders: [],
+      payments: [],
+      scriptUrl: ""
+    };
+
+    let financialChartInstance = null;
+    let statusChartInstance = null;
+
+    // --- UTILITIES & HELPERS ---
+    function getTodayIsoString() {
+      const now = new Date();
+      return now.toISOString().split('T')[0];
+    }
+
+    function getFutureIsoDate(daysAhead) {
+      const d = new Date();
+      d.setDate(d.getDate() + daysAhead);
+      return d.toISOString().split('T')[0];
+    }
+
+    function formatBRL(value) {
+      return new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+      }).format(Number(value) || 0);
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '-';
+      const parts = dateStr.split('-');
+      if (parts.length === 3) {
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+      }
+      return dateStr;
+    }
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      
+      let borderClass = 'border-slate-700 bg-brand-darkCard text-slate-100';
+      let icon = 'info';
+
+      if (type === 'success') {
+        borderClass = 'border-emerald-500/40 bg-brand-darkCard text-emerald-300';
+        icon = 'check-circle';
+      } else if (type === 'error') {
+        borderClass = 'border-red-500/40 bg-brand-darkCard text-red-300';
+        icon = 'alert-circle';
+      }
+
+      toast.className = `flex items-center gap-2.5 px-4 py-3 rounded-xl border ${borderClass} shadow-xl text-xs font-medium transition-all transform duration-300 opacity-0 translate-y-2 pointer-events-auto`;
+      toast.innerHTML = `<i data-lucide="${icon}" class="w-4 h-4 shrink-0"></i> <span>${message}</span>`;
+      
+      container.appendChild(toast);
+      lucide.createIcons();
+
+      // Trigger transition
+      requestAnimationFrame(() => {
+        toast.classList.remove('opacity-0', 'translate-y-2');
+      });
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', '-translate-y-2');
+        setTimeout(() => toast.remove(), 350);
+      }, 4000);
+    }
+
+    // --- STORAGE REPOSITORY ---
+    function loadState() {
+      try {
+        const stored = localStorage.getItem('OSeuAlfaiate_CRM_Data');
+        if (stored) {
+          appState = JSON.parse(stored);
+        } else {
+          appState = JSON.parse(JSON.stringify(INITIAL_DATA));
+          saveState();
+        }
+      } catch (err) {
+        console.error("Erro ao carregar dados locais:", err);
+        appState = JSON.parse(JSON.stringify(INITIAL_DATA));
+      }
+
+      // Load saved Apps Script URL
+      appState.scriptUrl = localStorage.getItem('OSeuAlfaiate_ScriptUrl') || '';
+      const urlInput = document.getElementById('google-script-url');
+      if (urlInput) urlInput.value = appState.scriptUrl;
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem('OSeuAlfaiate_CRM_Data', JSON.stringify(appState));
+      } catch (err) {
+        console.error("Erro ao salvar no storage local:", err);
+      }
+    }
+
+    // --- COMPUTED PROPERTIES ---
+    function calculateOrderFinancials(orderId) {
+      const order = appState.orders.find(o => o.id === orderId);
+      if (!order) return { paid: 0, remaining: 0, status: 'Em aberto' };
+
+      const orderPayments = appState.payments.filter(p => p.orderId === orderId);
+      const paid = orderPayments.reduce((acc, curr) => acc + Number(curr.amount || 0), 0);
+      
+      // Limitação do saldo restante a zero (não negativo)
+      const remaining = Math.max(0, Number(order.totalValue) - paid);
+
+      let status = 'Em aberto';
+      if (paid >= Number(order.totalValue)) {
+        status = 'Pago';
+      } else if (paid > 0) {
+        status = 'Parcial';
+      }
+
+      return { paid, remaining, status };
+    }
+
+    function calculateOrderDeadline(deadlineStr, orderStatus) {
+      if (orderStatus === 'Entregue') {
+        return { label: 'Entregue', class: 'badge-entregue' };
+      }
+
+      const today = getTodayIsoString();
+      if (!deadlineStr) return { label: 'Sem prazo', class: 'bg-slate-800 text-slate-400' };
+
+      if (deadlineStr < today) {
+        return { label: 'Atrasado', class: 'badge-atrasado' };
+      } else if (deadlineStr === today) {
+        return { label: 'Entrega hoje', class: 'badge-hoje' };
+      } else {
+        return { label: 'No prazo', class: 'badge-prazo' };
+      }
+    }
+
+    function calculateClientFinancials(clientId) {
+      const clientOrders = appState.orders.filter(o => o.clientId === clientId);
+      const ordersCount = clientOrders.length;
+      
+      let totalBought = 0;
+      let totalPaid = 0;
+
+      clientOrders.forEach(o => {
+        totalBought += Number(o.totalValue || 0);
+        const { paid } = calculateOrderFinancials(o.id);
+        totalPaid += paid;
+      });
+
+      const balance = Math.max(0, totalBought - totalPaid);
+
+      return { ordersCount, totalBought, totalPaid, balance };
+    }
+
+    // --- TAB SWITCHING ---
+    function switchTab(tabName) {
+      const tabs = ['dashboard', 'pedidos', 'clientes', 'pagamentos', 'planilha'];
+      tabs.forEach(t => {
+        const view = document.getElementById(`view-${t}`);
+        const btn = document.getElementById(`tab-btn-${t}`);
+        if (view) {
+          if (t === tabName) {
+            view.classList.remove('hidden');
+          } else {
+            view.classList.add('hidden');
+          }
+        }
+        if (btn) {
+          if (t === tabName) {
+            btn.className = "nav-tab px-3 py-2 rounded-md text-sm font-medium text-brand-gold bg-brand-darkBorder transition-all flex items-center gap-2";
+          } else {
+            btn.className = "nav-tab px-3 py-2 rounded-md text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-brand-slate transition-all flex items-center gap-2";
+          }
+        }
+      });
+
+      if (tabName === 'dashboard') {
+        renderDashboard();
+      } else if (tabName === 'pedidos') {
+        renderOrdersTable();
+      } else if (tabName === 'clientes') {
+        renderClientsTable();
+      } else if (tabName === 'pagamentos') {
+        renderPaymentsTable();
+      }
+
+      lucide.createIcons();
+    }
+
+    // --- DASHBOARD RENDERING & CHARTS ---
+    function renderDashboard() {
+      let totalFaturado = 0;
+      let totalRecebido = 0;
+      let totalEmAberto = 0;
+
+      let noPrazoCount = 0;
+      let hojeCount = 0;
+      let atrasadoCount = 0;
+      let entreguesCount = 0;
+
+      appState.orders.forEach(order => {
+        totalFaturado += Number(order.totalValue || 0);
+        const fin = calculateOrderFinancials(order.id);
+        totalRecebido += fin.paid;
+        totalEmAberto += fin.remaining;
+
+        const dl = calculateOrderDeadline(order.deadline, order.status);
+        if (dl.label === 'No prazo') noPrazoCount++;
+        else if (dl.label === 'Entrega hoje') hojeCount++;
+        else if (dl.label === 'Atrasado') atrasadoCount++;
+        else if (dl.label === 'Entregue') entreguesCount++;
+      });
+
+      const taxa = totalFaturado > 0 ? ((totalRecebido / totalFaturado) * 100).toFixed(0) : 0;
+
+      document.getElementById('metric-faturamento').textContent = formatBRL(totalFaturado);
+      document.getElementById('metric-recebido').textContent = formatBRL(totalRecebido);
+      document.getElementById('metric-taxa-recebimento').textContent = `${taxa}% já liquidado em caixa`;
+      document.getElementById('metric-aberto').textContent = formatBRL(totalEmAberto);
+      
+      document.getElementById('metric-clientes').textContent = appState.clients.length;
+      document.getElementById('metric-pedidos-count').textContent = `${appState.orders.length} pedidos cadastrados`;
+
+      document.getElementById('metric-no-prazo').textContent = noPrazoCount;
+      document.getElementById('metric-hoje').textContent = hojeCount;
+      document.getElementById('metric-atrasado').textContent = atrasadoCount;
+      document.getElementById('metric-entregues').textContent = entreguesCount;
+
+      // Render Alert Banner if there are overdue orders or today deliveries
+      renderAlertBanner(atrasadoCount, hojeCount);
+
+      // Render Charts
+      updateCharts(totalRecebido, totalEmAberto, noPrazoCount, hojeCount, atrasadoCount, entreguesCount);
+    }
+
+    function renderAlertBanner(atrasados, hoje) {
+      const container = document.getElementById('alert-box-container');
+      container.innerHTML = '';
+
+      if (atrasados > 0 || hoje > 0) {
+        const box = document.createElement('div');
+        box.className = "bg-brand-darkCard border border-amber-500/30 p-4 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg";
+        box.innerHTML = `
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+              <i data-lucide="alert-octagon" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h4 class="text-sm font-semibold text-slate-100">Atenção ao Cronograma do Atelier</h4>
+              <p class="text-xs text-slate-400 mt-0.5">
+                ${atrasados > 0 ? `<strong class="text-red-400 font-bold">${atrasados} pedido(s) atrasado(s)</strong>. ` : ''}
+                ${hoje > 0 ? `<strong class="text-amber-400 font-bold">${hoje} entrega(s) agendada(s) para hoje</strong>.` : ''}
+              </p>
+            </div>
+          </div>
+          <button onclick="switchTab('pedidos')" class="text-xs font-semibold px-4 py-2 rounded-lg bg-brand-slate hover:bg-slate-700 text-brand-gold border border-brand-gold/30 shrink-0">
+            Verificar Pedidos & Provas
+          </button>
+        `;
+        container.appendChild(box);
+      }
+    }
+
+    function updateCharts(recebido, aberto, noPrazo, hoje, atrasado, entregue) {
+      // 1. Chart Financial
+      const ctxFin = document.getElementById('chartFinancial')?.getContext('2d');
+      if (ctxFin) {
+        if (financialChartInstance) financialChartInstance.destroy();
+
+        // Get last 6 orders
+        const recentOrders = [...appState.orders].slice(-6);
+        const labels = recentOrders.map(o => o.code);
+        const dataTotal = recentOrders.map(o => o.totalValue);
+        const dataPaid = recentOrders.map(o => calculateOrderFinancials(o.id).paid);
+
+        financialChartInstance = new Chart(ctxFin, {
+          type: 'bar',
+          data: {
+            labels: labels.length ? labels : ['Sem dados'],
+            datasets: [
+              {
+                label: 'Valor Total (R$)',
+                data: dataTotal.length ? dataTotal : [0],
+                backgroundColor: 'rgba(197, 160, 89, 0.4)',
+                borderColor: '#C5A059',
+                borderWidth: 1.5,
+                borderRadius: 4
+              },
+              {
+                label: 'Valor Pago (R$)',
+                data: dataPaid.length ? dataPaid : [0],
+                backgroundColor: 'rgba(16, 185, 129, 0.5)',
+                borderColor: '#10B981',
+                borderWidth: 1.5,
+                borderRadius: 4
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                labels: { color: '#94a3b8', font: { family: 'Inter', size: 11 } }
+              }
+            },
+            scales: {
+              x: {
+                grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                ticks: { color: '#94a3b8' }
+              },
+              y: {
+                grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                ticks: {
+                  color: '#94a3b8',
+                  callback: (v) => 'R$ ' + v
+                }
+              }
+            }
+          }
+        });
+      }
+
+      // 2. Chart Status Donut
+      const ctxStat = document.getElementById('chartStatus')?.getContext('2d');
+      if (ctxStat) {
+        if (statusChartInstance) statusChartInstance.destroy();
+
+        statusChartInstance = new Chart(ctxStat, {
+          type: 'doughnut',
+          data: {
+            labels: ['No Prazo', 'Hoje', 'Atrasado', 'Entregue'],
+            datasets: [{
+              data: [noPrazo, hoje, atrasado, entregue],
+              backgroundColor: [
+                '#3b82f6',
+                '#f59e0b',
+                '#ef4444',
+                '#10b981'
+              ],
+              borderColor: '#131A2B',
+              borderWidth: 3
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: { color: '#94a3b8', font: { family: 'Inter', size: 11 } }
+              }
+            },
+            cutout: '70%'
+          }
+        });
+      }
+    }
+
+    // --- ORDERS TABLE & ACTIONS ---
+    function renderOrdersTable() {
+      const tbody = document.getElementById('orders-table-body');
+      const emptyState = document.getElementById('orders-empty-state');
+      const query = (document.getElementById('order-search')?.value || '').toLowerCase();
+      const filterDeadline = document.getElementById('order-filter-deadline')?.value || 'ALL';
+      const filterPayment = document.getElementById('order-filter-payment')?.value || 'ALL';
+
+      tbody.innerHTML = '';
+
+      let filtered = appState.orders.filter(order => {
+        const client = appState.clients.find(c => c.id === order.clientId);
+        const clientName = client ? client.name.toLowerCase() : '';
+        const matchesQuery = order.code.toLowerCase().includes(query) ||
+                             order.category.toLowerCase().includes(query) ||
+                             order.description.toLowerCase().includes(query) ||
+                             clientName.includes(query);
+
+        if (!matchesQuery) return false;
+
+        const dl = calculateOrderDeadline(order.deadline, order.status);
+        if (filterDeadline !== 'ALL' && dl.label !== filterDeadline) return false;
+
+        const fin = calculateOrderFinancials(order.id);
+        if (filterPayment !== 'ALL' && fin.status !== filterPayment) return false;
+
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        emptyState.classList.remove('hidden');
+        return;
+      }
+      emptyState.classList.add('hidden');
+
+      filtered.forEach(order => {
+        const client = appState.clients.find(c => c.id === order.clientId);
+        const { paid, remaining, status: payStatus } = calculateOrderFinancials(order.id);
+        const dl = calculateOrderDeadline(order.deadline, order.status);
+
+        let payBadgeClass = "bg-red-500/10 text-red-400 border border-red-500/20";
+        if (payStatus === 'Pago') payBadgeClass = "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+        if (payStatus === 'Parcial') payBadgeClass = "bg-amber-500/10 text-amber-400 border border-amber-500/20";
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-brand-slate/40 transition-colors";
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-mono text-xs">
+            <span class="font-bold text-brand-gold cursor-pointer hover:underline" onclick="openOrderDetailsModal('${order.id}')">${order.code}</span>
+            <span class="block text-[11px] text-slate-400 font-sans mt-0.5 truncate max-w-[180px]">${order.category}</span>
+          </td>
+          <td class="py-3 px-4 font-medium text-slate-200">
+            ${client ? client.name : '<span class="text-slate-500">Cliente Removido</span>'}
+          </td>
+          <td class="py-3 px-4 text-xs text-slate-300">
+            <span class="inline-flex items-center px-2 py-0.5 rounded bg-brand-slate border border-slate-700 text-[11px]">
+              ${order.status}
+            </span>
+          </td>
+          <td class="py-3 px-4 text-xs">
+            <div class="font-medium text-slate-300">${formatDate(order.deadline)}</div>
+            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full inline-block mt-0.5 ${dl.class}">
+              ${dl.label}
+            </span>
+          </td>
+          <td class="py-3 px-4 text-right font-medium text-slate-100">
+            ${formatBRL(order.totalValue)}
+          </td>
+          <td class="py-3 px-4 text-right text-emerald-400 font-medium">
+            ${formatBRL(paid)}
+          </td>
+          <td class="py-3 px-4 text-right font-semibold ${remaining > 0 ? 'text-amber-400' : 'text-slate-500'}">
+            ${formatBRL(remaining)}
+          </td>
+          <td class="py-3 px-4 text-center">
+            <span class="text-[10px] uppercase tracking-wider font-semibold px-2 py-1 rounded ${payBadgeClass}">
+              ${payStatus}
+            </span>
+          </td>
+          <td class="py-3 px-4 text-center">
+            <div class="flex items-center justify-center gap-1.5">
+              <button onclick="openOrderDetailsModal('${order.id}')" title="Ver Detalhes" class="p-1.5 rounded hover:bg-brand-slate text-slate-400 hover:text-white transition">
+                <i data-lucide="eye" class="w-4 h-4"></i>
+              </button>
+              <button onclick="openPaymentForOrder('${order.id}')" title="Registrar Pagamento" class="p-1.5 rounded hover:bg-brand-slate text-brand-gold transition">
+                <i data-lucide="dollar-sign" class="w-4 h-4"></i>
+              </button>
+              <button onclick="editOrder('${order.id}')" title="Editar Pedido" class="p-1.5 rounded hover:bg-brand-slate text-slate-400 hover:text-slate-200 transition">
+                <i data-lucide="edit-3" class="w-4 h-4"></i>
+              </button>
+              <button onclick="deleteOrder('${order.id}')" title="Excluir" class="p-1.5 rounded hover:bg-brand-slate text-red-400 hover:text-red-300 transition">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      lucide.createIcons();
+    }
+
+    // --- CLIENTS TABLE & ACTIONS ---
+    function renderClientsTable() {
+      const tbody = document.getElementById('clients-table-body');
+      const emptyState = document.getElementById('clients-empty-state');
+      const query = (document.getElementById('client-search')?.value || '').toLowerCase();
+
+      tbody.innerHTML = '';
+
+      const filtered = appState.clients.filter(c => 
+        c.name.toLowerCase().includes(query) || 
+        c.phone.includes(query) || 
+        (c.email && c.email.toLowerCase().includes(query))
+      );
+
+      if (filtered.length === 0) {
+        emptyState.classList.remove('hidden');
+        return;
+      }
+      emptyState.classList.add('hidden');
+
+      filtered.forEach(client => {
+        const { ordersCount, totalBought, totalPaid, balance } = calculateClientFinancials(client.id);
+        const cleanPhone = client.phone.replace(/\D/g, '');
+        const waLink = `https://wa.me/55${cleanPhone}?text=Ol%C3%A1%20${encodeURIComponent(client.name)},%20aqui%20%C3%A9%20d'O%20Seu%20Alfaiate.`;
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-brand-slate/40 transition-colors";
+        tr.innerHTML = `
+          <td class="py-3 px-4">
+            <div class="font-medium text-slate-100">${client.name}</div>
+            <div class="text-xs text-slate-400 font-mono">${client.phone}</div>
+            ${client.email ? `<div class="text-[11px] text-slate-500">${client.email}</div>` : ''}
+          </td>
+          <td class="py-3 px-4 text-center font-semibold text-slate-300">
+            ${ordersCount}
+          </td>
+          <td class="py-3 px-4 text-right font-medium text-slate-100">
+            ${formatBRL(totalBought)}
+          </td>
+          <td class="py-3 px-4 text-right text-emerald-400 font-medium">
+            ${formatBRL(totalPaid)}
+          </td>
+          <td class="py-3 px-4 text-right font-bold ${balance > 0 ? 'text-amber-400' : 'text-slate-500'}">
+            ${formatBRL(balance)}
+          </td>
+          <td class="py-3 px-4 text-center">
+            <a href="${waLink}" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 text-xs transition">
+              <i data-lucide="message-square" class="w-3.5 h-3.5"></i> WhatsApp
+            </a>
+          </td>
+          <td class="py-3 px-4 text-center">
+            <div class="flex items-center justify-center gap-1.5">
+              <button onclick="editClient('${client.id}')" title="Editar" class="p-1.5 rounded hover:bg-brand-slate text-slate-400 hover:text-white transition">
+                <i data-lucide="edit-3" class="w-4 h-4"></i>
+              </button>
+              <button onclick="deleteClient('${client.id}')" title="Excluir" class="p-1.5 rounded hover:bg-brand-slate text-red-400 hover:text-red-300 transition">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      lucide.createIcons();
+    }
+
+    // --- PAYMENTS TABLE & ACTIONS ---
+    function renderPaymentsTable() {
+      const tbody = document.getElementById('payments-table-body');
+      const emptyState = document.getElementById('payments-empty-state');
+      tbody.innerHTML = '';
+
+      if (appState.payments.length === 0) {
+        emptyState.classList.remove('hidden');
+        return;
+      }
+      emptyState.classList.add('hidden');
+
+      // Sort payments descending by date
+      const sorted = [...appState.payments].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      sorted.forEach(pay => {
+        const order = appState.orders.find(o => o.id === pay.orderId);
+        const client = order ? appState.clients.find(c => c.id === order.clientId) : null;
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-brand-slate/40 transition-colors";
+        tr.innerHTML = `
+          <td class="py-3 px-4 text-xs font-mono text-slate-300">
+            ${formatDate(pay.date)}
+          </td>
+          <td class="py-3 px-4 font-mono text-xs font-bold text-brand-gold">
+            ${order ? order.code : 'Avulso / Desconhecido'}
+          </td>
+          <td class="py-3 px-4 text-slate-200">
+            ${client ? client.name : '-'}
+          </td>
+          <td class="py-3 px-4 text-xs">
+            <span class="inline-flex items-center px-2 py-0.5 rounded bg-brand-slate border border-slate-700 text-slate-300">
+              ${pay.method}
+            </span>
+          </td>
+          <td class="py-3 px-4 text-xs text-slate-400 truncate max-w-[200px]">
+            ${pay.notes || '-'}
+          </td>
+          <td class="py-3 px-4 text-right font-bold text-emerald-400">
+            ${formatBRL(pay.amount)}
+          </td>
+          <td class="py-3 px-4 text-center">
+            <button onclick="deletePayment('${pay.id}')" title="Excluir Pagamento" class="p-1.5 rounded hover:bg-brand-slate text-red-400 hover:text-red-300 transition">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      lucide.createIcons();
+    }
+
+    // --- MODAL CONTROLS & FORMS ---
+    function openModal(modalId) {
+      const el = document.getElementById(modalId);
+      if (el) {
+        el.classList.remove('hidden');
+        el.classList.add('flex');
+      }
+      lucide.createIcons();
+    }
+
+    function closeModal(modalId) {
+      const el = document.getElementById(modalId);
+      if (el) {
+        el.classList.add('hidden');
+        el.classList.remove('flex');
+      }
+    }
+
+    // Order Modal
+    function openNewOrderModal() {
+      document.getElementById('order-form').reset();
+      document.getElementById('order-id').value = '';
+      document.getElementById('modal-order-title').textContent = 'Novo Pedido de Alfaiataria';
+      document.getElementById('order-deadline').value = getFutureIsoDate(15);
+
+      populateClientDropdown();
+      openModal('modal-order');
+    }
+
+    function populateClientDropdown(selectedClientId = null) {
+      const select = document.getElementById('order-client-id');
+      select.innerHTML = '';
+
+      if (appState.clients.length === 0) {
+        select.innerHTML = '<option value="">Nenhum cliente cadastrado ainda</option>';
+        return;
+      }
+
+      appState.clients.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = `${c.name} (${c.phone})`;
+        if (c.id === selectedClientId) opt.selected = true;
+        select.appendChild(opt);
+      });
+    }
+
+    function handleSaveOrder(e) {
+      e.preventDefault();
+      const id = document.getElementById('order-id').value;
+      const clientId = document.getElementById('order-client-id').value;
+      const category = document.getElementById('order-category').value;
+      const description = document.getElementById('order-description').value;
+      const totalValue = parseFloat(document.getElementById('order-total').value) || 0;
+      const deadline = document.getElementById('order-deadline').value;
+      const status = document.getElementById('order-status').value;
+
+      if (!clientId) {
+        showToast('Selecione ou cadastre um cliente primeiro.', 'error');
+        return;
+      }
+
+      if (id) {
+        // Edit
+        const order = appState.orders.find(o => o.id === id);
+        if (order) {
+          order.clientId = clientId;
+          order.category = category;
+          order.description = description;
+          order.totalValue = totalValue;
+          order.deadline = deadline;
+          order.status = status;
+          showToast(`Pedido ${order.code} atualizado com sucesso!`, 'success');
+        }
+      } else {
+        // Create new
+        const newCode = `PED-${100 + appState.orders.length + 1}`;
+        const newOrder = {
+          id: 'ord-' + Date.now(),
+          code: newCode,
+          clientId,
+          category,
+          description,
+          totalValue,
+          deadline,
+          status,
+          createdAt: getTodayIsoString()
+        };
+        appState.orders.push(newOrder);
+        showToast(`Pedido ${newCode} criado com sucesso!`, 'success');
+      }
+
+      saveState();
+      closeModal('modal-order');
+      renderOrdersTable();
+      renderDashboard();
+    }
+
+    function editOrder(orderId) {
+      const order = appState.orders.find(o => o.id === orderId);
+      if (!order) return;
+
+      document.getElementById('order-id').value = order.id;
+      document.getElementById('modal-order-title').textContent = `Editar Pedido ${order.code}`;
+      
+      populateClientDropdown(order.clientId);
+      document.getElementById('order-category').value = order.category;
+      document.getElementById('order-description').value = order.description;
+      document.getElementById('order-total').value = order.totalValue;
+      document.getElementById('order-deadline').value = order.deadline;
+      document.getElementById('order-status').value = order.status;
+
+      openModal('modal-order');
+    }
+
+    function deleteOrder(orderId) {
+      const order = appState.orders.find(o => o.id === orderId);
+      if (!order) return;
+
+      const confirmDelete = confirm(`Tem certeza que deseja remover o pedido ${order.code}?`);
+      if (confirmDelete) {
+        appState.orders = appState.orders.filter(o => o.id !== orderId);
+        // Also remove payments for this order
+        appState.payments = appState.payments.filter(p => p.orderId !== orderId);
+        saveState();
+        renderOrdersTable();
+        renderDashboard();
+        showToast(`Pedido ${order.code} excluído.`, 'info');
+      }
+    }
+
+    // Client Modal
+    function openNewClientModal(fromOrderModal = false) {
+      document.getElementById('client-form').reset();
+      document.getElementById('client-id').value = '';
+      document.getElementById('modal-client-title').textContent = 'Cadastrar Cliente';
+      openModal('modal-client');
+    }
+
+    function handleSaveClient(e) {
+      e.preventDefault();
+      const id = document.getElementById('client-id').value;
+      const name = document.getElementById('client-name').value.trim();
+      const phone = document.getElementById('client-phone').value.trim();
+      const email = document.getElementById('client-email').value.trim();
+      const notes = document.getElementById('client-notes').value.trim();
+
+      if (!name || !phone) {
+        showToast('Nome e telefone são obrigatórios.', 'error');
+        return;
+      }
+
+      if (id) {
+        const client = appState.clients.find(c => c.id === id);
+        if (client) {
+          client.name = name;
+          client.phone = phone;
+          client.email = email;
+          client.notes = notes;
+          showToast(`Cliente ${name} atualizado.`, 'success');
+        }
+      } else {
+        const newClient = {
+          id: 'cli-' + Date.now(),
+          name,
+          phone,
+          email,
+          notes,
+          createdAt: getTodayIsoString()
+        };
+        appState.clients.push(newClient);
+        showToast(`Cliente ${name} cadastrado com sucesso!`, 'success');
+      }
+
+      saveState();
+      closeModal('modal-client');
+      populateClientDropdown();
+      renderClientsTable();
+      renderDashboard();
+    }
+
+    function editClient(clientId) {
+      const client = appState.clients.find(c => c.id === clientId);
+      if (!client) return;
+
+      document.getElementById('client-id').value = client.id;
+      document.getElementById('modal-client-title').textContent = 'Editar Cliente';
+      document.getElementById('client-name').value = client.name;
+      document.getElementById('client-phone').value = client.phone;
+      document.getElementById('client-email').value = client.email || '';
+      document.getElementById('client-notes').value = client.notes || '';
+
+      openModal('modal-client');
+    }
+
+    function deleteClient(clientId) {
+      const client = appState.clients.find(c => c.id === clientId);
+      if (!client) return;
+
+      const hasOrders = appState.orders.some(o => o.clientId === clientId);
+      if (hasOrders) {
+        showToast('Não é possível excluir: existem pedidos vinculados a este cliente.', 'error');
+        return;
+      }
+
+      const confirmDelete = confirm(`Deseja realmente remover o cliente ${client.name}?`);
+      if (confirmDelete) {
+        appState.clients = appState.clients.filter(c => c.id !== clientId);
+        saveState();
+        renderClientsTable();
+        renderDashboard();
+        showToast('Cliente removido.', 'info');
+      }
+    }
+
+    // Payment Modal
+    function openNewPaymentModal(preselectedOrderId = null) {
+      document.getElementById('payment-form').reset();
+      document.getElementById('payment-date').value = getTodayIsoString();
+
+      const select = document.getElementById('payment-order-id');
+      select.innerHTML = '';
+
+      if (appState.orders.length === 0) {
+        select.innerHTML = '<option value="">Nenhum pedido cadastrado</option>';
+        return;
+      }
+
+      appState.orders.forEach(order => {
+        const client = appState.clients.find(c => c.id === order.clientId);
+        const { remaining } = calculateOrderFinancials(order.id);
+        const opt = document.createElement('option');
+        opt.value = order.id;
+        opt.textContent = `${order.code} - ${client ? client.name : ''} (${order.category}) - Falta: ${formatBRL(remaining)}`;
+        if (order.id === preselectedOrderId) opt.selected = true;
+        select.appendChild(opt);
+      });
+
+      updatePaymentHelperInfo();
+      openModal('modal-payment');
+    }
+
+    function openPaymentForOrder(orderId) {
+      openNewPaymentModal(orderId);
+    }
+
+    function updatePaymentHelperInfo() {
+      const orderId = document.getElementById('payment-order-id')?.value;
+      if (!orderId) return;
+
+      const order = appState.orders.find(o => o.id === orderId);
+      if (!order) return;
+
+      const { paid, remaining } = calculateOrderFinancials(orderId);
+      document.getElementById('pay-sum-total').textContent = formatBRL(order.totalValue);
+      document.getElementById('pay-sum-paid').textContent = formatBRL(paid);
+      document.getElementById('pay-sum-remaining').textContent = formatBRL(remaining);
+
+      // Suggest remaining value in input if empty
+      const amountInput = document.getElementById('payment-amount');
+      if (!amountInput.value && remaining > 0) {
+        amountInput.value = remaining.toFixed(2);
+      }
+    }
+
+    function handleSavePayment(e) {
+      e.preventDefault();
+      const orderId = document.getElementById('payment-order-id').value;
+      const amount = parseFloat(document.getElementById('payment-amount').value) || 0;
+      const date = document.getElementById('payment-date').value;
+      const method = document.getElementById('payment-method').value;
+      const notes = document.getElementById('payment-notes').value.trim();
+
+      if (!orderId || amount <= 0) {
+        showToast('Informe um valor de pagamento válido.', 'error');
+        return;
+      }
+
+      const newPayment = {
+        id: 'pay-' + Date.now(),
+        orderId,
+        amount,
+        date,
+        method,
+        notes
+      };
+
+      appState.payments.push(newPayment);
+      saveState();
+      closeModal('modal-payment');
+
+      showToast(`Pagamento de ${formatBRL(amount)} registrado!`, 'success');
+
+      renderOrdersTable();
+      renderPaymentsTable();
+      renderClientsTable();
+      renderDashboard();
+    }
+
+    function deletePayment(payId) {
+      const confirmDelete = confirm('Deseja cancelar o registro deste pagamento?');
+      if (confirmDelete) {
+        appState.payments = appState.payments.filter(p => p.id !== payId);
+        saveState();
+        renderPaymentsTable();
+        renderOrdersTable();
+        renderDashboard();
+        showToast('Pagamento removido com sucesso.', 'info');
+      }
+    }
+
+    // Order Details Modal
+    function openOrderDetailsModal(orderId) {
+      const order = appState.orders.find(o => o.id === orderId);
+      if (!order) return;
+
+      const client = appState.clients.find(c => c.id === order.clientId);
+      const { paid, remaining } = calculateOrderFinancials(order.id);
+      const dl = calculateOrderDeadline(order.deadline, order.status);
+
+      document.getElementById('detail-order-code').textContent = order.code;
+      document.getElementById('detail-client-name').textContent = client ? client.name : 'Não informado';
+      document.getElementById('detail-client-phone').textContent = client ? client.phone : '-';
+      document.getElementById('detail-category').textContent = order.category;
+      document.getElementById('detail-description').textContent = order.description || 'Sem observações adicionais';
+      document.getElementById('detail-deadline').textContent = formatDate(order.deadline);
+      document.getElementById('detail-status').textContent = order.status;
+
+      const dlBadge = document.getElementById('detail-deadline-badge');
+      dlBadge.className = `text-[10px] font-semibold px-2 py-0.5 rounded-full inline-block ${dl.class}`;
+      dlBadge.textContent = dl.label;
+
+      document.getElementById('detail-total-val').textContent = formatBRL(order.totalValue);
+      document.getElementById('detail-paid-val').textContent = formatBRL(paid);
+      document.getElementById('detail-remaining-val').textContent = formatBRL(remaining);
+
+      // Render payments list for this order
+      const listContainer = document.getElementById('detail-payments-list');
+      listContainer.innerHTML = '';
+
+      const orderPayments = appState.payments.filter(p => p.orderId === order.id);
+      if (orderPayments.length === 0) {
+        listContainer.innerHTML = '<p class="text-xs text-slate-500 italic">Nenhum pagamento registrado para este pedido.</p>';
+      } else {
+        orderPayments.forEach(p => {
+          const item = document.createElement('div');
+          item.className = "flex justify-between items-center p-2.5 rounded-lg bg-brand-dark border border-brand-darkBorder text-xs";
+          item.innerHTML = `
+            <div>
+              <span class="font-bold text-slate-200">${formatDate(p.date)}</span> — 
+              <span class="text-brand-gold font-medium">${p.method}</span>
+              ${p.notes ? `<span class="text-slate-400 block text-[11px]">${p.notes}</span>` : ''}
+            </div>
+            <div class="font-bold text-emerald-400">
+              ${formatBRL(p.amount)}
+            </div>
+          `;
+          listContainer.appendChild(item);
+        });
+      }
+
+      // Hook quick payment button
+      const btnAddPay = document.getElementById('btn-add-payment-to-this-order');
+      btnAddPay.onclick = () => {
+        closeModal('modal-order-details');
+        openNewPaymentModal(order.id);
+      };
+
+      openModal('modal-order-details');
+    }
+
+    // --- GOOGLE SHEETS SYNC LOGIC ---
+    function saveScriptUrl() {
+      const url = document.getElementById('google-script-url').value.trim();
+      localStorage.setItem('OSeuAlfaiate_ScriptUrl', url);
+      appState.scriptUrl = url;
+      showToast('URL do Web App salva com sucesso!', 'success');
+    }
+
+    async function syncWithGoogleSheet() {
+      const url = appState.scriptUrl || document.getElementById('google-script-url').value.trim();
+      if (!url) {
+        showToast('Configure a URL do Google Apps Script primeiro.', 'error');
+        return;
+      }
+
+      showToast('Sincronizando com a planilha Google...', 'info');
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Falha na resposta do servidor.');
+        const data = await response.json();
+
+        if (data.clients && Array.isArray(data.clients) && data.clients.length > 0) {
+          appState.clients = data.clients;
+        }
+        if (data.orders && Array.isArray(data.orders) && data.orders.length > 0) {
+          appState.orders = data.orders;
+        }
+        if (data.payments && Array.isArray(data.payments) && data.payments.length > 0) {
+          appState.payments = data.payments;
+        }
+
+        saveState();
+        refreshData();
+        showToast('Sincronização concluída com sucesso!', 'success');
+      } catch (err) {
+        console.warn("Aviso de sincronização remota:", err);
+        showToast('Não foi possível conectar com o endpoint agora. Usando dados locais.', 'info');
+      }
+    }
+
+    function copyAppsScriptCode() {
+      const code = document.getElementById('apps-script-code').innerText;
+      const tempInput = document.createElement('textarea');
+      tempInput.value = code;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+      showToast('Código do Apps Script copiado para a área de transferência!', 'success');
+    }
+
+    function exportDataJSON() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `O_Seu_Alfaiate_Backup_${getTodayIsoString()}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      showToast('Backup baixado com sucesso!', 'success');
+    }
+
+    function importDataJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (imported.clients && imported.orders && imported.payments) {
+            appState = imported;
+            saveState();
+            refreshData();
+            showToast('Dados restaurados com sucesso!', 'success');
+          } else {
+            showToast('Arquivo de backup inválido.', 'error');
+          }
+        } catch (err) {
+          showToast('Erro ao ler arquivo JSON.', 'error');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function resetToFictitiousData() {
+      const confirmReset = confirm('Deseja recarregar os dados fictícios originais de teste (inclusive o pedido atrasado)?');
+      if (confirmReset) {
+        appState = JSON.parse(JSON.stringify(INITIAL_DATA));
+        saveState();
+        refreshData();
+        showToast('Dados fictícios de teste restaurados!', 'info');
+      }
+    }
+
+    function refreshData() {
+      renderDashboard();
+      renderOrdersTable();
+      renderClientsTable();
+      renderPaymentsTable();
+    }
+
+    // --- INITIALIZATION ---
+    window.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      refreshData();
+      lucide.createIcons();
+    });
+  </script>
+</body>
+</html>
+```
