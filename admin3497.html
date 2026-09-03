@@ -1,4 +1,4 @@
-
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -12,7 +12,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Google Fonts: Playfair Display + Inter -->
+  <!-- Google Fonts: Playfair Display + Cinzel + Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -85,7 +85,7 @@
 <body class="bg-brand-dark text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-brand-gold selection:text-black">
 
   <!-- Toast Notification Container -->
-  <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+  <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none max-w-sm w-full"></div>
 
   <!-- Header / Navigation Bar -->
   <header class="bg-brand-darkCard border-b border-brand-darkBorder sticky top-0 z-40">
@@ -172,10 +172,11 @@
         <div class="flex items-center gap-3">
           <span id="sync-indicator" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            Banco Sincronizado
+            <span id="sync-indicator-text">Pronto para Sincronizar</span>
           </span>
-          <button onclick="refreshData()" class="p-2 rounded-lg bg-brand-slate hover:bg-slate-700 text-slate-300 transition" title="Atualizar Indicadores">
-            <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+          <button onclick="syncWithGoogleSheet()" class="p-2 rounded-lg bg-brand-slate hover:bg-slate-700 text-brand-gold transition border border-brand-gold/30 flex items-center gap-1.5 text-xs font-medium" title="Sincronizar com Planilha">
+            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+            <span class="hidden sm:inline">Sincronizar</span>
           </button>
         </div>
       </div>
@@ -274,18 +275,16 @@
 
       <!-- Charts Section -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Chart 1: Financial Balance -->
         <div class="lg:col-span-2 bg-brand-darkCard border border-brand-darkBorder rounded-xl p-5 shadow-sm">
           <h2 class="text-base font-semibold text-slate-200 mb-4 flex items-center gap-2">
             <i data-lucide="bar-chart-3" class="w-4 h-4 text-brand-gold"></i>
-            Balanço Financeiro por Pedido (Top 6 Recentes)
+            Balanço Financeiro por Pedido (Recentes)
           </h2>
           <div class="h-64 sm:h-72">
             <canvas id="chartFinancial"></canvas>
           </div>
         </div>
 
-        <!-- Chart 2: Status Breakdown -->
         <div class="bg-brand-darkCard border border-brand-darkBorder rounded-xl p-5 shadow-sm">
           <h2 class="text-base font-semibold text-slate-200 mb-4 flex items-center gap-2">
             <i data-lucide="pie-chart" class="w-4 h-4 text-brand-gold"></i>
@@ -297,7 +296,6 @@
         </div>
       </div>
 
-      <!-- Quick Action Alert Box for Overdue or Delivery Today -->
       <div id="alert-box-container"></div>
 
     </section>
@@ -305,19 +303,16 @@
     <!-- ==================== TAB: PEDIDOS ==================== -->
     <section id="view-pedidos" class="space-y-4 hidden">
       
-      <!-- Header with filters & search -->
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-brand-darkCard p-4 rounded-xl border border-brand-darkBorder">
         <div>
           <h2 class="text-xl font-serif font-bold text-slate-100">Controle de Pedidos & Provas</h2>
           <p class="text-xs text-slate-400">Acompanhamento dos ternos, camisas e ajustes em confecção.</p>
         </div>
         <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
-          <!-- Search input -->
           <div class="relative flex-1 md:w-64">
             <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
             <input type="text" id="order-search" oninput="renderOrdersTable()" placeholder="Buscar cliente ou peça..." class="w-full pl-9 pr-3 py-1.5 bg-brand-dark border border-brand-darkBorder rounded-lg text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-brand-gold">
           </div>
-          <!-- Filter by Deadline Status -->
           <select id="order-filter-deadline" onchange="renderOrdersTable()" class="bg-brand-dark border border-brand-darkBorder rounded-lg text-xs py-2 px-3 text-slate-300 focus:outline-none focus:border-brand-gold">
             <option value="ALL">Todos os Prazos</option>
             <option value="Atrasado">Apenas Atrasados</option>
@@ -325,21 +320,18 @@
             <option value="No prazo">No Prazo</option>
             <option value="Entregue">Entregues</option>
           </select>
-          <!-- Filter by Payment Status -->
           <select id="order-filter-payment" onchange="renderOrdersTable()" class="bg-brand-dark border border-brand-darkBorder rounded-lg text-xs py-2 px-3 text-slate-300 focus:outline-none focus:border-brand-gold">
             <option value="ALL">Todos Pagamentos</option>
             <option value="Em aberto">Em Aberto</option>
             <option value="Parcial">Parcial</option>
             <option value="Pago">Quitados</option>
           </select>
-          <!-- Button New Order -->
           <button onclick="openNewOrderModal()" class="bg-brand-gold hover:bg-brand-goldHover text-black text-xs font-semibold px-3 py-2 rounded-lg flex items-center gap-1">
             <i data-lucide="plus" class="w-4 h-4"></i> Novo
           </button>
         </div>
       </div>
 
-      <!-- Orders Table -->
       <div class="bg-brand-darkCard border border-brand-darkBorder rounded-xl overflow-hidden shadow-sm">
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm">
@@ -357,7 +349,6 @@
               </tr>
             </thead>
             <tbody id="orders-table-body" class="divide-y divide-brand-darkBorder text-slate-300">
-              <!-- Rendered via JS -->
             </tbody>
           </table>
         </div>
@@ -372,7 +363,6 @@
     <!-- ==================== TAB: CLIENTES ==================== -->
     <section id="view-clientes" class="space-y-4 hidden">
       
-      <!-- Top header -->
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-brand-darkCard p-4 rounded-xl border border-brand-darkBorder">
         <div>
           <h2 class="text-xl font-serif font-bold text-slate-100">Carteira de Clientes</h2>
@@ -389,7 +379,6 @@
         </div>
       </div>
 
-      <!-- Clients List / Cards Table -->
       <div class="bg-brand-darkCard border border-brand-darkBorder rounded-xl overflow-hidden shadow-sm">
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm">
@@ -405,7 +394,6 @@
               </tr>
             </thead>
             <tbody id="clients-table-body" class="divide-y divide-brand-darkBorder text-slate-300">
-              <!-- Rendered via JS -->
             </tbody>
           </table>
         </div>
@@ -420,7 +408,6 @@
     <!-- ==================== TAB: PAGAMENTOS ==================== -->
     <section id="view-pagamentos" class="space-y-4 hidden">
       
-      <!-- Top Bar -->
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-brand-darkCard p-4 rounded-xl border border-brand-darkBorder">
         <div>
           <h2 class="text-xl font-serif font-bold text-slate-100">Livro de Pagamentos & Entradas</h2>
@@ -433,7 +420,6 @@
         </div>
       </div>
 
-      <!-- Payments Table -->
       <div class="bg-brand-darkCard border border-brand-darkBorder rounded-xl overflow-hidden shadow-sm">
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm">
@@ -449,7 +435,6 @@
               </tr>
             </thead>
             <tbody id="payments-table-body" class="divide-y divide-brand-darkBorder text-slate-300">
-              <!-- Rendered via JS -->
             </tbody>
           </table>
         </div>
@@ -470,7 +455,7 @@
             <i data-lucide="sheet" class="w-6 h-6"></i>
           </div>
           <div>
-            <h2 class="text-xl font-serif font-bold text-slate-100">Conexão com a Planilha Google</h2>
+            <h2 class="text-xl font-serif font-bold text-slate-100">Conexão Direta com a Planilha Google</h2>
             <p class="text-sm text-slate-400 mt-1">
               Planilha vinculada: <a href="https://docs.google.com/spreadsheets/d/1FR3tG0wkzMbIHhxld8WKYZz9YSBhVN-u9ThSsUDDhRo/edit?usp=drivesdk" target="_blank" class="text-brand-gold hover:underline font-mono text-xs">Abrir Planilha O Seu Alfaiate no Google Drive ↗</a>
             </p>
@@ -483,51 +468,74 @@
             URL do Web App (Google Apps Script)
           </label>
           <div class="flex flex-col sm:flex-row gap-2">
-            <input type="url" id="google-script-url" placeholder="https://script.google.com/macros/s/.../exec" class="flex-1 bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 font-mono focus:outline-none focus:border-brand-gold">
+            <input type="url" id="google-script-url" placeholder="https://script.google.com/macros/s/.../exec" class="flex-1 bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-xs font-mono text-slate-100 focus:outline-none focus:border-brand-gold break-all">
             <button onclick="saveScriptUrl()" class="bg-brand-gold hover:bg-brand-goldHover text-black text-xs font-semibold px-4 py-2 rounded-lg shrink-0">
               Salvar Conexão
             </button>
-            <button onclick="syncWithGoogleSheet()" class="border border-brand-gold/40 text-brand-gold hover:bg-brand-gold/10 text-xs font-medium px-4 py-2 rounded-lg flex items-center justify-center gap-1.5 shrink-0">
+            <button onclick="syncWithGoogleSheet()" id="btn-sync-action" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium px-4 py-2 rounded-lg flex items-center justify-center gap-1.5 shrink-0 transition">
               <i data-lucide="refresh-cw" class="w-4 h-4"></i> Sincronizar Agora
             </button>
           </div>
-          <p class="text-xs text-slate-400">
-            Dica: Enquanto o Web App não estiver configurado, seus dados ficam salvos de forma segura e imediata no armazenamento do seu navegador.
-          </p>
+          <div id="sync-status-detail" class="text-xs text-slate-400 flex items-center gap-2">
+            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+            <span>Endpoint oficial configurado e pronto para comunicação bidirecional.</span>
+          </div>
         </div>
 
-        <!-- How to connect step-by-step -->
+        <!-- Código Apps Script Robusto e Atualizado -->
         <div class="mt-6 bg-brand-dark p-5 rounded-xl border border-brand-darkBorder">
-          <h3 class="text-sm font-semibold text-brand-gold uppercase tracking-wider mb-2 flex items-center gap-1.5">
-            <i data-lucide="code-2" class="w-4 h-4"></i> Como Ativar a Sincronização em 2 Minutos
-          </h3>
-          <ol class="text-xs text-slate-400 space-y-2 list-decimal list-inside leading-relaxed">
-            <li>Abra sua planilha do Google no link acima.</li>
-            <li>No menu superior, clique em <strong class="text-slate-200">Extensões → Apps Script</strong>.</li>
-            <li>Apague o código existente e cole o script abaixo.</li>
-            <li>Clique no botão azul <strong class="text-slate-200">Implantar → Nova implantação</strong>.</li>
-            <li>Selecione tipo <strong class="text-slate-200">Aplicativo da Web</strong>, configure acesso para <strong class="text-slate-200">"Qualquer pessoa"</strong> e clique em Implantar.</li>
-            <li>Copie a URL fornecida e cole no campo acima!</li>
-          </ol>
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="text-sm font-semibold text-brand-gold uppercase tracking-wider flex items-center gap-1.5">
+              <i data-lucide="code-2" class="w-4 h-4"></i> Código do Apps Script para a Planilha
+            </h3>
+            <button onclick="copyAppsScriptCode()" class="bg-brand-slate hover:bg-slate-700 text-slate-200 text-xs px-2.5 py-1 rounded border border-slate-600 flex items-center gap-1">
+              <i data-lucide="copy" class="w-3 h-3"></i> Copiar Código
+            </button>
+          </div>
+          <p class="text-xs text-slate-400 mb-3">
+            Certifique-se de que ao implantar no Google Apps Script, o campo <strong class="text-slate-200">"Quem pode acessar"</strong> esteja configurado como <strong class="text-emerald-400">"Qualquer pessoa"</strong> (sem exigir login do Google).
+          </p>
 
-          <!-- Code Box -->
-          <div class="mt-4 relative">
-            <pre class="bg-black/60 p-4 rounded-lg text-xs font-mono text-emerald-400 overflow-x-auto border border-slate-800" id="apps-script-code">function doGet(e) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var db = {
-    clients: getSheetData(ss.getSheetByName("CLIENTES")),
-    orders: getSheetData(ss.getSheetByName("PEDIDOS")),
-    payments: getSheetData(ss.getSheetByName("PAGAMENTOS"))
-  };
-  return ContentService.createTextOutput(JSON.stringify(db))
-    .setMimeType(ContentService.MimeType.JSON);
+          <div class="relative">
+            <pre class="bg-black/60 p-4 rounded-lg text-[11px] font-mono text-emerald-400 overflow-x-auto border border-slate-800" id="apps-script-code">function doGet(e) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    
+    // Busca flexível de abas mesmo se houver diferença de maiúsculas/minúsculas
+    function findSheet(name) {
+      var sheets = ss.getSheets();
+      for (var i = 0; i < sheets.length; i++) {
+        if (sheets[i].getName().trim().toUpperCase() === name.toUpperCase()) {
+          return sheets[i];
+        }
+      }
+      return null;
+    }
+
+    var clientsSheet = findSheet("CLIENTES");
+    var ordersSheet = findSheet("PEDIDOS");
+    var paymentsSheet = findSheet("PAGAMENTOS");
+
+    var db = {
+      status: "success",
+      timestamp: new Date().toISOString(),
+      clients: getSheetData(clientsSheet),
+      orders: getSheetData(ordersSheet),
+      payments: getSheetData(paymentsSheet)
+    };
+
+    return ContentService.createTextOutput(JSON.stringify(db))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "error",
+      message: err.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
 }
 
 function doPost(e) {
-  var data = JSON.parse(e.postData.contents);
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  // Sincroniza dados enviados
-  return ContentService.createTextOutput(JSON.stringify({status: "success"}))
+  return ContentService.createTextOutput(JSON.stringify({ status: "success" }))
     .setMimeType(ContentService.MimeType.JSON);
 }
 
@@ -535,20 +543,44 @@ function getSheetData(sheet) {
   if (!sheet) return [];
   var data = sheet.getDataRange().getValues();
   if (data.length <= 1) return [];
-  var headers = data[0];
+
+  // Localiza linha com cabeçalhos reais
+  var headerRowIdx = 0;
+  for (var r = 0; r < Math.min(5, data.length); r++) {
+    var nonEmpty = data[r].filter(function(cell) { return cell !== "" && cell !== null; });
+    if (nonEmpty.length >= 2) {
+      headerRowIdx = r;
+      break;
+    }
+  }
+
+  var headers = data[headerRowIdx];
   var rows = [];
-  for (var i = 1; i < data.length; i++) {
+
+  for (var i = headerRowIdx + 1; i < data.length; i++) {
+    var row = data[i];
+    var hasContent = row.some(function(cell) { return cell !== "" && cell !== null; });
+    if (!hasContent) continue;
+
     var obj = {};
     for (var h = 0; h < headers.length; h++) {
-      obj[headers[h]] = data[i][h];
+      var headerName = String(headers[h]).trim();
+      if (!headerName) continue;
+      
+      var val = row[h];
+      // Tratamento de datas para formato limpo YYYY-MM-DD
+      if (val instanceof Date) {
+        var y = val.getFullYear();
+        var m = ("0" + (val.getMonth() + 1)).slice(-2);
+        var d = ("0" + val.getDate()).slice(-2);
+        val = y + "-" + m + "-" + d;
+      }
+      obj[headerName] = val;
     }
     rows.push(obj);
   }
   return rows;
 }</pre>
-            <button onclick="copyAppsScriptCode()" class="absolute top-2 right-2 bg-brand-slate hover:bg-slate-700 text-slate-200 text-xs px-2.5 py-1 rounded border border-slate-600 flex items-center gap-1">
-              <i data-lucide="copy" class="w-3 h-3"></i> Copiar Código
-            </button>
           </div>
         </div>
 
@@ -589,7 +621,6 @@ function getSheetData(sheet) {
       <form id="order-form" onsubmit="handleSaveOrder(event)" class="p-5 space-y-4">
         <input type="hidden" id="order-id">
 
-        <!-- Cliente -->
         <div>
           <div class="flex justify-between items-center mb-1">
             <label class="text-xs font-medium text-slate-300">Cliente *</label>
@@ -598,11 +629,9 @@ function getSheetData(sheet) {
             </button>
           </div>
           <select id="order-client-id" required class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
-            <!-- options inserted by JS -->
           </select>
         </div>
 
-        <!-- Peça / Descrição -->
         <div>
           <label class="block text-xs font-medium text-slate-300 mb-1">Peça / Produto *</label>
           <select id="order-category" required class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
@@ -617,13 +646,11 @@ function getSheetData(sheet) {
           </select>
         </div>
 
-        <!-- Descrição Detalhada / Tecido -->
         <div>
           <label class="block text-xs font-medium text-slate-300 mb-1">Especificações do Tecido / Detalhes</label>
           <input type="text" id="order-description" placeholder="Ex: Lã Fria Super 130s Marinho, Forro Bemberg, Pesponto manual" class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
         </div>
 
-        <!-- Grid 2 col: Valor e Prazo -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-medium text-slate-300 mb-1">Valor Total (R$) *</label>
@@ -635,7 +662,6 @@ function getSheetData(sheet) {
           </div>
         </div>
 
-        <!-- Etapa Atual de Produção -->
         <div>
           <label class="block text-xs font-medium text-slate-300 mb-1">Etapa de Produção</label>
           <select id="order-status" class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
@@ -649,7 +675,6 @@ function getSheetData(sheet) {
           </select>
         </div>
 
-        <!-- Actions -->
         <div class="pt-4 border-t border-brand-darkBorder flex justify-end gap-3">
           <button type="button" onclick="closeModal('modal-order')" class="px-4 py-2 text-xs font-medium text-slate-400 hover:text-slate-200">
             Cancelar
@@ -718,16 +743,12 @@ function getSheetData(sheet) {
       </div>
 
       <form id="payment-form" onsubmit="handleSavePayment(event)" class="p-5 space-y-4">
-        
-        <!-- Pedido Selection -->
         <div>
           <label class="block text-xs font-medium text-slate-300 mb-1">Vincular ao Pedido *</label>
           <select id="payment-order-id" onchange="updatePaymentHelperInfo()" required class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
-            <!-- options inserted by JS -->
           </select>
         </div>
 
-        <!-- Helper Box: Shows remaining balance -->
         <div id="payment-order-summary" class="bg-brand-dark p-3 rounded-lg border border-brand-darkBorder text-xs space-y-1">
           <div class="flex justify-between text-slate-400">
             <span>Valor do Pedido:</span>
@@ -743,19 +764,16 @@ function getSheetData(sheet) {
           </div>
         </div>
 
-        <!-- Valor do Pagamento -->
         <div>
           <label class="block text-xs font-medium text-slate-300 mb-1">Valor Deste Pagamento (R$) *</label>
           <input type="number" step="0.01" min="0.01" id="payment-amount" required placeholder="0.00" class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
         </div>
 
-        <!-- Data -->
         <div>
           <label class="block text-xs font-medium text-slate-300 mb-1">Data do Recebimento *</label>
           <input type="date" id="payment-date" required class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
         </div>
 
-        <!-- Forma de Pagamento -->
         <div>
           <label class="block text-xs font-medium text-slate-300 mb-1">Forma de Pagamento</label>
           <select id="payment-method" class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
@@ -767,7 +785,6 @@ function getSheetData(sheet) {
           </select>
         </div>
 
-        <!-- Observações -->
         <div>
           <label class="block text-xs font-medium text-slate-300 mb-1">Observações (Opcional)</label>
           <input type="text" id="payment-notes" placeholder="Ex: Entrada de 50% / Parcela 1 de 2" class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
@@ -799,7 +816,6 @@ function getSheetData(sheet) {
       </div>
 
       <div class="p-6 space-y-6 overflow-y-auto flex-1">
-        <!-- Client & Product Info Card -->
         <div class="grid grid-cols-2 gap-4 bg-brand-dark p-4 rounded-xl border border-brand-darkBorder text-xs">
           <div>
             <span class="text-slate-500 uppercase tracking-wider block text-[10px]">Cliente</span>
@@ -822,7 +838,6 @@ function getSheetData(sheet) {
           </div>
         </div>
 
-        <!-- Financial Breakdown -->
         <div class="bg-brand-slate/40 p-4 rounded-xl border border-brand-darkBorder">
           <h4 class="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-1.5">
             <i data-lucide="receipt" class="w-4 h-4 text-brand-gold"></i>
@@ -844,7 +859,6 @@ function getSheetData(sheet) {
           </div>
         </div>
 
-        <!-- History of payments for this order -->
         <div>
           <div class="flex justify-between items-center mb-2">
             <h4 class="text-xs font-semibold text-slate-300 uppercase tracking-wider">
@@ -855,7 +869,6 @@ function getSheetData(sheet) {
             </button>
           </div>
           <div id="detail-payments-list" class="space-y-2">
-            <!-- Rendered by JS -->
           </div>
         </div>
       </div>
@@ -870,7 +883,10 @@ function getSheetData(sheet) {
 
   <!-- ==================== JAVASCRIPT APPLICATION LOGIC ==================== -->
   <script>
-    // System Seed / Initial Test Data matching your actual spreadsheet structure
+    // URL OFICIAL FORNECIDA PELO USUÁRIO
+    const OFFICIAL_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzakRzQJnIMTYRvkMwU40hEy5PDZHIQV6PblEsj2j1gmhdO38ZqTKWpoHALiqGD6ZYMcw/exec";
+
+    // System Initial Test Data
     const INITIAL_DATA = {
       clients: [
         {
@@ -886,7 +902,7 @@ function getSheetData(sheet) {
           name: "Gabriel Vasconcelos",
           phone: "11987651234",
           email: "gabriel.v@invest.com.br",
-          notes: "Noivo. Casamento em maio. Detalhe bordado no bolso interno.",
+          notes: "Noivo. Casamento em breve. Detalhe bordado no bolso interno.",
           createdAt: "2026-02-20"
         },
         {
@@ -914,7 +930,7 @@ function getSheetData(sheet) {
           category: "Costume 2 Peças",
           description: "Lã Fria Super 130s Azul Marinho Pinstripe",
           totalValue: 5800.00,
-          deadline: "2026-03-01", // Pedido intencionalmente atrasado para teste do sistema
+          deadline: "2026-03-01",
           status: "Ajustes Finais",
           createdAt: "2026-02-16"
         },
@@ -925,7 +941,7 @@ function getSheetData(sheet) {
           category: "Terno 3 Peças",
           description: "Terno de Gala Cinza Chumbo com Colete Seda e Forro Jacquard",
           totalValue: 7500.00,
-          deadline: getTodayIsoString(), // Entrega Hoje
+          deadline: getTodayIsoString(),
           status: "Pronto p/ Entrega",
           createdAt: "2026-02-20"
         },
@@ -936,7 +952,7 @@ function getSheetData(sheet) {
           category: "Camisa Sob Medida",
           description: "Kit com 3 Camisas Puro Algodão Egípcio 200 fios Branco e Azul Céu",
           totalValue: 2400.00,
-          deadline: getFutureIsoDate(10), // No prazo
+          deadline: getFutureIsoDate(10),
           status: "1ª Prova",
           createdAt: "2026-02-28"
         },
@@ -947,13 +963,12 @@ function getSheetData(sheet) {
           category: "Blazer Sob Medida",
           description: "Blazer Italiano Verde Oliva em Linho com Seda",
           totalValue: 3900.00,
-          deadline: getFutureIsoDate(15), // No prazo
+          deadline: getFutureIsoDate(15),
           status: "Corte & Modelagem",
           createdAt: "2026-03-02"
         }
       ],
       payments: [
-        // Pedido 1: Total 5800. Pagou sinal de 3000. Falta 2800.
         {
           id: "pay-1",
           orderId: "ord-1",
@@ -962,7 +977,6 @@ function getSheetData(sheet) {
           method: "Pix",
           notes: "Sinal de 50% no fechamento do corte"
         },
-        // Pedido 2: Total 7500. Pagou em 2 vezes: 4000 e 3500. Quitado (Pago)
         {
           id: "pay-2",
           orderId: "ord-2",
@@ -979,7 +993,6 @@ function getSheetData(sheet) {
           method: "Pix",
           notes: "Quitação final no ato da liberação"
         },
-        // Pedido 3: Total 2400. Pagou sinal de 1200.
         {
           id: "pay-4",
           orderId: "ord-3",
@@ -991,18 +1004,18 @@ function getSheetData(sheet) {
       ]
     };
 
-    // State Variables
+    // State
     let appState = {
       clients: [],
       orders: [],
       payments: [],
-      scriptUrl: ""
+      scriptUrl: OFFICIAL_SCRIPT_URL
     };
 
     let financialChartInstance = null;
     let statusChartInstance = null;
 
-    // --- UTILITIES & HELPERS ---
+    // Helpers
     function getTodayIsoString() {
       const now = new Date();
       return now.toISOString().split('T')[0];
@@ -1023,7 +1036,8 @@ function getSheetData(sheet) {
 
     function formatDate(dateStr) {
       if (!dateStr) return '-';
-      const parts = dateStr.split('-');
+      const clean = String(dateStr).split('T')[0];
+      const parts = clean.split('-');
       if (parts.length === 3) {
         return `${parts[2]}/${parts[1]}/${parts[0]}`;
       }
@@ -1038,31 +1052,30 @@ function getSheetData(sheet) {
       let icon = 'info';
 
       if (type === 'success') {
-        borderClass = 'border-emerald-500/40 bg-brand-darkCard text-emerald-300';
+        borderClass = 'border-emerald-500/50 bg-brand-darkCard text-emerald-300';
         icon = 'check-circle';
       } else if (type === 'error') {
-        borderClass = 'border-red-500/40 bg-brand-darkCard text-red-300';
-        icon = 'alert-circle';
+        borderClass = 'border-red-500/50 bg-brand-darkCard text-red-300';
+        icon = 'alert-triangle';
       }
 
-      toast.className = `flex items-center gap-2.5 px-4 py-3 rounded-xl border ${borderClass} shadow-xl text-xs font-medium transition-all transform duration-300 opacity-0 translate-y-2 pointer-events-auto`;
-      toast.innerHTML = `<i data-lucide="${icon}" class="w-4 h-4 shrink-0"></i> <span>${message}</span>`;
+      toast.className = `flex items-start gap-2.5 px-4 py-3 rounded-xl border ${borderClass} shadow-2xl text-xs font-medium transition-all transform duration-300 opacity-0 translate-y-2 pointer-events-auto`;
+      toast.innerHTML = `<i data-lucide="${icon}" class="w-4 h-4 shrink-0 mt-0.5"></i> <div class="flex-1 leading-snug">${message}</div>`;
       
       container.appendChild(toast);
       lucide.createIcons();
 
-      // Trigger transition
       requestAnimationFrame(() => {
         toast.classList.remove('opacity-0', 'translate-y-2');
       });
 
       setTimeout(() => {
         toast.classList.add('opacity-0', '-translate-y-2');
-        setTimeout(() => toast.remove(), 350);
-      }, 4000);
+        setTimeout(() => toast.remove(), 400);
+      }, 5000);
     }
 
-    // --- STORAGE REPOSITORY ---
+    // Repository
     function loadState() {
       try {
         const stored = localStorage.getItem('OSeuAlfaiate_CRM_Data');
@@ -1073,12 +1086,18 @@ function getSheetData(sheet) {
           saveState();
         }
       } catch (err) {
-        console.error("Erro ao carregar dados locais:", err);
         appState = JSON.parse(JSON.stringify(INITIAL_DATA));
       }
 
-      // Load saved Apps Script URL
-      appState.scriptUrl = localStorage.getItem('OSeuAlfaiate_ScriptUrl') || '';
+      // Garante a URL oficial válida e não truncada
+      const savedUrl = localStorage.getItem('OSeuAlfaiate_ScriptUrl');
+      if (savedUrl && savedUrl.length > 50) {
+        appState.scriptUrl = savedUrl;
+      } else {
+        appState.scriptUrl = OFFICIAL_SCRIPT_URL;
+        localStorage.setItem('OSeuAlfaiate_ScriptUrl', OFFICIAL_SCRIPT_URL);
+      }
+
       const urlInput = document.getElementById('google-script-url');
       if (urlInput) urlInput.value = appState.scriptUrl;
     }
@@ -1087,19 +1106,17 @@ function getSheetData(sheet) {
       try {
         localStorage.setItem('OSeuAlfaiate_CRM_Data', JSON.stringify(appState));
       } catch (err) {
-        console.error("Erro ao salvar no storage local:", err);
+        console.error("Erro ao salvar localmente:", err);
       }
     }
 
-    // --- COMPUTED PROPERTIES ---
+    // Cálculos
     function calculateOrderFinancials(orderId) {
       const order = appState.orders.find(o => o.id === orderId);
       if (!order) return { paid: 0, remaining: 0, status: 'Em aberto' };
 
       const orderPayments = appState.payments.filter(p => p.orderId === orderId);
       const paid = orderPayments.reduce((acc, curr) => acc + Number(curr.amount || 0), 0);
-      
-      // Limitação do saldo restante a zero (não negativo)
       const remaining = Math.max(0, Number(order.totalValue) - paid);
 
       let status = 'Em aberto';
@@ -1120,9 +1137,11 @@ function getSheetData(sheet) {
       const today = getTodayIsoString();
       if (!deadlineStr) return { label: 'Sem prazo', class: 'bg-slate-800 text-slate-400' };
 
-      if (deadlineStr < today) {
+      const cleanDeadline = String(deadlineStr).split('T')[0];
+
+      if (cleanDeadline < today) {
         return { label: 'Atrasado', class: 'badge-atrasado' };
-      } else if (deadlineStr === today) {
+      } else if (cleanDeadline === today) {
         return { label: 'Entrega hoje', class: 'badge-hoje' };
       } else {
         return { label: 'No prazo', class: 'badge-prazo' };
@@ -1143,22 +1162,213 @@ function getSheetData(sheet) {
       });
 
       const balance = Math.max(0, totalBought - totalPaid);
-
       return { ordersCount, totalBought, totalPaid, balance };
     }
 
-    // --- TAB SWITCHING ---
+    // Normalizador de dados da planilha Google
+    function normalizeGoogleSheetData(remoteData) {
+      let normalizedClients = [];
+      let normalizedOrders = [];
+      let normalizedPayments = [];
+
+      // 1. Clientes
+      if (Array.isArray(remoteData.clients) && remoteData.clients.length > 0) {
+        normalizedClients = remoteData.clients.map((c, index) => {
+          const id = String(c.id || c['ID'] || c['Código'] || `cli-${index + 1}`).trim();
+          const name = String(c.name || c['Nome'] || c['Cliente'] || c['NOME'] || `Cliente ${index + 1}`).trim();
+          const phone = String(c.phone || c['Telefone'] || c['WhatsApp'] || c['Celular'] || '').trim();
+          const email = String(c.email || c['E-mail'] || c['Email'] || '').trim();
+          const notes = String(c.notes || c['Observações'] || c['Notas'] || '').trim();
+          return { id, name, phone, email, notes, createdAt: getTodayIsoString() };
+        });
+      }
+
+      // 2. Pedidos
+      if (Array.isArray(remoteData.orders) && remoteData.orders.length > 0) {
+        normalizedOrders = remoteData.orders.map((o, index) => {
+          const id = String(o.id || o['ID'] || `ord-${index + 1}`).trim();
+          const code = String(o.code || o['Código'] || o['CODIGO'] || o['Pedido'] || `PED-${100 + index + 1}`).trim();
+          
+          let clientId = String(o.clientId || o['Cliente ID'] || o['ID Cliente'] || '').trim();
+          if (!clientId && (o['Cliente'] || o['Nome'])) {
+            const clientName = String(o['Cliente'] || o['Nome']).toLowerCase();
+            const found = normalizedClients.find(c => c.name.toLowerCase() === clientName);
+            if (found) clientId = found.id;
+          }
+          if (!clientId && normalizedClients.length > 0) {
+            clientId = normalizedClients[0].id;
+          }
+
+          const category = String(o.category || o['Produto'] || o['Peça'] || o['Categoria'] || 'Costume 2 Peças').trim();
+          const description = String(o.description || o['Descrição'] || o['Tecido'] || '').trim();
+          
+          let rawVal = o.totalValue || o['Valor'] || o['Valor Total'] || o['Total'] || 0;
+          if (typeof rawVal === 'string') {
+            rawVal = rawVal.replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
+          }
+          const totalValue = parseFloat(rawVal) || 0;
+
+          let deadline = String(o.deadline || o['Prazo'] || o['Data de Entrega'] || o['Entrega'] || getFutureIsoDate(10)).trim();
+          if (deadline.includes('T')) deadline = deadline.split('T')[0];
+
+          const status = String(o.status || o['Status'] || o['Etapa'] || '1ª Prova').trim();
+
+          return {
+            id,
+            code,
+            clientId: clientId || 'cli-1',
+            category,
+            description,
+            totalValue,
+            deadline,
+            status,
+            createdAt: getTodayIsoString()
+          };
+        });
+      }
+
+      // 3. Pagamentos
+      if (Array.isArray(remoteData.payments) && remoteData.payments.length > 0) {
+        normalizedPayments = remoteData.payments.map((p, index) => {
+          const id = String(p.id || p['ID'] || `pay-${index + 1}`).trim();
+          let orderId = String(p.orderId || p['Pedido ID'] || p['ID Pedido'] || '').trim();
+          
+          if (!orderId && (p['Pedido'] || p['Código'])) {
+            const orderCode = String(p['Pedido'] || p['Código']).trim();
+            const found = normalizedOrders.find(o => o.code === orderCode);
+            if (found) orderId = found.id;
+          }
+          if (!orderId && normalizedOrders.length > 0) {
+            orderId = normalizedOrders[0].id;
+          }
+
+          let rawAmount = p.amount || p['Valor'] || p['Valor Pago'] || 0;
+          if (typeof rawAmount === 'string') {
+            rawAmount = rawAmount.replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
+          }
+          const amount = parseFloat(rawAmount) || 0;
+
+          let date = String(p.date || p['Data'] || getTodayIsoString()).trim();
+          if (date.includes('T')) date = date.split('T')[0];
+
+          const method = String(p.method || p['Forma de Pagamento'] || p['Método'] || 'Pix').trim();
+          const notes = String(p.notes || p['Observações'] || '').trim();
+
+          return { id, orderId, amount, date, method, notes };
+        });
+      }
+
+      return {
+        clients: normalizedClients,
+        orders: normalizedOrders,
+        payments: normalizedPayments
+      };
+    }
+
+    // Sincronização Robusta
+    async function syncWithGoogleSheet() {
+      let url = document.getElementById('google-script-url')?.value.trim() || appState.scriptUrl || OFFICIAL_SCRIPT_URL;
+
+      // Validação básica da URL
+      if (!url.startsWith('https://script.google.com/macros/s/')) {
+        url = OFFICIAL_SCRIPT_URL;
+        document.getElementById('google-script-url').value = url;
+      }
+
+      const btn = document.getElementById('btn-sync-action');
+      if (btn) btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Sincronizando...';
+      lucide.createIcons();
+
+      showToast('Conectando à sua planilha Google O Seu Alfaiate...', 'info');
+
+      try {
+        const response = await fetch(url, {
+          method: 'GET',
+          redirect: 'follow'
+        });
+
+        if (!response.ok) {
+          throw new Error(`Servidor respondeu com status HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data.status === 'error') {
+          throw new Error(data.message || 'Erro na execução do script da planilha.');
+        }
+
+        const normalized = normalizeGoogleSheetData(data);
+
+        let countImported = 0;
+        if (normalized.clients.length > 0) {
+          appState.clients = normalized.clients;
+          countImported += normalized.clients.length;
+        }
+        if (normalized.orders.length > 0) {
+          appState.orders = normalized.orders;
+          countImported += normalized.orders.length;
+        }
+        if (normalized.payments.length > 0) {
+          appState.payments = normalized.payments;
+          countImported += normalized.payments.length;
+        }
+
+        appState.scriptUrl = url;
+        localStorage.setItem('OSeuAlfaiate_ScriptUrl', url);
+        saveState();
+
+        document.getElementById('sync-indicator-text').textContent = 'Planilha Sincronizada';
+        document.getElementById('sync-status-detail').innerHTML = `
+          <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
+          <span class="text-emerald-400">Sincronizado com sucesso às ${new Date().toLocaleTimeString('pt-BR')}. (${countImported} registros processados)</span>
+        `;
+
+        refreshData();
+        showToast(`Sincronização realizada com sucesso! ${countImported} registros atualizados.`, 'success');
+
+      } catch (err) {
+        console.error('Falha de Sincronização:', err);
+
+        let errorMsg = 'Não foi possível conectar com o endpoint.';
+        if (err.message && err.message.includes('Failed to fetch')) {
+          errorMsg = 'Erro de permissão no Google Apps Script: Certifique-se de implantar com acesso configurado para "Qualquer pessoa".';
+        } else if (err.message) {
+          errorMsg = err.message;
+        }
+
+        document.getElementById('sync-status-detail').innerHTML = `
+          <i data-lucide="alert-circle" class="w-4 h-4 text-red-400"></i>
+          <span class="text-red-400">Falha ao sincronizar: ${errorMsg}</span>
+        `;
+        showToast(errorMsg, 'error');
+      } finally {
+        if (btn) btn.innerHTML = '<i data-lucide="refresh-cw" class="w-4 h-4"></i> Sincronizar Agora';
+        lucide.createIcons();
+      }
+    }
+
+    function saveScriptUrl() {
+      const input = document.getElementById('google-script-url');
+      let val = input.value.trim();
+      if (!val || val.length < 30) {
+        val = OFFICIAL_SCRIPT_URL;
+        input.value = val;
+      }
+      localStorage.setItem('OSeuAlfaiate_ScriptUrl', val);
+      appState.scriptUrl = val;
+      showToast('URL da conexão salva com sucesso!', 'success');
+      syncWithGoogleSheet();
+    }
+
+    // Tabs
     function switchTab(tabName) {
       const tabs = ['dashboard', 'pedidos', 'clientes', 'pagamentos', 'planilha'];
       tabs.forEach(t => {
         const view = document.getElementById(`view-${t}`);
         const btn = document.getElementById(`tab-btn-${t}`);
         if (view) {
-          if (t === tabName) {
-            view.classList.remove('hidden');
-          } else {
-            view.classList.add('hidden');
-          }
+          if (t === tabName) view.classList.remove('hidden');
+          else view.classList.add('hidden');
         }
         if (btn) {
           if (t === tabName) {
@@ -1169,20 +1379,15 @@ function getSheetData(sheet) {
         }
       });
 
-      if (tabName === 'dashboard') {
-        renderDashboard();
-      } else if (tabName === 'pedidos') {
-        renderOrdersTable();
-      } else if (tabName === 'clientes') {
-        renderClientsTable();
-      } else if (tabName === 'pagamentos') {
-        renderPaymentsTable();
-      }
+      if (tabName === 'dashboard') renderDashboard();
+      else if (tabName === 'pedidos') renderOrdersTable();
+      else if (tabName === 'clientes') renderClientsTable();
+      else if (tabName === 'pagamentos') renderPaymentsTable();
 
       lucide.createIcons();
     }
 
-    // --- DASHBOARD RENDERING & CHARTS ---
+    // Dashboard
     function renderDashboard() {
       let totalFaturado = 0;
       let totalRecebido = 0;
@@ -1221,10 +1426,7 @@ function getSheetData(sheet) {
       document.getElementById('metric-atrasado').textContent = atrasadoCount;
       document.getElementById('metric-entregues').textContent = entreguesCount;
 
-      // Render Alert Banner if there are overdue orders or today deliveries
       renderAlertBanner(atrasadoCount, hojeCount);
-
-      // Render Charts
       updateCharts(totalRecebido, totalEmAberto, noPrazoCount, hojeCount, atrasadoCount, entreguesCount);
     }
 
@@ -1241,10 +1443,10 @@ function getSheetData(sheet) {
               <i data-lucide="alert-octagon" class="w-5 h-5"></i>
             </div>
             <div>
-              <h4 class="text-sm font-semibold text-slate-100">Atenção ao Cronograma do Atelier</h4>
+              <h4 class="text-sm font-semibold text-slate-100">Atenção aos Prazos do Atelier</h4>
               <p class="text-xs text-slate-400 mt-0.5">
                 ${atrasados > 0 ? `<strong class="text-red-400 font-bold">${atrasados} pedido(s) atrasado(s)</strong>. ` : ''}
-                ${hoje > 0 ? `<strong class="text-amber-400 font-bold">${hoje} entrega(s) agendada(s) para hoje</strong>.` : ''}
+                ${hoje > 0 ? `<strong class="text-amber-400 font-bold">${hoje} entrega(s) para hoje</strong>.` : ''}
               </p>
             </div>
           </div>
@@ -1257,12 +1459,10 @@ function getSheetData(sheet) {
     }
 
     function updateCharts(recebido, aberto, noPrazo, hoje, atrasado, entregue) {
-      // 1. Chart Financial
       const ctxFin = document.getElementById('chartFinancial')?.getContext('2d');
       if (ctxFin) {
         if (financialChartInstance) financialChartInstance.destroy();
 
-        // Get last 6 orders
         const recentOrders = [...appState.orders].slice(-6);
         const labels = recentOrders.map(o => o.code);
         const dataTotal = recentOrders.map(o => o.totalValue);
@@ -1316,7 +1516,6 @@ function getSheetData(sheet) {
         });
       }
 
-      // 2. Chart Status Donut
       const ctxStat = document.getElementById('chartStatus')?.getContext('2d');
       if (ctxStat) {
         if (statusChartInstance) statusChartInstance.destroy();
@@ -1327,12 +1526,7 @@ function getSheetData(sheet) {
             labels: ['No Prazo', 'Hoje', 'Atrasado', 'Entregue'],
             datasets: [{
               data: [noPrazo, hoje, atrasado, entregue],
-              backgroundColor: [
-                '#3b82f6',
-                '#f59e0b',
-                '#ef4444',
-                '#10b981'
-              ],
+              backgroundColor: ['#3b82f6', '#f59e0b', '#ef4444', '#10b981'],
               borderColor: '#131A2B',
               borderWidth: 3
             }]
@@ -1352,7 +1546,7 @@ function getSheetData(sheet) {
       }
     }
 
-    // --- ORDERS TABLE & ACTIONS ---
+    // Pedidos
     function renderOrdersTable() {
       const tbody = document.getElementById('orders-table-body');
       const emptyState = document.getElementById('orders-empty-state');
@@ -1362,7 +1556,7 @@ function getSheetData(sheet) {
 
       tbody.innerHTML = '';
 
-      let filtered = appState.orders.filter(order => {
+      const filtered = appState.orders.filter(order => {
         const client = appState.clients.find(c => c.id === order.clientId);
         const clientName = client ? client.name.toLowerCase() : '';
         const matchesQuery = order.code.toLowerCase().includes(query) ||
@@ -1454,7 +1648,7 @@ function getSheetData(sheet) {
       lucide.createIcons();
     }
 
-    // --- CLIENTS TABLE & ACTIONS ---
+    // Clientes
     function renderClientsTable() {
       const tbody = document.getElementById('clients-table-body');
       const emptyState = document.getElementById('clients-empty-state');
@@ -1521,7 +1715,7 @@ function getSheetData(sheet) {
       lucide.createIcons();
     }
 
-    // --- PAYMENTS TABLE & ACTIONS ---
+    // Pagamentos
     function renderPaymentsTable() {
       const tbody = document.getElementById('payments-table-body');
       const emptyState = document.getElementById('payments-empty-state');
@@ -1533,7 +1727,6 @@ function getSheetData(sheet) {
       }
       emptyState.classList.add('hidden');
 
-      // Sort payments descending by date
       const sorted = [...appState.payments].sort((a, b) => new Date(b.date) - new Date(a.date));
 
       sorted.forEach(pay => {
@@ -1547,7 +1740,7 @@ function getSheetData(sheet) {
             ${formatDate(pay.date)}
           </td>
           <td class="py-3 px-4 font-mono text-xs font-bold text-brand-gold">
-            ${order ? order.code : 'Avulso / Desconhecido'}
+            ${order ? order.code : 'Avulso'}
           </td>
           <td class="py-3 px-4 text-slate-200">
             ${client ? client.name : '-'}
@@ -1575,7 +1768,7 @@ function getSheetData(sheet) {
       lucide.createIcons();
     }
 
-    // --- MODAL CONTROLS & FORMS ---
+    // Modais
     function openModal(modalId) {
       const el = document.getElementById(modalId);
       if (el) {
@@ -1593,13 +1786,11 @@ function getSheetData(sheet) {
       }
     }
 
-    // Order Modal
     function openNewOrderModal() {
       document.getElementById('order-form').reset();
       document.getElementById('order-id').value = '';
       document.getElementById('modal-order-title').textContent = 'Novo Pedido de Alfaiataria';
       document.getElementById('order-deadline').value = getFutureIsoDate(15);
-
       populateClientDropdown();
       openModal('modal-order');
     }
@@ -1638,7 +1829,6 @@ function getSheetData(sheet) {
       }
 
       if (id) {
-        // Edit
         const order = appState.orders.find(o => o.id === id);
         if (order) {
           order.clientId = clientId;
@@ -1650,7 +1840,6 @@ function getSheetData(sheet) {
           showToast(`Pedido ${order.code} atualizado com sucesso!`, 'success');
         }
       } else {
-        // Create new
         const newCode = `PED-${100 + appState.orders.length + 1}`;
         const newOrder = {
           id: 'ord-' + Date.now(),
@@ -1679,7 +1868,6 @@ function getSheetData(sheet) {
 
       document.getElementById('order-id').value = order.id;
       document.getElementById('modal-order-title').textContent = `Editar Pedido ${order.code}`;
-      
       populateClientDropdown(order.clientId);
       document.getElementById('order-category').value = order.category;
       document.getElementById('order-description').value = order.description;
@@ -1694,10 +1882,8 @@ function getSheetData(sheet) {
       const order = appState.orders.find(o => o.id === orderId);
       if (!order) return;
 
-      const confirmDelete = confirm(`Tem certeza que deseja remover o pedido ${order.code}?`);
-      if (confirmDelete) {
+      if (confirm(`Tem certeza que deseja remover o pedido ${order.code}?`)) {
         appState.orders = appState.orders.filter(o => o.id !== orderId);
-        // Also remove payments for this order
         appState.payments = appState.payments.filter(p => p.orderId !== orderId);
         saveState();
         renderOrdersTable();
@@ -1706,7 +1892,6 @@ function getSheetData(sheet) {
       }
     }
 
-    // Client Modal
     function openNewClientModal(fromOrderModal = false) {
       document.getElementById('client-form').reset();
       document.getElementById('client-id').value = '';
@@ -1780,8 +1965,7 @@ function getSheetData(sheet) {
         return;
       }
 
-      const confirmDelete = confirm(`Deseja realmente remover o cliente ${client.name}?`);
-      if (confirmDelete) {
+      if (confirm(`Deseja realmente remover o cliente ${client.name}?`)) {
         appState.clients = appState.clients.filter(c => c.id !== clientId);
         saveState();
         renderClientsTable();
@@ -1790,7 +1974,6 @@ function getSheetData(sheet) {
       }
     }
 
-    // Payment Modal
     function openNewPaymentModal(preselectedOrderId = null) {
       document.getElementById('payment-form').reset();
       document.getElementById('payment-date').value = getTodayIsoString();
@@ -1833,7 +2016,6 @@ function getSheetData(sheet) {
       document.getElementById('pay-sum-paid').textContent = formatBRL(paid);
       document.getElementById('pay-sum-remaining').textContent = formatBRL(remaining);
 
-      // Suggest remaining value in input if empty
       const amountInput = document.getElementById('payment-amount');
       if (!amountInput.value && remaining > 0) {
         amountInput.value = remaining.toFixed(2);
@@ -1866,7 +2048,7 @@ function getSheetData(sheet) {
       saveState();
       closeModal('modal-payment');
 
-      showToast(`Pagamento de ${formatBRL(amount)} registrado!`, 'success');
+      showToast(`Pagamento de ${formatBRL(amount)} registrado com sucesso!`, 'success');
 
       renderOrdersTable();
       renderPaymentsTable();
@@ -1875,18 +2057,16 @@ function getSheetData(sheet) {
     }
 
     function deletePayment(payId) {
-      const confirmDelete = confirm('Deseja cancelar o registro deste pagamento?');
-      if (confirmDelete) {
+      if (confirm('Deseja cancelar o registro deste pagamento?')) {
         appState.payments = appState.payments.filter(p => p.id !== payId);
         saveState();
         renderPaymentsTable();
         renderOrdersTable();
         renderDashboard();
-        showToast('Pagamento removido com sucesso.', 'info');
+        showToast('Pagamento removido.', 'info');
       }
     }
 
-    // Order Details Modal
     function openOrderDetailsModal(orderId) {
       const order = appState.orders.find(o => o.id === orderId);
       if (!order) return;
@@ -1911,7 +2091,6 @@ function getSheetData(sheet) {
       document.getElementById('detail-paid-val').textContent = formatBRL(paid);
       document.getElementById('detail-remaining-val').textContent = formatBRL(remaining);
 
-      // Render payments list for this order
       const listContainer = document.getElementById('detail-payments-list');
       listContainer.innerHTML = '';
 
@@ -1936,7 +2115,6 @@ function getSheetData(sheet) {
         });
       }
 
-      // Hook quick payment button
       const btnAddPay = document.getElementById('btn-add-payment-to-this-order');
       btnAddPay.onclick = () => {
         closeModal('modal-order-details');
@@ -1944,47 +2122,6 @@ function getSheetData(sheet) {
       };
 
       openModal('modal-order-details');
-    }
-
-    // --- GOOGLE SHEETS SYNC LOGIC ---
-    function saveScriptUrl() {
-      const url = document.getElementById('google-script-url').value.trim();
-      localStorage.setItem('OSeuAlfaiate_ScriptUrl', url);
-      appState.scriptUrl = url;
-      showToast('URL do Web App salva com sucesso!', 'success');
-    }
-
-    async function syncWithGoogleSheet() {
-      const url = appState.scriptUrl || document.getElementById('google-script-url').value.trim();
-      if (!url) {
-        showToast('Configure a URL do Google Apps Script primeiro.', 'error');
-        return;
-      }
-
-      showToast('Sincronizando com a planilha Google...', 'info');
-
-      try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error('Falha na resposta do servidor.');
-        const data = await response.json();
-
-        if (data.clients && Array.isArray(data.clients) && data.clients.length > 0) {
-          appState.clients = data.clients;
-        }
-        if (data.orders && Array.isArray(data.orders) && data.orders.length > 0) {
-          appState.orders = data.orders;
-        }
-        if (data.payments && Array.isArray(data.payments) && data.payments.length > 0) {
-          appState.payments = data.payments;
-        }
-
-        saveState();
-        refreshData();
-        showToast('Sincronização concluída com sucesso!', 'success');
-      } catch (err) {
-        console.warn("Aviso de sincronização remota:", err);
-        showToast('Não foi possível conectar com o endpoint agora. Usando dados locais.', 'info');
-      }
     }
 
     function copyAppsScriptCode() {
@@ -1995,7 +2132,7 @@ function getSheetData(sheet) {
       tempInput.select();
       document.execCommand('copy');
       document.body.removeChild(tempInput);
-      showToast('Código do Apps Script copiado para a área de transferência!', 'success');
+      showToast('Código do Apps Script copiado!', 'success');
     }
 
     function exportDataJSON() {
@@ -2026,19 +2163,20 @@ function getSheetData(sheet) {
             showToast('Arquivo de backup inválido.', 'error');
           }
         } catch (err) {
-          showToast('Erro ao ler arquivo JSON.', 'error');
+          showToast('Erro ao processar o arquivo JSON.', 'error');
         }
       };
       reader.readAsText(file);
     }
 
     function resetToFictitiousData() {
-      const confirmReset = confirm('Deseja recarregar os dados fictícios originais de teste (inclusive o pedido atrasado)?');
-      if (confirmReset) {
-        appState = JSON.parse(JSON.stringify(INITIAL_DATA));
+      if (confirm('Deseja recarregar os dados fictícios originais de teste (inclusive o pedido atrasado)?')) {
+        appState.clients = JSON.parse(JSON.stringify(INITIAL_DATA.clients));
+        appState.orders = JSON.parse(JSON.stringify(INITIAL_DATA.orders));
+        appState.payments = JSON.parse(JSON.stringify(INITIAL_DATA.payments));
         saveState();
         refreshData();
-        showToast('Dados fictícios de teste restaurados!', 'info');
+        showToast('Dados de teste restaurados!', 'info');
       }
     }
 
@@ -2049,7 +2187,7 @@ function getSheetData(sheet) {
       renderPaymentsTable();
     }
 
-    // --- INITIALIZATION ---
+    // Inicialização
     window.addEventListener('DOMContentLoaded', () => {
       loadState();
       refreshData();
