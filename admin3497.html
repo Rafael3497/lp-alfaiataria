@@ -27,31 +27,12 @@
     }
   </script>
 </head>
-<body class="bg-[#F5EEDF] text-[#0F1826] min-h-screen flex flex-col md:flex-row antialiased">
-
-  <!-- Mobile Top Bar -->
-  <header class="md:hidden bg-[#0F1826] text-[#F5EEDF] px-4 py-3 flex items-center justify-between shadow-md z-30 sticky top-0">
-    <div class="flex items-center space-x-3">
-      <div class="w-9 h-9 rounded bg-[#DCC9A3] text-[#0F1826] flex items-center font-bold justify-center">
-        <i class="fa-solid fa-scissors"></i>
-      </div>
-      <div>
-        <h1 class="font-bold text-sm leading-tight tracking-wider">O SEU ALFAIATE</h1>
-        <p class="text-[10px] text-[#DCC9A3]">CRM & Gestão</p>
-      </div>
-    </div>
-    <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="text-[#F5EEDF] focus:outline-none p-2 text-lg">
-      <i class="fa-solid fa-bars"></i>
-    </button>
-  </header>
-
-  <!-- Sidebar Overlay for Mobile -->
-  <div id="mobile-sidebar-overlay" onclick="toggleMobileMenu()" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden"></div>
+<body class="bg-[#F5EEDF] text-[#0F1826] min-h-screen flex antialiased">
 
   <!-- Sidebar Navigation -->
-  <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-50 w-72 bg-[#0F1826] text-[#F5EEDF] flex flex-col justify-between p-6 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out shadow-xl md:shadow-none">
+  <aside class="w-72 bg-[#0F1826] text-[#F5EEDF] flex flex-col justify-between p-6 shadow-xl">
     <div>
-      <div class="hidden md:flex items-center space-x-3 mb-10 pb-4 border-b border-[#DCC9A3]/20">
+      <div class="flex items-center space-x-3 mb-10 pb-4 border-b border-[#DCC9A3]/20">
         <div class="w-10 h-10 rounded bg-[#DCC9A3] text-[#0F1826] flex items-center font-bold text-lg justify-center shadow">
           <i class="fa-solid fa-scissors"></i>
         </div>
@@ -97,11 +78,9 @@
   <!-- Main Content Area -->
   <main class="flex-1 flex flex-col min-w-0 overflow-y-auto">
     
-    <!-- Top Header Desktop -->
-    <header class="hidden md:flex bg-white/60 backdrop-blur border-b border-[#DCC9A3]/40 px-8 py-4 items-center justify-between shadow-sm">
-      <div class="flex items-center space-x-4">
-        <h2 id="page-title" class="text-xl font-bold text-[#0F1826]">Dashboard Geral</h2>
-      </div>
+    <!-- Top Header -->
+    <header class="bg-white/60 backdrop-blur border-b border-[#DCC9A3]/40 px-8 py-4 flex items-center justify-between shadow-sm">
+      <h2 id="page-title" class="text-xl font-bold text-[#0F1826]">Dashboard Geral</h2>
       <div class="flex items-center space-x-4">
         <button onclick="openNewOrderModal()" class="bg-[#0F1826] text-[#F5EEDF] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#0F1826]/90 shadow flex items-center space-x-2">
           <i class="fa-solid fa-plus text-xs"></i>
@@ -114,26 +93,13 @@
       </div>
     </header>
 
-    <!-- Mobile Quick Action Header Bar -->
-    <div class="md:hidden bg-white/80 border-b border-[#DCC9A3]/40 px-4 py-3 flex items-center justify-between shadow-sm">
-      <h2 id="mobile-page-title" class="text-base font-bold text-[#0F1826]">Dashboard</h2>
-      <div class="flex items-center space-x-2">
-        <button onclick="openNewOrderModal()" class="bg-[#0F1826] text-[#F5EEDF] px-3 py-1.5 rounded-lg text-xs font-semibold shadow">
-          <i class="fa-solid fa-plus mr-1"></i> Pedido
-        </button>
-        <button onclick="openNewClientModal()" class="border border-[#0F1826] text-[#0F1826] px-3 py-1.5 rounded-lg text-xs font-semibold">
-          <i class="fa-solid fa-user-plus mr-1"></i> Cliente
-        </button>
-      </div>
-    </div>
-
     <!-- Content Views Container -->
-    <div class="p-4 md:p-8 flex-1">
+    <div class="p-8 flex-1">
       
       <!-- VIEW: DASHBOARD -->
       <section id="view-dashboard" class="space-y-6">
         <!-- KPI Cards Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div class="bg-white rounded-xl p-5 border border-[#DCC9A3]/60 shadow-sm">
             <div class="flex items-center justify-between text-neutral-500 mb-2">
               <span class="text-xs font-semibold uppercase tracking-wider">Faturamento Total</span>
@@ -148,7 +114,7 @@
             </div>
             <div id="kpi-total-received" class="text-2xl font-bold text-emerald-700">R$ 0,00</div>
           </div>
-          <div class="bg-white rounded-xl p-5 border border-[#DCC9A3]/60 shadow-sm sm:col-span-2 lg:col-span-1">
+          <div class="bg-white rounded-xl p-5 border border-[#DCC9A3]/60 shadow-sm">
             <div class="flex items-center justify-between text-neutral-500 mb-2">
               <span class="text-xs font-semibold uppercase tracking-wider">Total a Receber</span>
               <i class="fa-solid fa-clock text-amber-600 bg-amber-50 p-2 rounded-lg"></i>
@@ -197,20 +163,20 @@
       <!-- VIEW: ORDERS -->
       <section id="view-orders" class="space-y-6 hidden">
         <div class="bg-white rounded-xl p-6 border border-[#DCC9A3]/60 shadow-sm space-y-4">
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div class="flex items-center justify-between">
             <div class="relative flex-1 max-w-md">
               <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-neutral-400">
                 <i class="fa-solid fa-search"></i>
               </span>
               <input type="text" id="search-orders" oninput="filterOrders()" placeholder="Buscar por código, cliente ou descrição..." class="w-full pl-10 pr-4 py-2 border border-[#DCC9A3]/60 rounded-lg text-sm bg-neutral-50 focus:bg-white">
             </div>
-            <button onclick="openNewOrderModal()" class="bg-[#0F1826] text-[#F5EEDF] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#0F1826]/90 shadow flex items-center justify-center space-x-2">
+            <button onclick="openNewOrderModal()" class="bg-[#0F1826] text-[#F5EEDF] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#0F1826]/90 shadow flex items-center space-x-2">
               <i class="fa-solid fa-plus text-xs"></i>
               <span>Novo Pedido</span>
             </button>
           </div>
 
-          <div class="mobile-table-wrapper rounded-lg border border-[#DCC9A3]/40 overflow-hidden">
+          <div class="rounded-lg border border-[#DCC9A3]/40 overflow-hidden">
             <table class="w-full text-left border-collapse text-sm">
               <thead class="bg-[#0F1826] text-[#F5EEDF] text-xs uppercase tracking-wider">
                 <tr>
@@ -234,20 +200,20 @@
       <!-- VIEW: CLIENTS -->
       <section id="view-clients" class="space-y-6 hidden">
         <div class="bg-white rounded-xl p-6 border border-[#DCC9A3]/60 shadow-sm space-y-4">
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div class="flex items-center justify-between">
             <div class="relative flex-1 max-w-md">
               <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-neutral-400">
                 <i class="fa-solid fa-search"></i>
               </span>
               <input type="text" id="search-clients" oninput="filterClients()" placeholder="Buscar por nome, telefone ou e-mail..." class="w-full pl-10 pr-4 py-2 border border-[#DCC9A3]/60 rounded-lg text-sm bg-neutral-50 focus:bg-white">
             </div>
-            <button onclick="openNewClientModal()" class="bg-[#0F1826] text-[#F5EEDF] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#0F1826]/90 shadow flex items-center justify-center space-x-2">
+            <button onclick="openNewClientModal()" class="bg-[#0F1826] text-[#F5EEDF] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#0F1826]/90 shadow flex items-center space-x-2">
               <i class="fa-solid fa-user-plus text-xs"></i>
               <span>Novo Cliente</span>
             </button>
           </div>
 
-          <div class="mobile-table-wrapper rounded-lg border border-[#DCC9A3]/40 overflow-hidden">
+          <div class="rounded-lg border border-[#DCC9A3]/40 overflow-hidden">
             <table class="w-full text-left border-collapse text-sm">
               <thead class="bg-[#0F1826] text-[#F5EEDF] text-xs uppercase tracking-wider">
                 <tr>
@@ -277,7 +243,7 @@
             </button>
           </div>
 
-          <div class="mobile-table-wrapper rounded-lg border border-[#DCC9A3]/40 overflow-hidden">
+          <div class="rounded-lg border border-[#DCC9A3]/40 overflow-hidden">
             <table class="w-full text-left border-collapse text-sm">
               <thead class="bg-[#0F1826] text-[#F5EEDF] text-xs uppercase tracking-wider">
                 <tr>
@@ -315,7 +281,7 @@
           <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1">Nome Completo</label>
           <input type="text" id="client-name" required class="w-full px-3 py-2 border border-[#DCC9A3] rounded-lg text-sm bg-neutral-50">
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1">Telefone / WhatsApp</label>
             <input type="text" id="client-phone" required class="w-full px-3 py-2 border border-[#DCC9A3] rounded-lg text-sm bg-neutral-50" placeholder="(85) 99999-9999">
@@ -346,7 +312,7 @@
       </div>
       <form id="form-order" onsubmit="saveOrder(event)" class="p-6 space-y-4">
         <input type="hidden" id="order-id">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1">Cliente</label>
             <select id="order-client-id" required class="w-full px-3 py-2 border border-[#DCC9A3] rounded-lg text-sm bg-neutral-50">
@@ -370,7 +336,7 @@
           <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1">Descrição / Tecido</label>
           <input type="text" id="order-description" required class="w-full px-3 py-2 border border-[#DCC9A3] rounded-lg text-sm bg-neutral-50" placeholder="Ex: Tecido Oxford Azul Marinho, botões madrepérola">
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="grid grid-cols-3 gap-4">
           <div>
             <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1">Valor Total (R$)</label>
             <input type="number" step="0.01" id="order-total" required class="w-full px-3 py-2 border border-[#DCC9A3] rounded-lg text-sm bg-neutral-50" placeholder="0.00">
@@ -417,7 +383,7 @@
             <!-- Filled via JS -->
           </select>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-600 mb-1">Valor Pago (R$)</label>
             <input type="number" step="0.01" id="payment-amount" required class="w-full px-3 py-2 border border-[#DCC9A3] rounded-lg text-sm bg-neutral-50" placeholder="0.00">
