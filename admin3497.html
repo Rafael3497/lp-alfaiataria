@@ -51,46 +51,46 @@
         </div>
         <div>
           <h1 class="font-bold tracking-wider text-sm text-brand-dark">O SEU ALFAIATE</h1>
-          <p class="text-[11px] text-brand-gold font-semibold uppercase tracking-wider">Gestão de Atelier</p>
+          <p class="text-[11px] text-brand-gold font-bold uppercase tracking-wider">Gestão de Atelier</p>
         </div>
       </div>
 
       <nav class="space-y-1.5" aria-label="Menu Principal">
-        <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="nav-tab w-full px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:text-brand-dark hover:bg-brand-slate transition-all flex items-center gap-3">
+        <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="nav-tab w-full px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-900 hover:text-brand-dark hover:bg-brand-slate transition-all flex items-center gap-3">
           <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
         </button>
-        <button onclick="switchTab('pedidos')" id="tab-btn-pedidos" class="nav-tab w-full px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:text-brand-dark hover:bg-brand-slate transition-all flex items-center gap-3">
+        <button onclick="switchTab('pedidos')" id="tab-btn-pedidos" class="nav-tab w-full px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-900 hover:text-brand-dark hover:bg-brand-slate transition-all flex items-center gap-3">
           <i data-lucide="shirt" class="w-4 h-4"></i> Pedidos
         </button>
-        <button onclick="switchTab('clientes')" id="tab-btn-clientes" class="nav-tab w-full px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:text-brand-dark hover:bg-brand-slate transition-all flex items-center gap-3">
+        <button onclick="switchTab('clientes')" id="tab-btn-clientes" class="nav-tab w-full px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-900 hover:text-brand-dark hover:bg-brand-slate transition-all flex items-center gap-3">
           <i data-lucide="users" class="w-4 h-4"></i> Clientes & Medidas
         </button>
-        <button onclick="switchTab('pagamentos')" id="tab-btn-pagamentos" class="nav-tab w-full px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:text-brand-dark hover:bg-brand-slate transition-all flex items-center gap-3">
+        <button onclick="switchTab('pagamentos')" id="tab-btn-pagamentos" class="nav-tab w-full px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-900 hover:text-brand-dark hover:bg-brand-slate transition-all flex items-center gap-3">
           <i data-lucide="wallet" class="w-4 h-4"></i> Pagamentos & Caixa
         </button>
       </nav>
     </div>
 
-    <div class="pt-4 border-t border-brand-border flex items-center justify-between text-xs text-slate-600">
+    <div class="pt-4 border-t border-brand-border flex items-center justify-between text-xs text-slate-900 font-bold">
       <div class="flex items-center gap-2">
-        <span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
-        <span class="font-medium">Sincronizado</span>
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse"></span>
+        <span>Sincronizado</span>
       </div>
     </div>
   </aside>
 
   <!-- Mobile Bottom Nav -->
-  <div class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-brand-card border-t border-brand-border px-4 py-2 flex justify-around items-center shadow-lg">
-    <button onclick="switchTab('dashboard')" id="m-tab-dashboard" class="flex flex-col items-center text-[10px] text-slate-700 font-medium py-1">
+  <div class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-brand-card border-t border-brand-border px-4 py-2.5 flex justify-around items-center shadow-lg">
+    <button onclick="switchTab('dashboard')" id="m-tab-dashboard" class="flex flex-col items-center text-[10px] text-slate-900 font-bold py-1">
       <i data-lucide="layout-dashboard" class="w-5 h-5 mb-1"></i> Dashboard
     </button>
-    <button onclick="switchTab('pedidos')" id="m-tab-pedidos" class="flex flex-col items-center text-[10px] text-slate-700 font-medium py-1">
+    <button onclick="switchTab('pedidos')" id="m-tab-pedidos" class="flex flex-col items-center text-[10px] text-slate-900 font-bold py-1">
       <i data-lucide="shirt" class="w-5 h-5 mb-1"></i> Pedidos
     </button>
-    <button onclick="switchTab('clientes')" id="m-tab-clientes" class="flex flex-col items-center text-[10px] text-slate-700 font-medium py-1">
+    <button onclick="switchTab('clientes')" id="m-tab-clientes" class="flex flex-col items-center text-[10px] text-slate-900 font-bold py-1">
       <i data-lucide="users" class="w-5 h-5 mb-1"></i> Clientes
     </button>
-    <button onclick="switchTab('pagamentos')" id="m-tab-pagamentos" class="flex flex-col items-center text-[10px] text-slate-700 font-medium py-1">
+    <button onclick="switchTab('pagamentos')" id="m-tab-pagamentos" class="flex flex-col items-center text-[10px] text-slate-900 font-bold py-1">
       <i data-lucide="wallet" class="w-5 h-5 mb-1"></i> Caixa
     </button>
   </div>
@@ -110,7 +110,7 @@
         <button onclick="openNewOrderModal()" class="bg-brand-dark hover:bg-slate-800 text-brand-cream px-3.5 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 shadow-sm">
           <i data-lucide="plus" class="w-4 h-4"></i> <span class="hidden sm:inline">Novo Pedido</span>
         </button>
-        <button onclick="openNewClientModal()" class="bg-brand-slate hover:bg-brand-border text-brand-dark border border-brand-border px-3.5 py-2 rounded-lg text-xs font-semibold transition flex items-center gap-2">
+        <button onclick="openNewClientModal()" class="bg-brand-slate hover:bg-brand-border text-brand-dark border border-brand-border px-3.5 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2">
           <i data-lucide="user-plus" class="w-4 h-4"></i> <span class="hidden sm:inline">Novo Cliente</span>
         </button>
       </div>
@@ -126,54 +126,54 @@
         <!-- Metrics Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div class="bg-brand-card p-5 rounded-2xl border border-brand-border shadow-sm">
-            <div class="flex items-center justify-between text-slate-600 mb-2">
-              <span class="text-xs font-semibold uppercase tracking-wider">Faturamento Total</span>
+            <div class="flex items-center justify-between text-slate-900 font-bold mb-2">
+              <span class="text-xs uppercase tracking-wider">Faturamento Total</span>
               <i data-lucide="trending-up" class="w-4 h-4 text-brand-gold"></i>
             </div>
-            <div id="metric-faturamento" class="text-2xl font-bold text-brand-dark">R$ 0,00</div>
+            <div id="metric-faturamento" class="text-2xl font-black text-brand-dark">R$ 0,00</div>
           </div>
           <div class="bg-brand-card p-5 rounded-2xl border border-brand-border shadow-sm">
-            <div class="flex items-center justify-between text-slate-600 mb-2">
-              <span class="text-xs font-semibold uppercase tracking-wider">Valor Recebido</span>
-              <i data-lucide="wallet" class="w-4 h-4 text-emerald-600"></i>
+            <div class="flex items-center justify-between text-slate-900 font-bold mb-2">
+              <span class="text-xs uppercase tracking-wider">Valor Recebido</span>
+              <i data-lucide="wallet" class="w-4 h-4 text-emerald-700"></i>
             </div>
-            <div id="metric-recebido" class="text-2xl font-bold text-emerald-600">R$ 0,00</div>
-            <div id="metric-taxa-recebimento" class="text-[11px] text-slate-600 mt-1 font-medium">0% liquidado</div>
+            <div id="metric-recebido" class="text-2xl font-black text-emerald-700">R$ 0,00</div>
+            <div id="metric-taxa-recebimento" class="text-[11px] text-slate-900 font-bold mt-1">0% liquidado</div>
           </div>
           <div class="bg-brand-card p-5 rounded-2xl border border-brand-border shadow-sm">
-            <div class="flex items-center justify-between text-slate-600 mb-2">
-              <span class="text-xs font-semibold uppercase tracking-wider">A Receber (Aberto)</span>
-              <i data-lucide="clock" class="w-4 h-4 text-amber-600"></i>
+            <div class="flex items-center justify-between text-slate-900 font-bold mb-2">
+              <span class="text-xs uppercase tracking-wider">A Receber (Aberto)</span>
+              <i data-lucide="clock" class="w-4 h-4 text-amber-700"></i>
             </div>
-            <div id="metric-aberto" class="text-2xl font-bold text-amber-600">R$ 0,00</div>
+            <div id="metric-aberto" class="text-2xl font-black text-amber-700">R$ 0,00</div>
           </div>
           <div class="bg-brand-card p-5 rounded-2xl border border-brand-border shadow-sm">
-            <div class="flex items-center justify-between text-slate-600 mb-2">
-              <span class="text-xs font-semibold uppercase tracking-wider">Carteira de Clientes</span>
-              <i data-lucide="users" class="w-4 h-4 text-blue-600"></i>
+            <div class="flex items-center justify-between text-slate-900 font-bold mb-2">
+              <span class="text-xs uppercase tracking-wider">Carteira de Clientes</span>
+              <i data-lucide="users" class="w-4 h-4 text-blue-700"></i>
             </div>
-            <div id="metric-clientes" class="text-2xl font-bold text-brand-dark">0</div>
-            <div id="metric-pedidos-count" class="text-[11px] text-slate-600 mt-1 font-medium">0 pedidos</div>
+            <div id="metric-clientes" class="text-2xl font-black text-brand-dark">0</div>
+            <div id="metric-pedidos-count" class="text-[11px] text-slate-900 font-bold mt-1">0 pedidos</div>
           </div>
         </div>
 
         <!-- Deadline Summary Pills -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div class="bg-brand-card p-4 rounded-xl border border-brand-border flex items-center gap-3 shadow-sm">
-            <div class="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0"><i data-lucide="calendar" class="w-4 h-4"></i></div>
-            <div><div class="text-xs text-slate-600 font-medium">No Prazo</div><div id="metric-no-prazo" class="text-lg font-bold text-brand-dark">0</div></div>
+            <div class="w-9 h-9 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center shrink-0"><i data-lucide="calendar" class="w-4 h-4"></i></div>
+            <div><div class="text-xs text-slate-900 font-bold">No Prazo</div><div id="metric-no-prazo" class="text-lg font-black text-brand-dark">0</div></div>
           </div>
           <div class="bg-brand-card p-4 rounded-xl border border-brand-border flex items-center gap-3 shadow-sm">
-            <div class="w-9 h-9 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0"><i data-lucide="alert-circle" class="w-4 h-4"></i></div>
-            <div><div class="text-xs text-slate-600 font-medium">Entrega Hoje</div><div id="metric-hoje" class="text-lg font-bold text-amber-600">0</div></div>
+            <div class="w-9 h-9 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center shrink-0"><i data-lucide="alert-circle" class="w-4 h-4"></i></div>
+            <div><div class="text-xs text-slate-900 font-bold">Entrega Hoje</div><div id="metric-hoje" class="text-lg font-black text-amber-700">0</div></div>
           </div>
           <div class="bg-brand-card p-4 rounded-xl border border-brand-border flex items-center gap-3 shadow-sm">
-            <div class="w-9 h-9 rounded-lg bg-red-50 text-red-600 flex items-center justify-center shrink-0"><i data-lucide="alert-triangle" class="w-4 h-4"></i></div>
-            <div><div class="text-xs text-slate-600 font-medium">Atrasados</div><div id="metric-atrasado" class="text-lg font-bold text-red-600">0</div></div>
+            <div class="w-9 h-9 rounded-lg bg-red-50 text-red-700 flex items-center justify-center shrink-0"><i data-lucide="alert-triangle" class="w-4 h-4"></i></div>
+            <div><div class="text-xs text-slate-900 font-bold">Atrasados</div><div id="metric-atrasado" class="text-lg font-black text-red-700">0</div></div>
           </div>
           <div class="bg-brand-card p-4 rounded-xl border border-brand-border flex items-center gap-3 shadow-sm">
-            <div class="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0"><i data-lucide="check-circle-2" class="w-4 h-4"></i></div>
-            <div><div class="text-xs text-slate-600 font-medium">Entregues</div><div id="metric-entregues" class="text-lg font-bold text-emerald-600">0</div></div>
+            <div class="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0"><i data-lucide="check-circle-2" class="w-4 h-4"></i></div>
+            <div><div class="text-xs text-slate-900 font-bold">Entregues</div><div id="metric-entregues" class="text-lg font-black text-emerald-700">0</div></div>
           </div>
         </div>
 
@@ -195,18 +195,18 @@
         <div class="bg-brand-card rounded-2xl border border-brand-border p-6 shadow-sm space-y-4">
           <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
             <div class="relative flex-1">
-              <i data-lucide="search" class="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-              <input type="text" id="order-search" placeholder="Buscar por código, cliente, peça ou tecido..." class="w-full bg-brand-slate border border-brand-border rounded-xl pl-10 pr-4 py-2.5 text-xs text-brand-dark font-medium placeholder-slate-500">
+              <i data-lucide="search" class="w-4 h-4 text-slate-900 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+              <input type="text" id="order-search" placeholder="Buscar por código, cliente, peça ou tecido..." class="w-full bg-brand-slate border border-brand-border rounded-xl pl-10 pr-4 py-2.5 text-xs text-brand-dark font-bold placeholder-slate-700">
             </div>
             <div class="flex flex-wrap items-center gap-2">
-              <select id="order-filter-deadline" onchange="renderOrdersTable()" class="bg-brand-slate border border-brand-border rounded-xl px-3 py-2.5 text-xs text-brand-dark font-medium">
+              <select id="order-filter-deadline" onchange="renderOrdersTable()" class="bg-brand-slate border border-brand-border rounded-xl px-3 py-2.5 text-xs text-brand-dark font-bold">
                 <option value="ALL">Todos os Prazos</option>
                 <option value="No prazo">No Prazo</option>
                 <option value="Entrega hoje">Entrega Hoje</option>
                 <option value="Atrasado">Atrasados</option>
                 <option value="Entregue">Entregues</option>
               </select>
-              <select id="order-filter-payment" onchange="renderOrdersTable()" class="bg-brand-slate border border-brand-border rounded-xl px-3 py-2.5 text-xs text-brand-dark font-medium">
+              <select id="order-filter-payment" onchange="renderOrdersTable()" class="bg-brand-slate border border-brand-border rounded-xl px-3 py-2.5 text-xs text-brand-dark font-bold">
                 <option value="ALL">Todos os Pagamentos</option>
                 <option value="Pago">Quitado</option>
                 <option value="Parcial">Parcial</option>
@@ -220,7 +220,7 @@
 
           <div class="overflow-x-auto rounded-xl border border-brand-border">
             <table class="w-full text-left border-collapse text-xs">
-              <thead class="bg-brand-slate text-slate-700 font-semibold uppercase tracking-wider border-b border-brand-border">
+              <thead class="bg-brand-slate text-slate-900 font-black uppercase tracking-wider border-b border-brand-border">
                 <tr>
                   <th class="py-3 px-4">Pedido</th>
                   <th class="py-3 px-4">Cliente</th>
@@ -236,7 +236,7 @@
               <tbody id="orders-table-body" class="divide-y divide-brand-border bg-brand-card"></tbody>
             </table>
           </div>
-          <div id="orders-empty-state" class="hidden text-center py-12 text-slate-500 text-xs font-medium">Nenhum pedido encontrado.</div>
+          <div id="orders-empty-state" class="hidden text-center py-12 text-slate-900 text-xs font-bold">Nenhum pedido encontrado.</div>
         </div>
       </section>
 
@@ -245,8 +245,8 @@
         <div class="bg-brand-card rounded-2xl border border-brand-border p-6 shadow-sm space-y-4">
           <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
             <div class="relative flex-1">
-              <i data-lucide="search" class="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-              <input type="text" id="client-search" placeholder="Buscar por nome, telefone ou e-mail..." class="w-full bg-brand-slate border border-brand-border rounded-xl pl-10 pr-4 py-2.5 text-xs text-brand-dark font-medium placeholder-slate-500">
+              <i data-lucide="search" class="w-4 h-4 text-slate-900 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+              <input type="text" id="client-search" placeholder="Buscar por nome, telefone ou e-mail..." class="w-full bg-brand-slate border border-brand-border rounded-xl pl-10 pr-4 py-2.5 text-xs text-brand-dark font-bold placeholder-slate-700">
             </div>
             <button onclick="openNewClientModal()" class="bg-brand-dark hover:bg-slate-800 text-brand-cream px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-sm">
               <i data-lucide="user-plus" class="w-4 h-4"></i> Cadastrar Cliente
@@ -255,7 +255,7 @@
 
           <div class="overflow-x-auto rounded-xl border border-brand-border">
             <table class="w-full text-left border-collapse text-xs">
-              <thead class="bg-brand-slate text-slate-700 font-semibold uppercase tracking-wider border-b border-brand-border">
+              <thead class="bg-brand-slate text-slate-900 font-black uppercase tracking-wider border-b border-brand-border">
                 <tr>
                   <th class="py-3 px-4">Cliente</th>
                   <th class="py-3 px-4 text-center">Pedidos</th>
@@ -269,7 +269,7 @@
               <tbody id="clients-table-body" class="divide-y divide-brand-border bg-brand-card"></tbody>
             </table>
           </div>
-          <div id="clients-empty-state" class="hidden text-center py-12 text-slate-500 text-xs font-medium">Nenhum cliente cadastrado.</div>
+          <div id="clients-empty-state" class="hidden text-center py-12 text-slate-900 text-xs font-bold">Nenhum cliente cadastrado.</div>
         </div>
       </section>
 
@@ -285,7 +285,7 @@
 
           <div class="overflow-x-auto rounded-xl border border-brand-border">
             <table class="w-full text-left border-collapse text-xs">
-              <thead class="bg-brand-slate text-slate-700 font-semibold uppercase tracking-wider border-b border-brand-border">
+              <thead class="bg-brand-slate text-slate-900 font-black uppercase tracking-wider border-b border-brand-border">
                 <tr>
                   <th class="py-3 px-4">Data</th>
                   <th class="py-3 px-4">Pedido</th>
@@ -299,7 +299,7 @@
               <tbody id="payments-table-body" class="divide-y divide-brand-border bg-brand-card"></tbody>
             </table>
           </div>
-          <div id="payments-empty-state" class="hidden text-center py-12 text-slate-500 text-xs font-medium">Nenhum pagamento registrado.</div>
+          <div id="payments-empty-state" class="hidden text-center py-12 text-slate-900 text-xs font-bold">Nenhum pagamento registrado.</div>
         </div>
       </section>
 
@@ -313,30 +313,30 @@
     <div class="bg-brand-card rounded-2xl border border-brand-border max-w-lg w-full overflow-hidden shadow-2xl modal-panel">
       <div class="bg-brand-slate px-6 py-4 border-b border-brand-border flex items-center justify-between">
         <h3 id="modal-client-title" class="text-sm font-bold text-brand-dark">Cadastrar Cliente</h3>
-        <button onclick="closeModal('modal-client')" class="text-slate-600 hover:text-brand-dark"><i data-lucide="x" class="w-5 h-5"></i></button>
+        <button onclick="closeModal('modal-client')" class="text-slate-900 hover:text-brand-dark"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
       <form id="client-form" onsubmit="handleSaveClient(event)" class="p-6 space-y-4 text-xs">
         <input type="hidden" id="client-id">
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">Nome Completo *</label>
-          <input type="text" id="client-name" required class="w-full bg-brand-slate border border-brand-border rounded-xl px-3.5 py-2.5 text-brand-dark font-medium placeholder-slate-500">
+          <label class="block font-bold text-slate-900 mb-1">Nome Completo *</label>
+          <input type="text" id="client-name" required class="w-full bg-brand-slate border border-brand-border rounded-xl px-3.5 py-2.5 text-brand-dark font-bold placeholder-slate-700">
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">WhatsApp / Telefone *</label>
-            <input type="text" id="client-phone" required placeholder="(11) 99999-9999" class="w-full bg-brand-slate border border-brand-border rounded-xl px-3.5 py-2.5 text-brand-dark font-medium placeholder-slate-500">
+            <label class="block font-bold text-slate-900 mb-1">WhatsApp / Telefone *</label>
+            <input type="text" id="client-phone" required placeholder="(11) 99999-9999" class="w-full bg-brand-slate border border-brand-border rounded-xl px-3.5 py-2.5 text-brand-dark font-bold placeholder-slate-700">
           </div>
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">E-mail</label>
-            <input type="email" id="client-email" placeholder="cliente@email.com" class="w-full bg-brand-slate border border-brand-border rounded-xl px-3.5 py-2.5 text-brand-dark font-medium placeholder-slate-500">
+            <label class="block font-bold text-slate-900 mb-1">E-mail</label>
+            <input type="email" id="client-email" placeholder="cliente@email.com" class="w-full bg-brand-slate border border-brand-border rounded-xl px-3.5 py-2.5 text-brand-dark font-bold placeholder-slate-700">
           </div>
         </div>
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">Observações Gerais</label>
-          <textarea id="client-notes" rows="2" placeholder="Preferências de corte, estilo, etc." class="w-full bg-brand-slate border border-brand-border rounded-xl px-3.5 py-2.5 text-brand-dark font-medium placeholder-slate-500"></textarea>
+          <label class="block font-bold text-slate-900 mb-1">Observações Gerais</label>
+          <textarea id="client-notes" rows="2" placeholder="Preferências de corte, estilo, etc." class="w-full bg-brand-slate border border-brand-border rounded-xl px-3.5 py-2.5 text-brand-dark font-bold placeholder-slate-700"></textarea>
         </div>
         <div class="flex items-center justify-end gap-3 pt-4 border-t border-brand-border">
-          <button type="button" onclick="closeModal('modal-client')" class="px-4 py-2.5 rounded-xl border border-brand-border text-slate-700 hover:bg-brand-slate font-medium">Cancelar</button>
+          <button type="button" onclick="closeModal('modal-client')" class="px-4 py-2.5 rounded-xl border border-brand-border text-slate-900 font-bold hover:bg-brand-slate">Cancelar</button>
           <button type="submit" class="px-5 py-2.5 rounded-xl bg-brand-dark hover:bg-slate-800 text-brand-cream font-bold shadow-sm">Salvar Cliente</button>
         </div>
       </form>
@@ -348,18 +348,18 @@
     <div class="bg-brand-card rounded-2xl border border-brand-border max-w-xl w-full overflow-hidden shadow-2xl modal-panel">
       <div class="bg-brand-slate px-6 py-4 border-b border-brand-border flex items-center justify-between">
         <h3 id="modal-order-title" class="text-sm font-bold text-brand-dark">Novo Pedido de Alfaiataria</h3>
-        <button onclick="closeModal('modal-order')" class="text-slate-600 hover:text-brand-dark"><i data-lucide="x" class="w-5 h-5"></i></button>
+        <button onclick="closeModal('modal-order')" class="text-slate-900 hover:text-brand-dark"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
       <form id="order-form" onsubmit="handleSaveOrder(event)" class="p-6 space-y-4 text-xs">
         <input type="hidden" id="order-id">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">Cliente *</label>
-            <select id="order-client-id" required class="w-full bg-brand-slate border border-brand-border rounded-xl px-3.5 py-2.5 text-brand-dark font-medium"></select>
+            <label class="block font-bold text-slate-900 mb-1">Cliente *</label>
+            <select id="order-client-id" required class="w-full bg-brand-slate border border-brand-border rounded-xl px-3.5 py-2.5 text-brand-dark font-bold"></select>
           </div>
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">Categoria / Peça *</label>
-            <select id="order-category" required class="w-full bg-brand-slate border border-brand-border rounded-xl px-3.5 py-2.5 text-brand-dark font-medium">
+            <label class="block font-bold text-slate-900 mb-1">Categoria / Peça *</label>
+            <select id="order-category" required class="w-full bg-brand-slate border border-brand-border rounded-xl px-3.5 py-2.5 text-brand-dark font-bold">
               <option value="Costume 2 Peças">Costume 2 Peças</option>
               <option value="Terno 3 Peças">Terno 3 Peças</option>
               <option value="Camisa Sob Medida">Camisa Sob Medida</option>
@@ -372,21 +372,21 @@
           </div>
         </div>
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">Descrição / Tecido / Detalhes *</label>
-          <input type="text" id="order-description" required placeholder="Ex: Lã Fria Super 130s Azul Marinho, forro acetinado" class="w-full bg-brand-slate border border-brand-border rounded-xl px-3.5 py-2.5 text-brand-dark font-medium placeholder-slate-500">
+          <label class="block font-bold text-slate-900 mb-1">Descrição / Tecido / Detalhes *</label>
+          <input type="text" id="order-description" required placeholder="Ex: Lã Fria Super 130s Azul Marinho, forro acetinado" class="w-full bg-brand-slate border border-brand-border rounded-xl px-3.5 py-2.5 text-brand-dark font-bold placeholder-slate-700">
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">Valor Total (R$) *</label>
-            <input type="text" id="order-total" required placeholder="0,00" class="w-full bg-brand-slate border border-brand-border rounded-xl px-3.5 py-2.5 text-brand-dark font-mono font-medium placeholder-slate-500">
+            <label class="block font-bold text-slate-900 mb-1">Valor Total (R$) *</label>
+            <input type="text" id="order-total" required placeholder="0,00" class="w-full bg-brand-slate border border-brand-border rounded-xl px-3.5 py-2.5 text-brand-dark font-mono font-bold placeholder-slate-700">
           </div>
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">Prazo de Entrega *</label>
-            <input type="date" id="order-deadline" required class="w-full bg-brand-slate border border-brand-border rounded-xl px-3.5 py-2.5 text-brand-dark font-medium">
+            <label class="block font-bold text-slate-900 mb-1">Prazo de Entrega *</label>
+            <input type="date" id="order-deadline" required class="w-full bg-brand-slate border border-brand-border rounded-xl px-3.5 py-2.5 text-brand-dark font-bold">
           </div>
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">Etapa / Status *</label>
-            <select id="order-status" required class="w-full bg-brand-slate border border-brand-border rounded-xl px-3.5 py-2.5 text-brand-dark font-medium">
+            <label class="block font-bold text-slate-900 mb-1">Etapa / Status *</label>
+            <select id="order-status" required class="w-full bg-brand-slate border border-brand-border rounded-xl px-3.5 py-2.5 text-brand-dark font-bold">
               <option value="Corte & Modelagem">Corte & Modelagem</option>
               <option value="Em Produção">Em Produção</option>
               <option value="1ª Prova">1ª Prova</option>
@@ -398,7 +398,7 @@
           </div>
         </div>
         <div class="flex items-center justify-end gap-3 pt-4 border-t border-brand-border">
-          <button type="button" onclick="closeModal('modal-order')" class="px-4 py-2.5 rounded-xl border border-brand-border text-slate-700 hover:bg-brand-slate font-medium">Cancelar</button>
+          <button type="button" onclick="closeModal('modal-order')" class="px-4 py-2.5 rounded-xl border border-brand-border text-slate-900 font-bold hover:bg-brand-slate">Cancelar</button>
           <button type="submit" class="px-5 py-2.5 rounded-xl bg-brand-dark hover:bg-slate-800 text-brand-cream font-bold shadow-sm">Salvar Pedido</button>
         </div>
       </form>
@@ -410,33 +410,33 @@
     <div class="bg-brand-card rounded-2xl border border-brand-border max-w-md w-full overflow-hidden shadow-2xl modal-panel">
       <div class="bg-brand-slate px-6 py-4 border-b border-brand-border flex items-center justify-between">
         <h3 id="modal-payment-title" class="text-sm font-bold text-brand-dark">Registrar Pagamento</h3>
-        <button onclick="closeModal('modal-payment')" class="text-slate-600 hover:text-brand-dark"><i data-lucide="x" class="w-5 h-5"></i></button>
+        <button onclick="closeModal('modal-payment')" class="text-slate-900 hover:text-brand-dark"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
       <form id="payment-form" onsubmit="handleSavePayment(event)" class="p-6 space-y-4 text-xs">
         <input type="hidden" id="payment-id">
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">Pedido Vinculado *</label>
-          <select id="payment-order-id" onchange="updatePaymentHelperInfo()" required class="w-full bg-brand-slate border border-brand-border rounded-xl px-3.5 py-2.5 text-brand-dark font-medium"></select>
-          <div class="bg-brand-slate p-3 rounded-xl border border-brand-border mt-2 flex justify-between text-[11px] text-slate-700 font-medium">
-            <span>Total: <strong id="pay-sum-total" class="text-brand-dark font-bold">R$ 0,00</strong></span>
-            <span>Pago: <strong id="pay-sum-paid" class="text-emerald-700 font-bold">R$ 0,00</strong></span>
-            <span>Restante: <strong id="pay-sum-remaining" class="text-amber-700 font-bold">R$ 0,00</strong></span>
+          <label class="block font-bold text-slate-900 mb-1">Pedido Vinculado *</label>
+          <select id="payment-order-id" onchange="updatePaymentHelperInfo()" required class="w-full bg-brand-slate border border-brand-border rounded-xl px-3.5 py-2.5 text-brand-dark font-bold"></select>
+          <div class="bg-brand-slate p-3 rounded-xl border border-brand-border mt-2 flex justify-between text-[11px] text-slate-900 font-bold">
+            <span>Total: <strong id="pay-sum-total" class="text-brand-dark font-black">R$ 0,00</strong></span>
+            <span>Pago: <strong id="pay-sum-paid" class="text-emerald-700 font-black">R$ 0,00</strong></span>
+            <span>Restante: <strong id="pay-sum-remaining" class="text-amber-700 font-black">R$ 0,00</strong></span>
           </div>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">Valor do Pagamento (R$) *</label>
-            <input type="text" id="payment-amount" required placeholder="0,00" class="w-full bg-brand-slate border border-brand-border rounded-xl px-3.5 py-2.5 text-brand-dark font-mono font-medium">
+            <label class="block font-bold text-slate-900 mb-1">Valor do Pagamento (R$) *</label>
+            <input type="text" id="payment-amount" required placeholder="0,00" class="w-full bg-brand-slate border border-brand-border rounded-xl px-3.5 py-2.5 text-brand-dark font-mono font-bold">
           </div>
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">Data *</label>
-            <input type="date" id="payment-date" required class="w-full bg-brand-slate border border-brand-border rounded-xl px-3.5 py-2.5 text-brand-dark font-medium">
+            <label class="block font-bold text-slate-900 mb-1">Data *</label>
+            <input type="date" id="payment-date" required class="w-full bg-brand-slate border border-brand-border rounded-xl px-3.5 py-2.5 text-brand-dark font-bold">
           </div>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">Forma de Pagamento *</label>
-            <select id="payment-method" required class="w-full bg-brand-slate border border-brand-border rounded-xl px-3.5 py-2.5 text-brand-dark font-medium">
+            <label class="block font-bold text-slate-900 mb-1">Forma de Pagamento *</label>
+            <select id="payment-method" required class="w-full bg-brand-slate border border-brand-border rounded-xl px-3.5 py-2.5 text-brand-dark font-bold">
               <option value="Pix">Pix</option>
               <option value="Cartão de Crédito">Cartão de Crédito</option>
               <option value="Cartão de Débito">Cartão de Débito</option>
@@ -445,12 +445,12 @@
             </select>
           </div>
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">Observações</label>
-            <input type="text" id="payment-notes" placeholder="Ex: Sinal, 2ª parcela..." class="w-full bg-brand-slate border border-brand-border rounded-xl px-3.5 py-2.5 text-brand-dark font-medium placeholder-slate-500">
+            <label class="block font-bold text-slate-900 mb-1">Observações</label>
+            <input type="text" id="payment-notes" placeholder="Ex: Sinal, 2ª parcela..." class="w-full bg-brand-slate border border-brand-border rounded-xl px-3.5 py-2.5 text-brand-dark font-bold placeholder-slate-700">
           </div>
         </div>
         <div class="flex items-center justify-end gap-3 pt-4 border-t border-brand-border">
-          <button type="button" onclick="closeModal('modal-payment')" class="px-4 py-2.5 rounded-xl border border-brand-border text-slate-700 hover:bg-brand-slate font-medium">Cancelar</button>
+          <button type="button" onclick="closeModal('modal-payment')" class="px-4 py-2.5 rounded-xl border border-brand-border text-slate-900 font-bold hover:bg-brand-slate">Cancelar</button>
           <button type="submit" class="px-5 py-2.5 rounded-xl bg-brand-dark hover:bg-slate-800 text-brand-cream font-bold shadow-sm">Salvar Pagamento</button>
         </div>
       </form>
@@ -461,35 +461,35 @@
   <div id="modal-measurements" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/50 modal-overlay">
     <div class="bg-brand-card rounded-2xl border border-brand-border max-w-2xl w-full overflow-hidden shadow-2xl modal-panel max-h-[90vh] flex flex-col">
       <div class="bg-brand-slate px-6 py-4 border-b border-brand-border flex items-center justify-between shrink-0">
-        <h3 class="text-sm font-bold text-brand-dark">Ficha de Medidas — <span id="meas-client-name" class="text-brand-dark font-semibold"></span></h3>
-        <button onclick="closeModal('modal-measurements')" class="text-slate-600 hover:text-brand-dark"><i data-lucide="x" class="w-5 h-5"></i></button>
+        <h3 class="text-sm font-bold text-brand-dark">Ficha de Medidas — <span id="meas-client-name" class="text-brand-dark font-bold"></span></h3>
+        <button onclick="closeModal('modal-measurements')" class="text-slate-900 hover:text-brand-dark"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
       <div class="p-6 space-y-4 text-xs overflow-y-auto flex-1">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <div class="flex items-center justify-between mb-1"><label class="font-semibold text-slate-700">Medidas — Paletó / Blazer</label><label class="flex items-center gap-1.5 text-[11px] text-slate-600 font-medium cursor-pointer"><input type="checkbox" id="chk-paleto" checked class="rounded border-brand-border bg-brand-slate text-brand-dark"> Incluir no PDF</label></div>
-            <textarea id="meas-paleto" rows="3" placeholder="Tórax, cintura, quadril, ombro, manga, comprimento..." class="w-full bg-brand-slate border border-brand-border rounded-xl p-3 text-brand-dark font-medium placeholder-slate-500"></textarea>
+            <div class="flex items-center justify-between mb-1"><label class="font-bold text-slate-900">Medidas — Paletó / Blazer</label><label class="flex items-center gap-1.5 text-[11px] text-slate-900 font-bold cursor-pointer"><input type="checkbox" id="chk-paleto" checked class="rounded border-brand-border bg-brand-slate text-brand-dark"> Incluir no PDF</label></div>
+            <textarea id="meas-paleto" rows="3" placeholder="Tórax, cintura, quadril, ombro, manga, comprimento..." class="w-full bg-brand-slate border border-brand-border rounded-xl p-3 text-brand-dark font-bold placeholder-slate-700"></textarea>
           </div>
           <div>
-            <div class="flex items-center justify-between mb-1"><label class="font-semibold text-slate-700">Medidas — Calça</label><label class="flex items-center gap-1.5 text-[11px] text-slate-600 font-medium cursor-pointer"><input type="checkbox" id="chk-calca" checked class="rounded border-brand-border bg-brand-slate text-brand-dark"> Incluir no PDF</label></div>
-            <textarea id="meas-calca" rows="3" placeholder="Cintura, quadril, coxa, gancho, comprimento, barra..." class="w-full bg-brand-slate border border-brand-border rounded-xl p-3 text-brand-dark font-medium placeholder-slate-500"></textarea>
+            <div class="flex items-center justify-between mb-1"><label class="font-bold text-slate-900">Medidas — Calça</label><label class="flex items-center gap-1.5 text-[11px] text-slate-900 font-bold cursor-pointer"><input type="checkbox" id="chk-calca" checked class="rounded border-brand-border bg-brand-slate text-brand-dark"> Incluir no PDF</label></div>
+            <textarea id="meas-calca" rows="3" placeholder="Cintura, quadril, coxa, gancho, comprimento, barra..." class="w-full bg-brand-slate border border-brand-border rounded-xl p-3 text-brand-dark font-bold placeholder-slate-700"></textarea>
           </div>
           <div>
-            <div class="flex items-center justify-between mb-1"><label class="font-semibold text-slate-700">Medidas — Colete</label><label class="flex items-center gap-1.5 text-[11px] text-slate-600 font-medium cursor-pointer"><input type="checkbox" id="chk-colete" checked class="rounded border-brand-border bg-brand-slate text-brand-dark"> Incluir no PDF</label></div>
-            <textarea id="meas-colete" rows="3" placeholder="Tórax, cintura, comprimento frontal e costas..." class="w-full bg-brand-slate border border-brand-border rounded-xl p-3 text-brand-dark font-medium placeholder-slate-500"></textarea>
+            <div class="flex items-center justify-between mb-1"><label class="font-bold text-slate-900">Medidas — Colete</label><label class="flex items-center gap-1.5 text-[11px] text-slate-900 font-bold cursor-pointer"><input type="checkbox" id="chk-colete" checked class="rounded border-brand-border bg-brand-slate text-brand-dark"> Incluir no PDF</label></div>
+            <textarea id="meas-colete" rows="3" placeholder="Tórax, cintura, comprimento frontal e costas..." class="w-full bg-brand-slate border border-brand-border rounded-xl p-3 text-brand-dark font-bold placeholder-slate-700"></textarea>
           </div>
           <div>
-            <div class="flex items-center justify-between mb-1"><label class="font-semibold text-slate-700">Medidas — Camisa</label><label class="flex items-center gap-1.5 text-[11px] text-slate-600 font-medium cursor-pointer"><input type="checkbox" id="chk-camisa" checked class="rounded border-brand-border bg-brand-slate text-brand-dark"> Incluir no PDF</label></div>
-            <textarea id="meas-camisa" rows="3" placeholder="Pescoço, tórax, cintura, punho, manga, comprimento..." class="w-full bg-brand-slate border border-brand-border rounded-xl p-3 text-brand-dark font-medium placeholder-slate-500"></textarea>
+            <div class="flex items-center justify-between mb-1"><label class="font-bold text-slate-900">Medidas — Camisa</label><label class="flex items-center gap-1.5 text-[11px] text-slate-900 font-bold cursor-pointer"><input type="checkbox" id="chk-camisa" checked class="rounded border-brand-border bg-brand-slate text-brand-dark"> Incluir no PDF</label></div>
+            <textarea id="meas-camisa" rows="3" placeholder="Pescoço, tórax, cintura, punho, manga, comprimento..." class="w-full bg-brand-slate border border-brand-border rounded-xl p-3 text-brand-dark font-bold placeholder-slate-700"></textarea>
           </div>
         </div>
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">Observações Adicionais para a Ficha</label>
-          <input type="text" id="meas-pdf-obs" placeholder="Ex: Postura ereta, ombro direito ligeiramente mais baixo..." class="w-full bg-brand-slate border border-brand-border rounded-xl px-3.5 py-2.5 text-brand-dark font-medium placeholder-slate-500">
+          <label class="block font-bold text-slate-900 mb-1">Observações Adicionais para a Ficha</label>
+          <input type="text" id="meas-pdf-obs" placeholder="Ex: Postura ereta, ombro direito ligeiramente mais baixo..." class="w-full bg-brand-slate border border-brand-border rounded-xl px-3.5 py-2.5 text-brand-dark font-bold placeholder-slate-700">
         </div>
       </div>
       <div class="bg-brand-slate px-6 py-4 border-t border-brand-border flex items-center justify-between shrink-0">
-        <button onclick="handleSaveMeasurements()" class="px-4 py-2.5 rounded-xl bg-white hover:bg-brand-border text-brand-dark border border-brand-border font-medium text-xs transition shadow-sm">Salvar Alterações</button>
+        <button onclick="handleSaveMeasurements()" class="px-4 py-2.5 rounded-xl bg-white hover:bg-brand-border text-brand-dark border border-brand-border font-bold text-xs transition shadow-sm">Salvar Alterações</button>
         <button onclick="generateMeasurementsPDF()" class="px-5 py-2.5 rounded-xl bg-brand-dark hover:bg-slate-800 text-brand-cream font-bold text-xs transition flex items-center gap-2 shadow-sm"><i data-lucide="file-down" class="w-4 h-4"></i> Baixar PDF da Ficha</button>
       </div>
     </div>
@@ -503,41 +503,41 @@
           <h3 class="text-sm font-bold text-brand-dark">Detalhes do Pedido <span id="detail-order-code" class="text-brand-dark font-mono font-bold"></span></h3>
           <span id="detail-deadline-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold"></span>
         </div>
-        <button onclick="closeModal('modal-order-details')" class="text-slate-600 hover:text-brand-dark"><i data-lucide="x" class="w-5 h-5"></i></button>
+        <button onclick="closeModal('modal-order-details')" class="text-slate-900 hover:text-brand-dark"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
       <div class="p-6 space-y-6 text-xs overflow-y-auto flex-1">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-brand-slate p-4 rounded-xl border border-brand-border">
-          <div><span class="text-slate-600 block mb-0.5 font-medium">Cliente</span><strong id="detail-client-name" class="text-brand-dark text-sm font-bold"></strong><div id="detail-client-phone" class="text-slate-600 font-mono mt-0.5 font-medium"></div></div>
-          <div><span class="text-slate-600 block mb-0.5 font-medium">Categoria & Tecido</span><strong id="detail-category" class="text-brand-dark block font-bold"></strong><span id="detail-description" class="text-slate-700 mt-0.5 block font-medium"></span></div>
-          <div><span class="text-slate-600 block mb-0.5 font-medium">Data de Entrega</span><strong id="detail-deadline" class="text-brand-dark font-bold"></strong></div>
-          <div><span class="text-slate-600 block mb-0.5 font-medium">Etapa Atual</span><strong id="detail-status" class="text-brand-dark font-bold"></strong></div>
+          <div><span class="text-slate-900 block mb-0.5 font-bold">Cliente</span><strong id="detail-client-name" class="text-brand-dark text-sm font-black"></strong><div id="detail-client-phone" class="text-slate-900 font-mono mt-0.5 font-bold"></div></div>
+          <div><span class="text-slate-900 block mb-0.5 font-bold">Categoria & Tecido</span><strong id="detail-category" class="text-brand-dark block font-black"></strong><span id="detail-description" class="text-slate-900 mt-0.5 block font-bold"></span></div>
+          <div><span class="text-slate-900 block mb-0.5 font-bold">Data de Entrega</span><strong id="detail-deadline" class="text-brand-dark font-black"></strong></div>
+          <div><span class="text-slate-900 block mb-0.5 font-bold">Etapa Atual</span><strong id="detail-status" class="text-brand-dark font-black"></strong></div>
         </div>
 
         <div class="grid grid-cols-3 gap-3">
           <div class="bg-brand-slate p-3.5 rounded-xl border border-brand-border text-center">
-            <span class="text-slate-600 block text-[11px] mb-1 font-medium">Valor Total</span>
-            <strong id="detail-total-val" class="text-brand-dark text-sm font-bold">R$ 0,00</strong>
+            <span class="text-slate-900 block text-[11px] mb-1 font-bold">Valor Total</span>
+            <strong id="detail-total-val" class="text-brand-dark text-sm font-black">R$ 0,00</strong>
           </div>
           <div class="bg-brand-slate p-3.5 rounded-xl border border-brand-border text-center">
-            <span class="text-slate-600 block text-[11px] mb-1 font-medium">Total Pago</span>
-            <strong id="detail-paid-val" class="text-emerald-700 text-sm font-bold">R$ 0,00</strong>
+            <span class="text-slate-900 block text-[11px] mb-1 font-bold">Total Pago</span>
+            <strong id="detail-paid-val" class="text-emerald-700 text-sm font-black">R$ 0,00</strong>
           </div>
           <div class="bg-brand-slate p-3.5 rounded-xl border border-brand-border text-center">
-            <span class="text-slate-600 block text-[11px] mb-1 font-medium">Saldo Restante</span>
-            <strong id="detail-remaining-val" class="text-amber-700 text-sm font-bold">R$ 0,00</strong>
+            <span class="text-slate-900 block text-[11px] mb-1 font-bold">Saldo Restante</span>
+            <strong id="detail-remaining-val" class="text-amber-700 text-sm font-black">R$ 0,00</strong>
           </div>
         </div>
 
         <div class="space-y-3">
           <div class="flex items-center justify-between">
             <h4 class="font-bold text-brand-dark">Histórico de Pagamentos deste Pedido</h4>
-            <button id="btn-add-payment-to-this-order" class="text-xs font-semibold text-brand-dark hover:underline flex items-center gap-1"><i data-lucide="plus" class="w-3.5 h-3.5"></i> Adicionar Pagamento</button>
+            <button id="btn-add-payment-to-this-order" class="text-xs font-bold text-brand-dark hover:underline flex items-center gap-1"><i data-lucide="plus" class="w-3.5 h-3.5"></i> Adicionar Pagamento</button>
           </div>
           <div id="detail-payments-list" class="space-y-2"></div>
         </div>
       </div>
       <div class="bg-brand-slate px-6 py-4 border-t border-brand-border flex justify-end shrink-0">
-        <button onclick="closeModal('modal-order-details')" class="px-4 py-2.5 rounded-xl border border-brand-border text-slate-700 hover:bg-white font-medium text-xs">Fechar</button>
+        <button onclick="closeModal('modal-order-details')" class="px-4 py-2.5 rounded-xl border border-brand-border text-slate-900 font-bold hover:bg-white text-xs">Fechar</button>
       </div>
     </div>
   </div>
@@ -547,9 +547,9 @@
     <div class="bg-brand-card rounded-2xl border border-brand-border max-w-sm w-full overflow-hidden shadow-2xl modal-panel p-6 text-center">
       <div id="confirm-icon" class="w-10 h-10 rounded-lg flex items-center justify-center mx-auto mb-4 bg-amber-100 text-amber-700"><i data-lucide="help-circle" class="w-5 h-5"></i></div>
       <h3 id="confirm-title" class="text-sm font-bold text-brand-dark mb-2">Confirmar ação</h3>
-      <p id="confirm-message" class="text-xs text-slate-700 mb-6 leading-relaxed font-medium"></p>
+      <p id="confirm-message" class="text-xs text-slate-900 font-bold mb-6 leading-relaxed"></p>
       <div class="flex items-center justify-center gap-3">
-        <button id="confirm-cancel-btn" class="flex-1 py-2.5 px-4 text-xs font-medium rounded-xl border border-brand-border text-slate-700 hover:bg-brand-slate">Cancelar</button>
+        <button id="confirm-cancel-btn" class="flex-1 py-2.5 px-4 text-xs font-bold rounded-xl border border-brand-border text-slate-900 hover:bg-brand-slate">Cancelar</button>
         <button id="confirm-ok-btn" class="flex-1 py-2.5 px-4 text-xs font-bold rounded-xl bg-brand-dark hover:bg-slate-800 text-brand-cream">Confirmar</button>
       </div>
     </div>
