@@ -1,399 +1,564 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="h-full">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Alfaiataria Sob Medida em Fortaleza | O Seu Alfaiate</title>
-<meta name="description" content="Ternos, camisas e calças sob medida em Fortaleza. Tecidos premium, corte exclusivo e acabamento à mão. Agende seu atendimento pelo WhatsApp.">
-<meta name="robots" content="index, follow">
-<meta name="author" content="O Seu Alfaiate">
-<link rel="canonical" href="https://oseualfaiate.com.br/">
-
-<!-- Geo / local business -->
-<meta name="geo.placename" content="Fortaleza, Ceará, Brasil">
-<meta name="geo.region" content="BR-CE">
-
-<!-- Open Graph (Facebook, WhatsApp, LinkedIn) -->
-<meta property="og:type" content="business.business">
-<meta property="og:site_name" content="O Seu Alfaiate">
-<meta property="og:title" content="Alfaiataria Sob Medida em Fortaleza | O Seu Alfaiate">
-<meta property="og:description" content="Ternos, camisas e calças sob medida em Fortaleza. Tecidos premium, corte exclusivo e acabamento à mão. Agende seu atendimento pelo WhatsApp.">
-<meta property="og:url" content="https://oseualfaiate.com.br/">
-<meta property="og:image" content="https://oseualfaiate.com.br/assets/logo.jpg">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:locale" content="pt_BR">
-
-<!-- Twitter / X Card -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Alfaiataria Sob Medida em Fortaleza | O Seu Alfaiate">
-<meta name="twitter:description" content="Ternos, camisas e calças sob medida em Fortaleza. Tecidos premium, corte exclusivo e acabamento à mão.">
-<meta name="twitter:image" content="https://oseualfaiate.com.br/assets/logo.jpg">
-
-<!-- Favicon simplificado para usar a logo da pasta assets -->
-<link rel="icon" type="image/jpeg" href="assets/logo.jpg">
-<link rel="apple-touch-icon" href="assets/logo.jpg">
-<meta name="theme-color" content="#15130F">
-
-<!-- Performance: preconnect + preload -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="image" href="assets/hero-jacket.jpg" fetchpriority="high">
-<link rel="preload" as="image" href="assets/logo.jpg">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Manrope:wght@400;500;700;800&display=swap">
-
-<link rel="stylesheet" href="css/style.css">
-
-<!-- Dados estruturados (Schema.org) para o Google -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "ClothingStore",
-  "name": "O Seu Alfaiate",
-  "image": "https://oseualfaiate.com.br/assets/logo.jpg",
-  "url": "https://oseualfaiate.com.br/",
-  "telephone": "+5585989157733",
-  "priceRange": "$$",
-  "description": "Alfaiataria sob medida em Fortaleza. Ternos, camisas e calças personalizadas com tecidos premium e acabamento à mão.",
-  "address": {
-    "@type": "PostalAddress",
-    "addressLocality": "Fortaleza",
-    "addressRegion": "CE",
-    "addressCountry": "BR"
-  },
-  "sameAs": [
-    "https://www.instagram.com/oseualfaiate",
-    "https://maps.app.goo.gl/ufXktqNfCca4Qp636"
-  ],
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "5",
-    "reviewCount": "8"
-  },
-  "review": [
-    { "@type": "Review", "author": { "@type": "Person", "name": "Lucas Lourenço Miranda Nascimento" }, "reviewRating": { "@type": "Rating", "ratingValue": "5" }, "reviewBody": "Serviço de qualidade, atendimento diferenciado e camisa perfeita. Uma camisa de alfaiataria faz toda diferença." },
-    { "@type": "Review", "author": { "@type": "Person", "name": "Fabrício Oliveira" }, "reviewRating": { "@type": "Rating", "ratingValue": "5" }, "reviewBody": "Alfaiataria de excelente qualidade. Uma camisa feita sob medida realmente faz toda diferença. Recomendo fortemente." },
-    { "@type": "Review", "author": { "@type": "Person", "name": "Sandra Glória" }, "reviewRating": { "@type": "Rating", "ratingValue": "5" }, "reviewBody": "Trabalho simplesmente impecável do Rafael. Camisas super bem cortadas e acabamento de excelência." }
-  ]
-}
-</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>O Seu Alfaiate — CRM & Gestão de Atelier</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- html2pdf.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/admin.css">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              cream: '#F5EEDF',
+              gold: '#DCC9A3',
+              goldHover: '#C5B288',
+              dark: '#0F1826',
+              darkBorder: '#1E293B',
+              darkCard: '#131C2E',
+              slate: '#1E293B'
+            }
+          }
+        }
+      }
+    }
+  </script>
 </head>
-<body>
+<body class="h-full flex flex-col md:flex-row bg-brand-dark text-slate-100 antialiased selection:bg-brand-gold selection:text-brand-dark">
 
-<div id="tape-rail" aria-hidden="true">
-  <div id="tape-fill"></div>
-  <div id="tape-ticks"></div>
-  <div id="tape-num">0</div>
-</div>
+  <!-- Toast Container -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none max-w-sm w-full px-4"></div>
 
-<header>
-  <div class="wrap header-inner">
-    <a href="#hero" class="brand">
-      <img src="assets/logo.jpg" alt="O Seu Alfaiate" width="40" height="40" decoding="async">
-      <span>O Seu Alfaiate</span>
-    </a>
-    <div class="header-actions">
-      <a class="btn btn-primary btn-sm" href="https://wa.me/5585989157733?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20agendar%20um%20atendimento." target="_blank" rel="noopener">Agendar</a>
+  <!-- Sidebar Desktop -->
+  <aside class="hidden md:flex w-72 bg-brand-darkCard border-r border-brand-darkBorder flex-col justify-between shrink-0 p-6 select-none">
+    <div>
+      <div class="flex items-center gap-3 pb-6 mb-6 border-b border-brand-darkBorder">
+        <div class="w-10 h-10 rounded-xl bg-brand-gold text-brand-dark font-bold flex items-center justify-center text-lg shadow-lg">
+          <i data-lucide="scissors" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h1 class="font-bold tracking-wider text-sm text-brand-cream">O SEU ALFAIATE</h1>
+          <p class="text-[11px] text-brand-gold font-medium">Gestão de Atelier</p>
+        </div>
+      </div>
+
+      <nav class="space-y-1.5" aria-label="Menu Principal">
+        <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="nav-tab w-full px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-brand-slate/40 transition-all flex items-center gap-3">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
+        </button>
+        <button onclick="switchTab('pedidos')" id="tab-btn-pedidos" class="nav-tab w-full px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-brand-slate/40 transition-all flex items-center gap-3">
+          <i data-lucide="shirt" class="w-4 h-4"></i> Pedidos
+        </button>
+        <button onclick="switchTab('clientes')" id="tab-btn-clientes" class="nav-tab w-full px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-brand-slate/40 transition-all flex items-center gap-3">
+          <i data-lucide="users" class="w-4 h-4"></i> Clientes & Medidas
+        </button>
+        <button onclick="switchTab('pagamentos')" id="tab-btn-pagamentos" class="nav-tab w-full px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-brand-slate/40 transition-all flex items-center gap-3">
+          <i data-lucide="wallet" class="w-4 h-4"></i> Pagamentos & Caixa
+        </button>
+      </nav>
     </div>
+
+    <div class="pt-4 border-t border-brand-darkBorder flex items-center justify-between text-xs text-slate-400">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span>Sincronizado</span>
+      </div>
+      <button onclick="fetchFromGoogleSheets(true)" id="btn-manual-reload" title="Sincronizar com Planilha" class="p-1.5 rounded-lg hover:bg-brand-slate text-slate-300 hover:text-brand-gold transition">
+        <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Mobile Bottom Nav -->
+  <div class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-brand-darkCard border-t border-brand-darkBorder px-4 py-2 flex justify-around items-center">
+    <button onclick="switchTab('dashboard')" id="m-tab-dashboard" class="flex flex-col items-center text-[10px] text-slate-400 font-medium py-1">
+      <i data-lucide="layout-dashboard" class="w-5 h-5 mb-1"></i> Dashboard
+    </button>
+    <button onclick="switchTab('pedidos')" id="m-tab-pedidos" class="flex flex-col items-center text-[10px] text-slate-400 font-medium py-1">
+      <i data-lucide="shirt" class="w-5 h-5 mb-1"></i> Pedidos
+    </button>
+    <button onclick="switchTab('clientes')" id="m-tab-clientes" class="flex flex-col items-center text-[10px] text-slate-400 font-medium py-1">
+      <i data-lucide="users" class="w-5 h-5 mb-1"></i> Clientes
+    </button>
+    <button onclick="switchTab('pagamentos')" id="m-tab-pagamentos" class="flex flex-col items-center text-[10px] text-slate-400 font-medium py-1">
+      <i data-lucide="wallet" class="w-5 h-5 mb-1"></i> Caixa
+    </button>
   </div>
-</header>
 
-<section id="hero">
-  <div class="wrap hero-inner">
-    <div class="eyebrow hero-eyebrow">Alfaiataria sob medida em Fortaleza</div>
-    <h1 class="reveal">Esqueça os tamanhos.<br><em>Vista o que foi feito para você.</em></h1>
-    <br>
-    <div class="hero-ctas reveal">
-      <a class="btn btn-primary" href="https://wa.me/5585989157733?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20agendar%20um%20atendimento." target="_blank" rel="noopener">Agendar meu atendimento</a>
-      <a class="btn btn-ghost" href="#processo">Ver como funciona</a>
-    </div>
-  </div>
-  <div class="scroll-cue"><span class="line"></span>Role</div>
-</section>
-
-<div class="stitch"><svg viewBox="0 0 1200 34" preserveAspectRatio="none"><line x1="0" y1="17" x2="1200" y2="17" stroke="#A6957A" stroke-width="1" stroke-dasharray="2 10"/></svg></div>
-
-<section class="section" id="camisaria">
-  <div class="wrap">
-    <div class="section-head reveal">
-      <div class="eyebrow">Especialidade</div>
-      <h2>A verdadeira camisa sob medida</h2>
-      <p>O colarinho perfeito, a manga na altura exata e o caimento que abraça o corpo sem sobras. Trabalhamos com os melhores tecidos para criar camisas que elevam a sua presença em qualquer ambiente.</p>
-      <a class="btn btn-ghost" href="camisaria.html" style="margin-top: 24px;">Conhecer a Camisaria Exclusiva</a>
-    </div>
+  <!-- Main Content Area -->
+  <main class="flex-1 flex flex-col min-w-0 overflow-y-auto pb-20 md:pb-0">
     
-    <div class="camisaria-grid reveal">
-      <!-- Vídeo 1 -->
-      <div class="media-item video-item">
-        <video src="assets/camisa-video-1.mp4" poster="assets/gallery-1.jpg" autoplay loop muted playsinline preload="metadata"></video>
+    <!-- Topbar -->
+    <header class="bg-brand-darkCard border-b border-brand-darkBorder px-6 py-4 flex items-center justify-between sticky top-0 z-30 shadow-sm">
+      <div class="flex items-center gap-3">
+        <div class="md:hidden w-8 h-8 rounded-lg bg-brand-gold text-brand-dark font-bold flex items-center justify-center">
+          <i data-lucide="scissors" class="w-4 h-4"></i>
+        </div>
+        <h2 class="text-base font-bold text-brand-cream">Painel Administrativo</h2>
       </div>
-      <!-- Foto 1 -->
-      <div class="media-item photo-item">
-        <img src="assets/camisa-foto-1.jpeg" alt="Camisa social sob medida em Fortaleza" loading="lazy" decoding="async">
+      <div class="flex items-center gap-2.5">
+        <button onclick="openNewOrderModal()" class="bg-brand-gold hover:bg-brand-goldHover text-brand-dark px-3.5 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 shadow-sm">
+          <i data-lucide="plus" class="w-4 h-4"></i> <span class="hidden sm:inline">Novo Pedido</span>
+        </button>
+        <button onclick="openNewClientModal()" class="bg-brand-slate hover:bg-brand-darkBorder text-slate-200 border border-brand-darkBorder px-3.5 py-2 rounded-lg text-xs font-semibold transition flex items-center gap-2">
+          <i data-lucide="user-plus" class="w-4 h-4"></i> <span class="hidden sm:inline">Novo Cliente</span>
+        </button>
       </div>
-      <!-- Foto 2 -->
-      <div class="media-item photo-item">
-        <img src="assets/camisa-foto-2.jpeg" alt="Detalhe do colarinho de camisa sob medida" loading="lazy" decoding="async">
+    </header>
+
+    <!-- Content Views Container -->
+    <div class="p-6 max-w-7xl w-full mx-auto flex-1 space-y-6">
+      
+      <!-- VIEW: DASHBOARD -->
+      <section id="view-dashboard" class="space-y-6">
+        <div id="alert-box-container"></div>
+
+        <!-- Metrics Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-brand-darkCard p-5 rounded-2xl border border-brand-darkBorder shadow-sm">
+            <div class="flex items-center justify-between text-slate-400 mb-2">
+              <span class="text-xs font-semibold uppercase tracking-wider">Faturamento Total</span>
+              <i data-lucide="trending-up" class="w-4 h-4 text-brand-gold"></i>
+            </div>
+            <div id="metric-faturamento" class="text-2xl font-bold text-slate-100">R$ 0,00</div>
+          </div>
+          <div class="bg-brand-darkCard p-5 rounded-2xl border border-brand-darkBorder shadow-sm">
+            <div class="flex items-center justify-between text-slate-400 mb-2">
+              <span class="text-xs font-semibold uppercase tracking-wider">Valor Recebido</span>
+              <i data-lucide="wallet" class="w-4 h-4 text-emerald-500"></i>
+            </div>
+            <div id="metric-recebido" class="text-2xl font-bold text-emerald-500">R$ 0,00</div>
+            <div id="metric-taxa-recebimento" class="text-[11px] text-slate-400 mt-1">0% liquidado</div>
+          </div>
+          <div class="bg-brand-darkCard p-5 rounded-2xl border border-brand-darkBorder shadow-sm">
+            <div class="flex items-center justify-between text-slate-400 mb-2">
+              <span class="text-xs font-semibold uppercase tracking-wider">A Receber (Aberto)</span>
+              <i data-lucide="clock" class="w-4 h-4 text-amber-500"></i>
+            </div>
+            <div id="metric-aberto" class="text-2xl font-bold text-amber-500">R$ 0,00</div>
+          </div>
+          <div class="bg-brand-darkCard p-5 rounded-2xl border border-brand-darkBorder shadow-sm">
+            <div class="flex items-center justify-between text-slate-400 mb-2">
+              <span class="text-xs font-semibold uppercase tracking-wider">Carteira de Clientes</span>
+              <i data-lucide="users" class="w-4 h-4 text-blue-400"></i>
+            </div>
+            <div id="metric-clientes" class="text-2xl font-bold text-slate-100">0</div>
+            <div id="metric-pedidos-count" class="text-[11px] text-slate-400 mt-1">0 pedidos</div>
+          </div>
+        </div>
+
+        <!-- Deadline Summary Pills -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div class="bg-brand-darkCard p-4 rounded-xl border border-brand-darkBorder flex items-center gap-3">
+            <div class="w-9 h-9 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center shrink-0"><i data-lucide="calendar" class="w-4 h-4"></i></div>
+            <div><div class="text-xs text-slate-400">No Prazo</div><div id="metric-no-prazo" class="text-lg font-bold text-slate-100">0</div></div>
+          </div>
+          <div class="bg-brand-darkCard p-4 rounded-xl border border-brand-darkBorder flex items-center gap-3">
+            <div class="w-9 h-9 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0"><i data-lucide="alert-circle" class="w-4 h-4"></i></div>
+            <div><div class="text-xs text-slate-400">Entrega Hoje</div><div id="metric-hoje" class="text-lg font-bold text-amber-500">0</div></div>
+          </div>
+          <div class="bg-brand-darkCard p-4 rounded-xl border border-brand-darkBorder flex items-center gap-3">
+            <div class="w-9 h-9 rounded-lg bg-red-500/10 text-red-500 flex items-center justify-center shrink-0"><i data-lucide="alert-triangle" class="w-4 h-4"></i></div>
+            <div><div class="text-xs text-slate-400">Atrasados</div><div id="metric-atrasado" class="text-lg font-bold text-red-500">0</div></div>
+          </div>
+          <div class="bg-brand-darkCard p-4 rounded-xl border border-brand-darkBorder flex items-center gap-3">
+            <div class="w-9 h-9 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0"><i data-lucide="check-circle-2" class="w-4 h-4"></i></div>
+            <div><div class="text-xs text-slate-400">Entregues</div><div id="metric-entregues" class="text-lg font-bold text-emerald-500">0</div></div>
+          </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="bg-brand-darkCard p-6 rounded-2xl border border-brand-darkBorder lg:col-span-2 shadow-sm flex flex-col">
+            <h3 class="text-sm font-bold text-slate-200 mb-4 flex items-center gap-2"><i data-lucide="bar-chart-3" class="w-4 h-4 text-brand-gold"></i> Desempenho Financeiro (Últimos Pedidos)</h3>
+            <div class="relative flex-1 min-h-[260px]"><canvas id="chartFinancial"></canvas></div>
+          </div>
+          <div class="bg-brand-darkCard p-6 rounded-2xl border border-brand-darkBorder shadow-sm flex flex-col">
+            <h3 class="text-sm font-bold text-slate-200 mb-4 flex items-center gap-2"><i data-lucide="pie-chart" class="w-4 h-4 text-brand-gold"></i> Status de Prazos</h3>
+            <div class="relative flex-1 min-h-[260px]"><canvas id="chartStatus"></canvas></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW: ORDERS -->
+      <section id="view-pedidos" class="space-y-6 hidden">
+        <div class="bg-brand-darkCard rounded-2xl border border-brand-darkBorder p-6 shadow-sm space-y-4">
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+            <div class="relative flex-1">
+              <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+              <input type="text" id="order-search" placeholder="Buscar por código, cliente, peça ou tecido..." class="w-full bg-brand-dark border border-brand-darkBorder rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-100 placeholder-slate-500">
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <select id="order-filter-deadline" onchange="renderOrdersTable()" class="bg-brand-dark border border-brand-darkBorder rounded-xl px-3 py-2.5 text-xs text-slate-300">
+                <option value="ALL">Todos os Prazos</option>
+                <option value="No prazo">No Prazo</option>
+                <option value="Entrega hoje">Entrega Hoje</option>
+                <option value="Atrasado">Atrasados</option>
+                <option value="Entregue">Entregues</option>
+              </select>
+              <select id="order-filter-payment" onchange="renderOrdersTable()" class="bg-brand-dark border border-brand-darkBorder rounded-xl px-3 py-2.5 text-xs text-slate-300">
+                <option value="ALL">Todos os Pagamentos</option>
+                <option value="Pago">Quitado</option>
+                <option value="Parcial">Parcial</option>
+                <option value="Em aberto">Em Aberto</option>
+              </select>
+              <button onclick="openNewOrderModal()" class="bg-brand-gold hover:bg-brand-goldHover text-brand-dark px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-sm">
+                <i data-lucide="plus" class="w-4 h-4"></i> Novo Pedido
+              </button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto rounded-xl border border-brand-darkBorder">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead class="bg-brand-dark text-slate-400 font-semibold uppercase tracking-wider border-b border-brand-darkBorder">
+                <tr>
+                  <th class="py-3 px-4">Pedido</th>
+                  <th class="py-3 px-4">Cliente</th>
+                  <th class="py-3 px-4">Etapa</th>
+                  <th class="py-3 px-4">Entrega</th>
+                  <th class="py-3 px-4 text-right">Total</th>
+                  <th class="py-3 px-4 text-right">Pago</th>
+                  <th class="py-3 px-4 text-right">Restante</th>
+                  <th class="py-3 px-4 text-center">Caixa</th>
+                  <th class="py-3 px-4 text-center">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="orders-table-body" class="divide-y divide-brand-darkBorder bg-brand-darkCard/50"></tbody>
+            </table>
+          </div>
+          <div id="orders-empty-state" class="hidden text-center py-12 text-slate-500 text-xs">Nenhum pedido encontrado.</div>
+        </div>
+      </section>
+
+      <!-- VIEW: CLIENTS -->
+      <section id="view-clientes" class="space-y-6 hidden">
+        <div class="bg-brand-darkCard rounded-2xl border border-brand-darkBorder p-6 shadow-sm space-y-4">
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+            <div class="relative flex-1">
+              <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+              <input type="text" id="client-search" placeholder="Buscar por nome, telefone ou e-mail..." class="w-full bg-brand-dark border border-brand-darkBorder rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-100 placeholder-slate-500">
+            </div>
+            <button onclick="openNewClientModal()" class="bg-brand-gold hover:bg-brand-goldHover text-brand-dark px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-sm">
+              <i data-lucide="user-plus" class="w-4 h-4"></i> Cadastrar Cliente
+            </button>
+          </div>
+
+          <div class="overflow-x-auto rounded-xl border border-brand-darkBorder">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead class="bg-brand-dark text-slate-400 font-semibold uppercase tracking-wider border-b border-brand-darkBorder">
+                <tr>
+                  <th class="py-3 px-4">Cliente</th>
+                  <th class="py-3 px-4 text-center">Pedidos</th>
+                  <th class="py-3 px-4 text-right">Total Consumido</th>
+                  <th class="py-3 px-4 text-right">Total Pago</th>
+                  <th class="py-3 px-4 text-right">Saldo Devedor</th>
+                  <th class="py-3 px-4 text-center">Contato</th>
+                  <th class="py-3 px-4 text-center">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="clients-table-body" class="divide-y divide-brand-darkBorder bg-brand-darkCard/50"></tbody>
+            </table>
+          </div>
+          <div id="clients-empty-state" class="hidden text-center py-12 text-slate-500 text-xs">Nenhum cliente cadastrado.</div>
+        </div>
+      </section>
+
+      <!-- VIEW: PAYMENTS -->
+      <section id="view-pagamentos" class="space-y-6 hidden">
+        <div class="bg-brand-darkCard rounded-2xl border border-brand-darkBorder p-6 shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-slate-200">Histórico de Lançamentos em Caixa</h3>
+            <button onclick="openNewPaymentModal()" class="bg-brand-gold hover:bg-brand-goldHover text-brand-dark px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-sm">
+              <i data-lucide="dollar-sign" class="w-4 h-4"></i> Registrar Pagamento
+            </button>
+          </div>
+
+          <div class="overflow-x-auto rounded-xl border border-brand-darkBorder">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead class="bg-brand-dark text-slate-400 font-semibold uppercase tracking-wider border-b border-brand-darkBorder">
+                <tr>
+                  <th class="py-3 px-4">Data</th>
+                  <th class="py-3 px-4">Pedido</th>
+                  <th class="py-3 px-4">Cliente</th>
+                  <th class="py-3 px-4">Forma</th>
+                  <th class="py-3 px-4">Observações</th>
+                  <th class="py-3 px-4 text-right">Valor Pago</th>
+                  <th class="py-3 px-4 text-center">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="payments-table-body" class="divide-y divide-brand-darkBorder bg-brand-darkCard/50"></tbody>
+            </table>
+          </div>
+          <div id="payments-empty-state" class="hidden text-center py-12 text-slate-500 text-xs">Nenhum pagamento registrado.</div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- MODALS -->
+
+  <!-- Modal: Client Form -->
+  <div id="modal-client" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/70 modal-overlay">
+    <div class="bg-brand-darkCard rounded-2xl border border-brand-darkBorder max-w-lg w-full overflow-hidden shadow-2xl modal-panel">
+      <div class="bg-brand-dark px-6 py-4 border-b border-brand-darkBorder flex items-center justify-between">
+        <h3 id="modal-client-title" class="text-sm font-bold text-brand-cream">Cadastrar Cliente</h3>
+        <button onclick="closeModal('modal-client')" class="text-slate-400 hover:text-slate-200"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
-      <!-- Foto 3 -->
-      <div class="media-item photo-item">
-        <img src="assets/camisa-foto-3.jpeg" alt="Caimento perfeito de camisa sob medida" loading="lazy" decoding="async">
+      <form id="client-form" onsubmit="handleSaveClient(event)" class="p-6 space-y-4 text-xs">
+        <input type="hidden" id="client-id">
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Nome Completo *</label>
+          <input type="text" id="client-name" required class="w-full bg-brand-dark border border-brand-darkBorder rounded-xl px-3.5 py-2.5 text-slate-100 placeholder-slate-500">
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">WhatsApp / Telefone *</label>
+            <input type="text" id="client-phone" required placeholder="(11) 99999-9999" class="w-full bg-brand-dark border border-brand-darkBorder rounded-xl px-3.5 py-2.5 text-slate-100 placeholder-slate-500">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">E-mail</label>
+            <input type="email" id="client-email" placeholder="cliente@email.com" class="w-full bg-brand-dark border border-brand-darkBorder rounded-xl px-3.5 py-2.5 text-slate-100 placeholder-slate-500">
+          </div>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Observações Gerais</label>
+          <textarea id="client-notes" rows="2" placeholder="Preferências de corte, estilo, etc." class="w-full bg-brand-dark border border-brand-darkBorder rounded-xl px-3.5 py-2.5 text-slate-100 placeholder-slate-500"></textarea>
+        </div>
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-brand-darkBorder">
+          <button type="button" onclick="closeModal('modal-client')" class="px-4 py-2.5 rounded-xl border border-brand-darkBorder text-slate-300 hover:bg-brand-slate font-medium">Cancelar</button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-brand-gold hover:bg-brand-goldHover text-brand-dark font-bold">Salvar Cliente</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Order Form -->
+  <div id="modal-order" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/70 modal-overlay">
+    <div class="bg-brand-darkCard rounded-2xl border border-brand-darkBorder max-w-xl w-full overflow-hidden shadow-2xl modal-panel">
+      <div class="bg-brand-dark px-6 py-4 border-b border-brand-darkBorder flex items-center justify-between">
+        <h3 id="modal-order-title" class="text-sm font-bold text-brand-cream">Novo Pedido de Alfaiataria</h3>
+        <button onclick="closeModal('modal-order')" class="text-slate-400 hover:text-slate-200"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
-      <!-- Foto 4 -->
-      <div class="media-item photo-item">
-        <img src="assets/camisa-foto-4.jpeg" alt="Tecidos premium para camisaria sob medida" loading="lazy" decoding="async">
+      <form id="order-form" onsubmit="handleSaveOrder(event)" class="p-6 space-y-4 text-xs">
+        <input type="hidden" id="order-id">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Cliente *</label>
+            <select id="order-client-id" required class="w-full bg-brand-dark border border-brand-darkBorder rounded-xl px-3.5 py-2.5 text-slate-100"></select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Categoria / Peça *</label>
+            <select id="order-category" required class="w-full bg-brand-dark border border-brand-darkBorder rounded-xl px-3.5 py-2.5 text-slate-100">
+              <option value="Costume 2 Peças">Costume 2 Peças</option>
+              <option value="Terno 3 Peças">Terno 3 Peças</option>
+              <option value="Camisa Sob Medida">Camisa Sob Medida</option>
+              <option value="Blazer Sob Medida">Blazer Sob Medida</option>
+              <option value="Calça Alfaiataria">Calça Alfaiataria</option>
+              <option value="Colete">Colete</option>
+              <option value="Smoking / Gala">Smoking / Gala</option>
+              <option value="Outro">Outro</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Descrição / Tecido / Detalhes *</label>
+          <input type="text" id="order-description" required placeholder="Ex: Lã Fria Super 130s Azul Marinho, forro acetinado" class="w-full bg-brand-dark border border-brand-darkBorder rounded-xl px-3.5 py-2.5 text-slate-100 placeholder-slate-500">
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Valor Total (R$) *</label>
+            <input type="text" id="order-total" required placeholder="0,00" class="w-full bg-brand-dark border border-brand-darkBorder rounded-xl px-3.5 py-2.5 text-slate-100 placeholder-slate-500 font-mono">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Prazo de Entrega *</label>
+            <input type="date" id="order-deadline" required class="w-full bg-brand-dark border border-brand-darkBorder rounded-xl px-3.5 py-2.5 text-slate-100">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Etapa / Status *</label>
+            <select id="order-status" required class="w-full bg-brand-dark border border-brand-darkBorder rounded-xl px-3.5 py-2.5 text-slate-100">
+              <option value="Corte & Modelagem">Corte & Modelagem</option>
+              <option value="Em Produção">Em Produção</option>
+              <option value="1ª Prova">1ª Prova</option>
+              <option value="Ajustes Finais">Ajustes Finais</option>
+              <option value="Pronto p/ Entrega">Pronto p/ Entrega</option>
+              <option value="Entregue">Entregue</option>
+              <option value="Cancelado">Cancelado</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-brand-darkBorder">
+          <button type="button" onclick="closeModal('modal-order')" class="px-4 py-2.5 rounded-xl border border-brand-darkBorder text-slate-300 hover:bg-brand-slate font-medium">Cancelar</button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-brand-gold hover:bg-brand-goldHover text-brand-dark font-bold">Salvar Pedido</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Payment Form -->
+  <div id="modal-payment" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/70 modal-overlay">
+    <div class="bg-brand-darkCard rounded-2xl border border-brand-darkBorder max-w-md w-full overflow-hidden shadow-2xl modal-panel">
+      <div class="bg-brand-dark px-6 py-4 border-b border-brand-darkBorder flex items-center justify-between">
+        <h3 id="modal-payment-title" class="text-sm font-bold text-brand-cream">Registrar Pagamento</h3>
+        <button onclick="closeModal('modal-payment')" class="text-slate-400 hover:text-slate-200"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
-      <!-- Vídeo 2 -->
-      <div class="media-item video-item">
-        <video src="assets/camisa-video-2.mp4" poster="assets/gallery-6.jpg" autoplay loop muted playsinline preload="metadata"></video>
+      <form id="payment-form" onsubmit="handleSavePayment(event)" class="p-6 space-y-4 text-xs">
+        <input type="hidden" id="payment-id">
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Pedido Vinculado *</label>
+          <select id="payment-order-id" onchange="updatePaymentHelperInfo()" required class="w-full bg-brand-dark border border-brand-darkBorder rounded-xl px-3.5 py-2.5 text-slate-100"></select>
+          <div class="bg-brand-dark p-3 rounded-xl border border-brand-darkBorder mt-2 flex justify-between text-[11px] text-slate-400">
+            <span>Total: <strong id="pay-sum-total" class="text-slate-200">R$ 0,00</strong></span>
+            <span>Pago: <strong id="pay-sum-paid" class="text-emerald-500">R$ 0,00</strong></span>
+            <span>Restante: <strong id="pay-sum-remaining" class="text-amber-500">R$ 0,00</strong></span>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Valor do Pagamento (R$) *</label>
+            <input type="text" id="payment-amount" required placeholder="0,00" class="w-full bg-brand-dark border border-brand-darkBorder rounded-xl px-3.5 py-2.5 text-slate-100 font-mono">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Data *</label>
+            <input type="date" id="payment-date" required class="w-full bg-brand-dark border border-brand-darkBorder rounded-xl px-3.5 py-2.5 text-slate-100">
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Forma de Pagamento *</label>
+            <select id="payment-method" required class="w-full bg-brand-dark border border-brand-darkBorder rounded-xl px-3.5 py-2.5 text-slate-100">
+              <option value="Pix">Pix</option>
+              <option value="Cartão de Crédito">Cartão de Crédito</option>
+              <option value="Cartão de Débito">Cartão de Débito</option>
+              <option value="Dinheiro">Dinheiro</option>
+              <option value="Transferência">Transferência</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Observações</label>
+            <input type="text" id="payment-notes" placeholder="Ex: Sinal, 2ª parcela..." class="w-full bg-brand-dark border border-brand-darkBorder rounded-xl px-3.5 py-2.5 text-slate-100 placeholder-slate-500">
+          </div>
+        </div>
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-brand-darkBorder">
+          <button type="button" onclick="closeModal('modal-payment')" class="px-4 py-2.5 rounded-xl border border-brand-darkBorder text-slate-300 hover:bg-brand-slate font-medium">Cancelar</button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-brand-gold hover:bg-brand-goldHover text-brand-dark font-bold">Salvar Pagamento</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Measurements & PDF Generator -->
+  <div id="modal-measurements" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/70 modal-overlay">
+    <div class="bg-brand-darkCard rounded-2xl border border-brand-darkBorder max-w-2xl w-full overflow-hidden shadow-2xl modal-panel max-h-[90vh] flex flex-col">
+      <div class="bg-brand-dark px-6 py-4 border-b border-brand-darkBorder flex items-center justify-between shrink-0">
+        <h3 class="text-sm font-bold text-brand-cream">Ficha de Medidas — <span id="meas-client-name" class="text-brand-gold"></span></h3>
+        <button onclick="closeModal('modal-measurements')" class="text-slate-400 hover:text-slate-200"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <div class="p-6 space-y-4 text-xs overflow-y-auto flex-1">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <div class="flex items-center justify-between mb-1"><label class="font-semibold text-slate-300">Medidas — Paletó / Blazer</label><label class="flex items-center gap-1.5 text-[11px] text-slate-400 cursor-pointer"><input type="checkbox" id="chk-paleto" checked class="rounded border-brand-darkBorder bg-brand-dark text-brand-gold"> Incluir no PDF</label></div>
+            <textarea id="meas-paleto" rows="3" placeholder="Tórax, cintura, quadril, ombro, manga, comprimento..." class="w-full bg-brand-dark border border-brand-darkBorder rounded-xl p-3 text-slate-100 placeholder-slate-500"></textarea>
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-1"><label class="font-semibold text-slate-300">Medidas — Calça</label><label class="flex items-center gap-1.5 text-[11px] text-slate-400 cursor-pointer"><input type="checkbox" id="chk-calca" checked class="rounded border-brand-darkBorder bg-brand-dark text-brand-gold"> Incluir no PDF</label></div>
+            <textarea id="meas-calca" rows="3" placeholder="Cintura, quadril, coxa, gancho, comprimento, barra..." class="w-full bg-brand-dark border border-brand-darkBorder rounded-xl p-3 text-slate-100 placeholder-slate-500"></textarea>
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-1"><label class="font-semibold text-slate-300">Medidas — Colete</label><label class="flex items-center gap-1.5 text-[11px] text-slate-400 cursor-pointer"><input type="checkbox" id="chk-colete" checked class="rounded border-brand-darkBorder bg-brand-dark text-brand-gold"> Incluir no PDF</label></div>
+            <textarea id="meas-colete" rows="3" placeholder="Tórax, cintura, comprimento frontal e costas..." class="w-full bg-brand-dark border border-brand-darkBorder rounded-xl p-3 text-slate-100 placeholder-slate-500"></textarea>
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-1"><label class="font-semibold text-slate-300">Medidas — Camisa</label><label class="flex items-center gap-1.5 text-[11px] text-slate-400 cursor-pointer"><input type="checkbox" id="chk-camisa" checked class="rounded border-brand-darkBorder bg-brand-dark text-brand-gold"> Incluir no PDF</label></div>
+            <textarea id="meas-camisa" rows="3" placeholder="Pescoço, tórax, cintura, punho, manga, comprimento..." class="w-full bg-brand-dark border border-brand-darkBorder rounded-xl p-3 text-slate-100 placeholder-slate-500"></textarea>
+          </div>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Observações Adicionais para a Ficha</label>
+          <input type="text" id="meas-pdf-obs" placeholder="Ex: Postura ereta, ombro direito ligeiramente mais baixo..." class="w-full bg-brand-dark border border-brand-darkBorder rounded-xl px-3.5 py-2.5 text-slate-100 placeholder-slate-500">
+        </div>
+      </div>
+      <div class="bg-brand-dark px-6 py-4 border-t border-brand-darkBorder flex items-center justify-between shrink-0">
+        <button onclick="handleSaveMeasurements()" class="px-4 py-2.5 rounded-xl bg-brand-slate hover:bg-brand-darkBorder text-slate-200 border border-brand-darkBorder font-medium text-xs transition">Salvar Alterações</button>
+        <button onclick="generateMeasurementsPDF()" class="px-5 py-2.5 rounded-xl bg-brand-gold hover:bg-brand-goldHover text-brand-dark font-bold text-xs transition flex items-center gap-2 shadow-sm"><i data-lucide="file-down" class="w-4 h-4"></i> Baixar PDF da Ficha</button>
       </div>
     </div>
   </div>
-</section>
 
-<section class="section" id="processo">
-  <div class="wrap">
-    <div class="section-head reveal">
-      <div class="eyebrow">Como funciona</div>
-      <h2>Da primeira medida ao acabamento final</h2>
-      <p>Um processo consultivo, sem pressa e sem achismo, onde cada etapa existe para garantir que a peça final seja exatamente sua.</p>
-    </div>
-    <div class="process-list">
-      <div class="process-row reveal">
-        <div class="process-num">01</div>
-        <div class="process-text">
-          <h3>Medição detalhada</h3>
-          <p>Mais de 20 pontos do corpo são medidos com precisão: ombros, costas, mangas e cintura, para um molde que é só seu.</p>
+  <!-- Modal: Order Details & Payments History -->
+  <div id="modal-order-details" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/70 modal-overlay">
+    <div class="bg-brand-darkCard rounded-2xl border border-brand-darkBorder max-w-2xl w-full overflow-hidden shadow-2xl modal-panel max-h-[90vh] flex flex-col">
+      <div class="bg-brand-dark px-6 py-4 border-b border-brand-darkBorder flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-3">
+          <h3 class="text-sm font-bold text-brand-cream">Detalhes do Pedido <span id="detail-order-code" class="text-brand-gold font-mono"></span></h3>
+          <span id="detail-deadline-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold"></span>
         </div>
-        <div class="process-img"><img src="assets/back-measure.jpg" alt="Medição de terno sob medida em Fortaleza" loading="lazy" decoding="async"></div>
+        <button onclick="closeModal('modal-order-details')" class="text-slate-400 hover:text-slate-200"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
-      <div class="process-row reveal">
-        <div class="process-num">02</div>
-        <div class="process-text">
-          <h3>Escolha do tecido</h3>
-          <p>Catálogo com tecidos premium e simples para o dia a dia.</p>
-          <div class="tag-labels"><span class="tag">Lã premium</span><span class="tag">Linho</span><span class="tag">Acabamento à mão</span></div>
+      <div class="p-6 space-y-6 text-xs overflow-y-auto flex-1">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-brand-dark p-4 rounded-xl border border-brand-darkBorder">
+          <div><span class="text-slate-400 block mb-0.5">Cliente</span><strong id="detail-client-name" class="text-slate-100 text-sm"></strong><div id="detail-client-phone" class="text-slate-400 font-mono mt-0.5"></div></div>
+          <div><span class="text-slate-400 block mb-0.5">Categoria & Tecido</span><strong id="detail-category" class="text-slate-100 block"></strong><span id="detail-description" class="text-slate-300 mt-0.5 block"></span></div>
+          <div><span class="text-slate-400 block mb-0.5">Data de Entrega</span><strong id="detail-deadline" class="text-slate-100"></strong></div>
+          <div><span class="text-slate-400 block mb-0.5">Etapa Atual</span><strong id="detail-status" class="text-brand-gold"></strong></div>
         </div>
-        <div class="process-img"><img src="assets/flatlay.jpg" alt="Tecidos premium e acabamentos de alfaiataria" loading="lazy" decoding="async"></div>
-      </div>
-      <div class="process-row reveal">
-        <div class="process-num">03</div>
-        <div class="process-text">
-          <h3>Prova e ajustes</h3>
-          <p>Para ternos você experimenta a peça em construção. Cada detalhe é revisto antes do acabamento final, sem pressa.</p>
-        </div>
-        <div class="process-img"><img src="assets/buttoning.jpg" alt="Prova de terno sob medida" loading="lazy" decoding="async"></div>
-      </div>
-      <div class="process-row reveal">
-        <div class="process-num">04</div>
-        <div class="process-text">
-          <h3>Acabamento sob medida</h3>
-          <p>Costura à mão nos pontos que fazem diferença. O resultado: uma peça que veste como uma segunda pele.</p>
-          <div class="tag-labels"><span class="tag">Caimento impecável</span><span class="tag">Do social ao casual</span></div>
-        </div>
-        <div class="process-img"><img src="assets/button-macro.jpg" alt="Acabamento à mão em alfaiataria sob medida" loading="lazy" decoding="async"></div>
-      </div>
-    </div>
-  </div>
-</section>
 
-<section class="section alt" id="sobre">
-  <div class="wrap">
-    <div class="about-grid reveal">
-      <div class="about-img">
-        <img src="assets/rafael-ye.jpeg" alt="Rafael Ye, alfaiate responsável pela O Seu Alfaiate em Fortaleza" loading="lazy" decoding="async">
+        <div class="grid grid-cols-3 gap-3">
+          <div class="bg-brand-dark p-3.5 rounded-xl border border-brand-darkBorder text-center">
+            <span class="text-slate-400 block text-[11px] mb-1">Valor Total</span>
+            <strong id="detail-total-val" class="text-slate-100 text-sm font-bold">R$ 0,00</strong>
+          </div>
+          <div class="bg-brand-dark p-3.5 rounded-xl border border-brand-darkBorder text-center">
+            <span class="text-slate-400 block text-[11px] mb-1">Total Pago</span>
+            <strong id="detail-paid-val" class="text-emerald-500 text-sm font-bold">R$ 0,00</strong>
+          </div>
+          <div class="bg-brand-dark p-3.5 rounded-xl border border-brand-darkBorder text-center">
+            <span class="text-slate-400 block text-[11px] mb-1">Saldo Restante</span>
+            <strong id="detail-remaining-val" class="text-amber-500 text-sm font-bold">R$ 0,00</strong>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="font-bold text-slate-200">Histórico de Pagamentos deste Pedido</h4>
+            <button id="btn-add-payment-to-this-order" class="text-xs font-semibold text-brand-gold hover:underline flex items-center gap-1"><i data-lucide="plus" class="w-3.5 h-3.5"></i> Adicionar Pagamento</button>
+          </div>
+          <div id="detail-payments-list" class="space-y-2"></div>
+        </div>
       </div>
-      <div class="about-text">
-        <div class="eyebrow">Quem assina</div>
-        <h2>A precisão de quem veste homens desde 2009.</h2>
-        <p>Prazer, sou <strong>Rafael Ye</strong>.</p>
-        <p>Entrei para a alfaiataria em 2009 e, desde então, faço roupas sob medida para homens que valorizam um bom caimento, qualidade e atenção aos detalhes.</p>
-        <p>Ao longo desses anos, tive a oportunidade de vestir empresários, advogados, médicos, políticos e outros profissionais que entendem que a forma como se apresentam também comunica quem são.</p>
-        <p>Cada camisa, calça ou terno é feito pensando em um único cliente. Sem tamanhos prontos, sem adaptações. Apenas uma peça feita para vestir você do jeito certo.</p>
-        <div class="signature">Rafael Ye</div>
+      <div class="bg-brand-dark px-6 py-4 border-t border-brand-darkBorder flex justify-end shrink-0">
+        <button onclick="closeModal('modal-order-details')" class="px-4 py-2.5 rounded-xl border border-brand-darkBorder text-slate-300 hover:bg-brand-slate font-medium text-xs">Fechar</button>
       </div>
     </div>
   </div>
-</section>
 
-<div class="stitch"><svg viewBox="0 0 1200 34" preserveAspectRatio="none"><line x1="0" y1="17" x2="1200" y2="17" stroke="#A6957A" stroke-width="1" stroke-dasharray="2 10"/></svg></div>
-
-<section class="section dark" id="avaliacoes">
-  <div class="wrap">
-    <div class="section-head reveal">
-      <h2>O que dizem sobre a gente</h2>
-      <p>Avaliações reais de clientes no Google, sem filtro e sem edição.</p>
-    </div>
-
-    <div class="reviews-card reveal">
-      <div>
-        <div class="stars" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="#1C2A44"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          <svg viewBox="0 0 24 24" fill="#1C2A44"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          <svg viewBox="0 0 24 24" fill="#1C2A44"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          <svg viewBox="0 0 24 24" fill="#1C2A44"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          <svg viewBox="0 0 24 24" fill="#1C2A44"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-        </div>
-        <h3>5 estrelas no Google</h3>
-        <p>As avaliações reais dos nossos clientes estão no Google, sem filtro e sem edição. Dá uma olhada antes de agendar seu atendimento.</p>
-      </div>
-      <a class="btn btn-primary" href="https://maps.app.goo.gl/ufXktqNfCca4Qp636?g_st=ic" target="_blank" rel="noopener">Ver todas no Google</a>
-    </div>
-  </div>
-
-  <div class="carousel-container reveal">
-    <div class="carousel-track" id="reviews-track">
-      <div class="review-card">
-        <div class="review-top">
-          <img class="review-avatar" src="assets/reviews/lucas-lourenco.jpg" alt="Foto de Lucas Lourenço Miranda Nascimento" loading="lazy" decoding="async" width="46" height="46">
-          <div>
-            <div class="review-name">Lucas Lourenço Miranda Nascimento</div>
-            <div class="review-meta">Local Guide</div>
-          </div>
-        </div>
-        <div class="mini-stars">★★★★★</div>
-        <p class="review-text">Serviço de qualidade, atendimento diferenciado e camisa perfeita. Uma camisa de alfaiataria faz toda diferença.</p>
-      </div>
-
-      <div class="review-card">
-        <div class="review-top">
-          <img class="review-avatar" src="assets/reviews/pedro-cela.jpg" alt="Foto de Pedro Cela" loading="lazy" decoding="async" width="46" height="46">
-          <div>
-            <div class="review-name">Pedro Cela</div>
-            <div class="review-meta">Cliente</div>
-          </div>
-        </div>
-        <div class="mini-stars">★★★★★</div>
-        <p class="review-text">O Seu Alfaiate é top. Camisa de excelente qualidade, alinhada.</p>
-      </div>
-
-      <div class="review-card">
-        <div class="review-top">
-          <img class="review-avatar" src="assets/reviews/thiago-camara.jpg" alt="Foto de Thiago Camara" loading="lazy" decoding="async" width="46" height="46">
-          <div>
-            <div class="review-name">Thiago Camara</div>
-            <div class="review-meta">Cliente</div>
-          </div>
-        </div>
-        <div class="mini-stars">★★★★★</div>
-        <p class="review-text">Serviço de qualidade.</p>
-      </div>
-
-      <div class="review-card">
-        <div class="review-top">
-          <img class="review-avatar" src="assets/reviews/fabricio-oliveira.jpg" alt="Foto de Fabrício Oliveira" loading="lazy" decoding="async" width="46" height="46">
-          <div>
-            <div class="review-name">Fabrício Oliveira</div>
-            <div class="review-meta">Local Guide</div>
-          </div>
-        </div>
-        <div class="mini-stars">★★★★★</div>
-        <p class="review-text">Alfaiataria de excelente qualidade. Uma camisa feita sob medida realmente faz toda diferença. Recebi a camisa e logo notei o excelente acabamento, mostrando o zelo do profissional. Ao vestir, um caimento perfeito. Recomendo fortemente.</p>
-      </div>
-
-      <div class="review-card">
-        <div class="review-top">
-          <img class="review-avatar" src="assets/reviews/sandra-gloria.jpg" alt="Foto de Sandra Glória" loading="lazy" decoding="async" width="46" height="46">
-          <div>
-            <div class="review-name">Sandra Glória</div>
-            <div class="review-meta">Cliente</div>
-          </div>
-        </div>
-        <div class="mini-stars">★★★★★</div>
-        <p class="review-text">Trabalho simplesmente impecável do Rafael. Camisas super bem cortadas e acabamento de excelência. Nota 1000, super recomendo.</p>
-      </div>
-
-      <div class="review-card">
-        <div class="review-top">
-          <img class="review-avatar" src="assets/reviews/davi-ribeiro.jpg" alt="Foto de Davi Ribeiro" loading="lazy" decoding="async" width="46" height="46">
-          <div>
-            <div class="review-name">Davi Ribeiro</div>
-            <div class="review-meta">Cliente</div>
-          </div>
-        </div>
-        <div class="mini-stars">★★★★★</div>
-        <p class="review-text">Ficou muito bem feito, excelente qualidade.</p>
-      </div>
-
-      <div class="review-card">
-        <div class="review-top">
-          <img class="review-avatar" src="assets/reviews/cristiani-aragao.jpg" alt="Foto de Cristiani Aragão Colares" loading="lazy" decoding="async" width="46" height="46">
-          <div>
-            <div class="review-name">Cristiani Aragão Colares</div>
-            <div class="review-meta">Cliente</div>
-          </div>
-        </div>
-        <div class="mini-stars">★★★★★</div>
-        <p class="review-text">Alfaiate de qualidade, satisfeita com a costura.</p>
-      </div>
-
-      <div class="review-card">
-        <div class="review-top">
-          <img class="review-avatar" src="assets/reviews/matheus-queiroz.jpg" alt="Foto de Matheus Queiroz" loading="lazy" decoding="async" width="46" height="46">
-          <div>
-            <div class="review-name">Matheus Queiroz</div>
-            <div class="review-meta">Cliente</div>
-          </div>
-        </div>
-        <div class="mini-stars">★★★★★</div>
-        <p class="review-text">Excelente experiência. Encomendei um terno sob medida em Fortaleza e o resultado superou minhas expectativas. O caimento ficou perfeito, os tecidos são de alta qualidade e todo o processo foi muito profissional.</p>
+  <!-- Modal: Confirmation Dialog -->
+  <div id="modal-confirm" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/70 modal-overlay">
+    <div class="bg-brand-darkCard rounded-2xl border border-brand-darkBorder max-w-sm w-full overflow-hidden shadow-2xl modal-panel p-6 text-center">
+      <div id="confirm-icon" class="w-10 h-10 rounded-lg flex items-center justify-center mx-auto mb-4 bg-brand-gold/15 text-brand-gold"><i data-lucide="help-circle" class="w-5 h-5"></i></div>
+      <h3 id="confirm-title" class="text-sm font-bold text-slate-100 mb-2">Confirmar ação</h3>
+      <p id="confirm-message" class="text-xs text-slate-400 mb-6 leading-relaxed"></p>
+      <div class="flex items-center justify-center gap-3">
+        <button id="confirm-cancel-btn" class="flex-1 py-2.5 px-4 text-xs font-medium rounded-xl border border-brand-darkBorder text-slate-300 hover:bg-brand-slate">Cancelar</button>
+        <button id="confirm-ok-btn" class="flex-1 py-2.5 px-4 text-xs font-bold rounded-xl bg-brand-gold hover:bg-brand-goldHover text-brand-dark">Confirmar</button>
       </div>
     </div>
   </div>
-</section>
 
-<section class="section dark final-cta" id="contato">
-  <div class="wrap">
-    <div class="eyebrow light reveal">Pronto para vestir sob medida?</div>
-    <h2 class="reveal" style="color:var(--ivory)">Agende seu atendimento e vista uma peça feita especialmente para você.</h2>
-    <a class="btn btn-primary reveal" href="https://wa.me/5585989157733?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20agendar%20um%20atendimento." target="_blank" rel="noopener">Falar no WhatsApp agora</a>
-  </div>
-</section>
-
-<section style="margin-left:34px;" id="localizacao">
-  <div class="wrap" style="padding:0;">
-    <div class="loc-grid reveal">
-      <div class="loc-info">
-        <div class="eyebrow navy-dark">Nos encontre</div>
-        <h3 style="margin-top:18px;">O Seu Alfaiate</h3>
-        <p>Alfaiataria personalizada sob medida em Fortaleza. Atendimento com hora marcada.</p>
-        <div class="loc-links">
-          <a class="loc-link" href="https://www.instagram.com/oseualfaiate?igsh=MWwxdGNhOTk2MGtr&utm_source=qr" target="_blank" rel="noopener">
-            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1"/></svg></span>
-            @oseualfaiate
-          </a>
-          <a class="loc-link" href="https://wa.me/5585989157733" target="_blank" rel="noopener">
-            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
-            (85) 98915-7733
-          </a>
-        </div>
-      </div>
-      <div class="loc-map">
-        <a class="overlay" href="https://maps.app.goo.gl/ufXktqNfCca4Qp636?g_st=ic" target="_blank" rel="noopener"><span>Abrir no Google Maps</span></a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<footer>
-  <div class="wrap foot-inner">
-    <span>© 2026 O Seu Alfaiate • <a href="https://oseualfaiate.com.br" class="domain-link">oseualfaiate.com.br</a> • Fortaleza, CE</span>
-    <div class="foot-social">
-      <a class="icon-link" href="https://www.instagram.com/oseualfaiate?igsh=MWwxdGNhOTk2MGtr&utm_source=qr" target="_blank" rel="noopener" aria-label="Instagram">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1"/></svg>
-      </a>
-      <a class="icon-link" href="https://wa.me/5585989157733" target="_blank" rel="noopener" aria-label="WhatsApp">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.29-1.39a9.9 9.9 0 0 0 4.75 1.21h.01c5.46 0 9.9-4.45 9.9-9.91C21.96 6.45 17.5 2 12.04 2zm5.83 14.02c-.25.7-1.44 1.34-1.99 1.42-.51.08-1.14.11-1.85-.12-.42-.14-.97-.32-1.66-.63-2.93-1.27-4.84-4.23-4.99-4.43-.15-.2-1.19-1.58-1.19-3.02 0-1.44.75-2.14 1.02-2.43.27-.29.58-.36.78-.36.2 0 .39 0 .56.01.18.01.42-.07.65.5.25.6.85 2.07.92 2.22.07.15.12.33.02.53-.1.2-.15.33-.3.5-.15.17-.31.39-.44.52-.15.15-.3.31-.13.61.17.3.75 1.24 1.62 2 1.11.99 2.05 1.3 2.35 1.44.3.15.48.13.66-.08.18-.2.75-.87.95-1.17.2-.3.4-.24.66-.15.27.1 1.72.81 2.02.96.3.15.5.22.57.35.07.13.07.75-.18 1.45z"/></svg>
-      </a>
-    </div>
-  </div>
-</footer>
-
-<a id="wa-float" href="https://wa.me/5585989157733?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20agendar%20um%20atendimento." target="_blank" rel="noopener" aria-label="Fale no WhatsApp">
-  <svg width="28" height="28" viewBox="0 0 24 24" fill="#F3E9D6"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.29-1.39a9.9 9.9 0 0 0 4.75 1.21h.01c5.46 0 9.9-4.45 9.9-9.91C21.96 6.45 17.5 2 12.04 2zm5.83 14.02c-.25.7-1.44 1.34-1.99 1.42-.51.08-1.14.11-1.85-.12-.42-.14-.97-.32-1.66-.63-2.93-1.27-4.84-4.23-4.99-4.43-.15-.2-1.19-1.58-1.19-3.02 0-1.44.75-2.14 1.02-2.43.27-.29.58-.36.78-.36.2 0 .39 0 .56.01.18.01.42-.07.65.5.25.6.85 2.07.92 2.22.07.15.12.33.02.53-.1.2-.15.33-.3.5-.15.17-.31.39-.44.52-.15.15-.3.31-.13.61.17.3.75 1.24 1.62 2 1.11.99 2.05 1.3 2.35 1.44.3.15.48.13.66-.08.18-.2.75-.87.95-1.17.2-.3.4-.24.66-.15.27.1 1.72.81 2.02.96.3.15.5.22.57.35.07.13.07.75-.18 1.45z"/></svg>
-</a>
-
-<script src="js/script.js" defer></script>
+  <!-- Main JavaScript Script -->
+  <script src="js/admin.js"></script>
 </body>
 </html>
