@@ -1,50 +1,26 @@
 // ============================================================
 // O SEU ALFAIATE — CRM & GESTÃO DE ATELIER
-// Script Principal (js/admin.js)
+// Script Principal Original (js/admin.js)
 // ============================================================
 
-// Substitua pela URL da implantação do seu Google Apps Script Web App
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzV-example-url/exec";
 
-// Estado da Aplicação com Proteção Contra Dados Corrompidos no LocalStorage
-let db = { clients: [], orders: [], payments: [] };
+let db = {
+  clients: JSON.parse(localStorage.getItem('alfaiate_clients')) || [],
+  orders: JSON.parse(localStorage.getItem('alfaiate_orders')) || [],
+  payments: JSON.parse(localStorage.getItem('alfaiate_payments')) || []
+};
 
-try {
-  const savedClients = localStorage.getItem('alfaiate_clients');
-  const savedOrders = localStorage.getItem('alfaiate_orders');
-  const savedPayments = localStorage.getItem('alfaiate_payments');
-  
-  if (savedClients) db.clients = JSON.parse(savedClients);
-  if (savedOrders) db.orders = JSON.parse(savedOrders);
-  if (savedPayments) db.payments = JSON.parse(savedPayments);
-
-  if (!Array.isArray(db.clients)) db.clients = [];
-  if (!Array.isArray(db.orders)) db.orders = [];
-  if (!Array.isArray(db.payments)) db.payments = [];
-} catch (e) {
-  console.warn("Resetando dados locais devido a formato inválido.", e);
-  db = { clients: [], orders: [], payments: [] };
-}
-
-// Inicialização imediata ao carregar a página
 document.addEventListener('DOMContentLoaded', () => {
-  try {
-    renderAll();
-    initDates();
-    backgroundSyncFetch();
-  } catch (err) {
-    console.error("Erro na inicialização:", err);
-  }
+  renderAll();
+  initDates();
+  backgroundSyncFetch();
 });
 
 function saveLocal() {
-  try {
-    localStorage.setItem('alfaiate_clients', JSON.stringify(db.clients));
-    localStorage.setItem('alfaiate_orders', JSON.stringify(db.orders));
-    localStorage.setItem('alfaiate_payments', JSON.stringify(db.payments));
-  } catch (e) {
-    console.error("Erro ao salvar no localStorage:", e);
-  }
+  localStorage.setItem('alfaiate_clients', JSON.stringify(db.clients));
+  localStorage.setItem('alfaiate_orders', JSON.stringify(db.orders));
+  localStorage.setItem('alfaiate_payments', JSON.stringify(db.payments));
   renderAll();
   scheduleBackgroundSync();
 }
@@ -68,7 +44,7 @@ async function syncToGoogleSheets() {
       body: JSON.stringify(db)
     });
   } catch (err) {
-    console.error("Erro na sincronização em segundo plano:", err);
+    console.error("Erro na sincronização:", err);
   }
 }
 
@@ -81,11 +57,11 @@ async function manualSync() {
     const response = await fetch(WEB_APP_URL, { method: 'GET', redirect: 'follow' });
     const remoteData = await response.json();
     if (remoteData.status === "success") {
-      if (Array.isArray(remoteData.clients)) db.clients = remoteData.clients;
-      if (Array.isArray(remoteData.orders)) db.orders = remoteData.orders;
-      if (Array.isArray(remoteData.payments)) db.payments = remoteData.payments;
+      if (remoteData.clients) db.clients = remoteData.clients;
+      if (remoteData.orders) db.orders = remoteData.orders;
+      if (remoteData.payments) db.payments = remoteData.payments;
       saveLocal();
-      alert("Sincronizado com sucesso com a planilha!");
+      alert("Sincronizado com sucesso!");
     }
   } catch (err) {
     console.error(err);
@@ -99,17 +75,16 @@ async function backgroundSyncFetch() {
     const response = await fetch(WEB_APP_URL, { method: 'GET', redirect: 'follow' });
     const remoteData = await response.json();
     if (remoteData.status === "success") {
-      if (Array.isArray(remoteData.clients) && remoteData.clients.length > 0) db.clients = remoteData.clients;
-      if (Array.isArray(remoteData.orders) && remoteData.orders.length > 0) db.orders = remoteData.orders;
-      if (Array.isArray(remoteData.payments) && remoteData.payments.length > 0) db.payments = remoteData.payments;
+      if (remoteData.clients && remoteData.clients.length > 0) db.clients = remoteData.clients;
+      if (remoteData.orders && remoteData.orders.length > 0) db.orders = remoteData.orders;
+      if (remoteData.payments && remoteData.payments.length > 0) db.payments = remoteData.payments;
       saveLocal();
     }
   } catch (err) {
-    // Falhas silenciosas em segundo plano não afetam a experiência
+    // Silencioso
   }
 }
 
-// Navegação por Abas
 function switchTab(tabName) {
   const tabs = ['dashboard', 'orders', 'clients', 'payments'];
   tabs.forEach(t => {
@@ -135,26 +110,7 @@ function switchTab(tabName) {
     payments: "Controle de Pagamentos"
   };
   const titleEl = document.getElementById('page-title');
-  const mobileTitleEl = document.getElementById('mobile-page-title');
   if (titleEl) titleEl.innerText = titles[tabName];
-  if (mobileTitleEl) mobileTitleEl.innerText = titles[tabName];
-
-  // Fecha menu mobile se estiver aberto
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('mobile-sidebar-overlay');
-  if (sidebar && overlay) {
-    sidebar.classList.add('-translate-x-full');
-    overlay.classList.add('hidden');
-  }
-}
-
-function toggleMobileMenu() {
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('mobile-sidebar-overlay');
-  if (sidebar && overlay) {
-    sidebar.classList.toggle('-translate-x-full');
-    overlay.classList.toggle('hidden');
-  }
 }
 
 function initDates() {
@@ -165,7 +121,6 @@ function initDates() {
   if (paymentDateEl) paymentDateEl.value = today;
 }
 
-// Renderização Geral
 function renderAll() {
   renderDashboard();
   renderOrders();
@@ -174,23 +129,17 @@ function renderAll() {
   populateDropdowns();
 }
 
-// Dashboard
 function renderDashboard() {
   const totalRevenue = db.orders.reduce((acc, o) => acc + Number(o.totalValue || 0), 0);
   const totalReceived = db.payments.reduce((acc, p) => acc + Number(p.amount || 0), 0);
   const totalPending = Math.max(0, totalRevenue - totalReceived);
 
-  const revEl = document.getElementById('kpi-total-revenue');
-  const recEl = document.getElementById('kpi-total-received');
-  const penEl = document.getElementById('kpi-total-pending');
-  if (revEl) revEl.innerText = formatCurrency(totalRevenue);
-  if (recEl) recEl.innerText = formatCurrency(totalReceived);
-  if (penEl) penEl.innerText = formatCurrency(totalPending);
+  document.getElementById('kpi-total-revenue').innerText = formatCurrency(totalRevenue);
+  document.getElementById('kpi-total-received').innerText = formatCurrency(totalReceived);
+  document.getElementById('kpi-total-pending').innerText = formatCurrency(totalPending);
 
-  const totOrd = document.getElementById('dash-total-orders');
-  const totCli = document.getElementById('dash-total-clients');
-  if (totOrd) totOrd.innerText = `${db.orders.length} pedidos`;
-  if (totCli) totCli.innerText = `${db.clients.length} clientes`;
+  document.getElementById('dash-total-orders').innerText = `${db.orders.length} pedidos`;
+  document.getElementById('dash-total-clients').innerText = `${db.clients.length} clientes`;
 
   const statuses = [
     "Novo pedido", "Pagamento pendente", "Medidas realizadas", "Tecido escolhido",
@@ -198,24 +147,20 @@ function renderDashboard() {
   ];
 
   const statusListEl = document.getElementById('dash-status-list');
-  if (statusListEl) {
-    statusListEl.innerHTML = '';
-    statuses.forEach(status => {
-      const count = db.orders.filter(o => o.status === status).length;
-      statusListEl.innerHTML += `
-        <div class="flex items-center justify-between p-2 rounded hover:bg-[#F5EEDF]/40">
-          <span class="text-neutral-700 font-medium">${status}</span>
-          <span class="font-bold text-[#0F1826] bg-[#F5EEDF] px-2 py-0.5 rounded-full text-xs">${count}</span>
-        </div>
-      `;
-    });
-  }
+  statusListEl.innerHTML = '';
+  statuses.forEach(status => {
+    const count = db.orders.filter(o => o.status === status).length;
+    statusListEl.innerHTML += `
+      <div class="flex items-center justify-between p-2 rounded hover:bg-[#F5EEDF]/40">
+        <span class="text-neutral-700 font-medium">${status}</span>
+        <span class="font-bold text-[#0F1826] bg-[#F5EEDF] px-2 py-0.5 rounded-full text-xs">${count}</span>
+      </div>
+    `;
+  });
 }
 
-// Clientes
 function renderClients() {
   const tbody = document.getElementById('clients-table-body');
-  if (!tbody) return;
   const query = (document.getElementById('search-clients')?.value || '').toLowerCase();
   const filtered = db.clients.filter(c => 
     (c.name || '').toLowerCase().includes(query) ||
@@ -252,10 +197,8 @@ function renderClients() {
   });
 }
 
-// Pedidos
 function renderOrders() {
   const tbody = document.getElementById('orders-table-body');
-  if (!tbody) return;
   const query = (document.getElementById('search-orders')?.value || '').toLowerCase();
   const filtered = db.orders.filter(o => {
     const client = db.clients.find(c => c.id === o.clientId);
@@ -295,10 +238,8 @@ function renderOrders() {
   });
 }
 
-// Pagamentos
 function renderPayments() {
   const tbody = document.getElementById('payments-table-body');
-  if (!tbody) return;
   tbody.innerHTML = '';
   if (db.payments.length === 0) {
     tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-neutral-400">Nenhum pagamento registrado.</td></tr>`;
@@ -346,7 +287,6 @@ function populateDropdowns() {
   }
 }
 
-// Modals Control
 function openNewClientModal() {
   document.getElementById('client-modal-title').innerText = "Novo Cliente";
   document.getElementById('form-client').reset();
@@ -389,7 +329,6 @@ function closePaymentModal() {
   document.getElementById('modal-payment').classList.add('hidden');
 }
 
-// Client Handlers
 function saveClient(e) {
   e.preventDefault();
   const id = document.getElementById('client-id').value;
@@ -439,7 +378,6 @@ function deleteClient(id) {
   }
 }
 
-// Order Handlers
 function saveOrder(e) {
   e.preventDefault();
   const id = document.getElementById('order-id').value;
@@ -497,7 +435,6 @@ function deleteOrder(id) {
   }
 }
 
-// Payment Handlers
 function savePayment(e) {
   e.preventDefault();
   const orderId = document.getElementById('payment-order-id').value;
@@ -523,7 +460,6 @@ function deletePayment(id) {
   }
 }
 
-// Utils
 function formatCurrency(val) {
   return Number(val || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
