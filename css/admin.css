@@ -1,6 +1,6 @@
 /* ============================================================
    O SEU ALFAIATE — CRM & Gestão de Atelier
-   Estilos Customizados & Identidade Visual (Mobile & Desktop)
+   Estilos Customizados & Identidade Visual
    ============================================================ */
 
 ::-webkit-scrollbar {
@@ -28,11 +28,6 @@ body {
   background-color: #F5EEDF;
   color: #0F1826;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-}
-
-.brand-mark img {
-  object-fit: cover;
-  border-radius: 0.375rem;
 }
 
 .client-avatar {
@@ -73,12 +68,4 @@ input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: #0F1826 !important;
   box-shadow: 0 0 0 2px rgba(15, 24, 38, 0.15);
-}
-
-/* Mobile Optimizations */
-@media (max-width: 768px) {
-  .mobile-table-wrapper {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
 }
