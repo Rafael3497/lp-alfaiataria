@@ -6,24 +6,45 @@
 // Substitua pela URL da implantação do seu Google Apps Script Web App
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzV-example-url/exec";
 
-// Estado da Aplicação
-let db = {
-  clients: JSON.parse(localStorage.getItem('alfaiate_clients')) || [],
-  orders: JSON.parse(localStorage.getItem('alfaiate_orders')) || [],
-  payments: JSON.parse(localStorage.getItem('alfaiate_payments')) || []
-};
+// Estado da Aplicação com Proteção Contra Dados Corrompidos no LocalStorage
+let db = { clients: [], orders: [], payments: [] };
 
-// Inicialização imediata ao carregar a página (sem loading screens ou spinners)
+try {
+  const savedClients = localStorage.getItem('alfaiate_clients');
+  const savedOrders = localStorage.getItem('alfaiate_orders');
+  const savedPayments = localStorage.getItem('alfaiate_payments');
+  
+  if (savedClients) db.clients = JSON.parse(savedClients);
+  if (savedOrders) db.orders = JSON.parse(savedOrders);
+  if (savedPayments) db.payments = JSON.parse(savedPayments);
+
+  if (!Array.isArray(db.clients)) db.clients = [];
+  if (!Array.isArray(db.orders)) db.orders = [];
+  if (!Array.isArray(db.payments)) db.payments = [];
+} catch (e) {
+  console.warn("Resetando dados locais devido a formato inválido.", e);
+  db = { clients: [], orders: [], payments: [] };
+}
+
+// Inicialização imediata ao carregar a página
 document.addEventListener('DOMContentLoaded', () => {
-  renderAll();
-  initDates();
-  backgroundSyncFetch();
+  try {
+    renderAll();
+    initDates();
+    backgroundSyncFetch();
+  } catch (err) {
+    console.error("Erro na inicialização:", err);
+  }
 });
 
 function saveLocal() {
-  localStorage.setItem('alfaiate_clients', JSON.stringify(db.clients));
-  localStorage.setItem('alfaiate_orders', JSON.stringify(db.orders));
-  localStorage.setItem('alfaiate_payments', JSON.stringify(db.payments));
+  try {
+    localStorage.setItem('alfaiate_clients', JSON.stringify(db.clients));
+    localStorage.setItem('alfaiate_orders', JSON.stringify(db.orders));
+    localStorage.setItem('alfaiate_payments', JSON.stringify(db.payments));
+  } catch (e) {
+    console.error("Erro ao salvar no localStorage:", e);
+  }
   renderAll();
   scheduleBackgroundSync();
 }
@@ -60,9 +81,9 @@ async function manualSync() {
     const response = await fetch(WEB_APP_URL, { method: 'GET', redirect: 'follow' });
     const remoteData = await response.json();
     if (remoteData.status === "success") {
-      if (remoteData.clients) db.clients = remoteData.clients;
-      if (remoteData.orders) db.orders = remoteData.orders;
-      if (remoteData.payments) db.payments = remoteData.payments;
+      if (Array.isArray(remoteData.clients)) db.clients = remoteData.clients;
+      if (Array.isArray(remoteData.orders)) db.orders = remoteData.orders;
+      if (Array.isArray(remoteData.payments)) db.payments = remoteData.payments;
       saveLocal();
       alert("Sincronizado com sucesso com a planilha!");
     }
@@ -78,13 +99,13 @@ async function backgroundSyncFetch() {
     const response = await fetch(WEB_APP_URL, { method: 'GET', redirect: 'follow' });
     const remoteData = await response.json();
     if (remoteData.status === "success") {
-      if (remoteData.clients && remoteData.clients.length > 0) db.clients = remoteData.clients;
-      if (remoteData.orders && remoteData.orders.length > 0) db.orders = remoteData.orders;
-      if (remoteData.payments && remoteData.payments.length > 0) db.payments = remoteData.payments;
+      if (Array.isArray(remoteData.clients) && remoteData.clients.length > 0) db.clients = remoteData.clients;
+      if (Array.isArray(remoteData.orders) && remoteData.orders.length > 0) db.orders = remoteData.orders;
+      if (Array.isArray(remoteData.payments) && remoteData.payments.length > 0) db.payments = remoteData.payments;
       saveLocal();
     }
   } catch (err) {
-    // Falhas silenciosas em segundo plano não atrapalham o usuário
+    // Falhas silenciosas em segundo plano não afetam a experiência
   }
 }
 
@@ -159,12 +180,17 @@ function renderDashboard() {
   const totalReceived = db.payments.reduce((acc, p) => acc + Number(p.amount || 0), 0);
   const totalPending = Math.max(0, totalRevenue - totalReceived);
 
-  document.getElementById('kpi-total-revenue').innerText = formatCurrency(totalRevenue);
-  document.getElementById('kpi-total-received').innerText = formatCurrency(totalReceived);
-  document.getElementById('kpi-total-pending').innerText = formatCurrency(totalPending);
+  const revEl = document.getElementById('kpi-total-revenue');
+  const recEl = document.getElementById('kpi-total-received');
+  const penEl = document.getElementById('kpi-total-pending');
+  if (revEl) revEl.innerText = formatCurrency(totalRevenue);
+  if (recEl) recEl.innerText = formatCurrency(totalReceived);
+  if (penEl) penEl.innerText = formatCurrency(totalPending);
 
-  document.getElementById('dash-total-orders').innerText = `${db.orders.length} pedidos`;
-  document.getElementById('dash-total-clients').innerText = `${db.clients.length} clientes`;
+  const totOrd = document.getElementById('dash-total-orders');
+  const totCli = document.getElementById('dash-total-clients');
+  if (totOrd) totOrd.innerText = `${db.orders.length} pedidos`;
+  if (totCli) totCli.innerText = `${db.clients.length} clientes`;
 
   const statuses = [
     "Novo pedido", "Pagamento pendente", "Medidas realizadas", "Tecido escolhido",
@@ -172,21 +198,24 @@ function renderDashboard() {
   ];
 
   const statusListEl = document.getElementById('dash-status-list');
-  statusListEl.innerHTML = '';
-  statuses.forEach(status => {
-    const count = db.orders.filter(o => o.status === status).length;
-    statusListEl.innerHTML += `
-      <div class="flex items-center justify-between p-2 rounded hover:bg-[#F5EEDF]/40">
-        <span class="text-neutral-700 font-medium">${status}</span>
-        <span class="font-bold text-[#0F1826] bg-[#F5EEDF] px-2 py-0.5 rounded-full text-xs">${count}</span>
-      </div>
-    `;
-  });
+  if (statusListEl) {
+    statusListEl.innerHTML = '';
+    statuses.forEach(status => {
+      const count = db.orders.filter(o => o.status === status).length;
+      statusListEl.innerHTML += `
+        <div class="flex items-center justify-between p-2 rounded hover:bg-[#F5EEDF]/40">
+          <span class="text-neutral-700 font-medium">${status}</span>
+          <span class="font-bold text-[#0F1826] bg-[#F5EEDF] px-2 py-0.5 rounded-full text-xs">${count}</span>
+        </div>
+      `;
+    });
+  }
 }
 
 // Clientes
 function renderClients() {
   const tbody = document.getElementById('clients-table-body');
+  if (!tbody) return;
   const query = (document.getElementById('search-clients')?.value || '').toLowerCase();
   const filtered = db.clients.filter(c => 
     (c.name || '').toLowerCase().includes(query) ||
@@ -226,6 +255,7 @@ function renderClients() {
 // Pedidos
 function renderOrders() {
   const tbody = document.getElementById('orders-table-body');
+  if (!tbody) return;
   const query = (document.getElementById('search-orders')?.value || '').toLowerCase();
   const filtered = db.orders.filter(o => {
     const client = db.clients.find(c => c.id === o.clientId);
@@ -268,6 +298,7 @@ function renderOrders() {
 // Pagamentos
 function renderPayments() {
   const tbody = document.getElementById('payments-table-body');
+  if (!tbody) return;
   tbody.innerHTML = '';
   if (db.payments.length === 0) {
     tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-neutral-400">Nenhum pagamento registrado.</td></tr>`;
