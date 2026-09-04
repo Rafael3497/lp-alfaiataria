@@ -112,21 +112,21 @@ function showToast(message, type = 'info') {
   if (!container) return;
   const toast = document.createElement('div');
 
-  let borderClass = 'border-blue-500/30 bg-blue-500/10 text-blue-400';
+  let borderClass = 'border-blue-500/30 bg-blue-50 text-blue-700';
   let icon = 'info';
 
   if (type === 'success') {
-    borderClass = 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400';
+    borderClass = 'border-emerald-500/30 bg-emerald-50 text-emerald-800';
     icon = 'check-circle';
   } else if (type === 'error') {
-    borderClass = 'border-red-500/30 bg-red-500/10 text-red-400';
+    borderClass = 'border-red-500/30 bg-red-50 text-red-800';
     icon = 'alert-triangle';
   } else if (type === 'warning') {
-    borderClass = 'border-amber-500/30 bg-amber-500/10 text-amber-400';
+    borderClass = 'border-amber-500/30 bg-amber-50 text-amber-800';
     icon = 'alert-circle';
   }
 
-  toast.className = `toast-item flex items-start gap-2.5 px-4 py-3 rounded-lg border ${borderClass} shadow-xl text-sm font-medium opacity-0 translate-y-2 pointer-events-auto bg-brand-darkCard transition-all duration-300`;
+  toast.className = `toast-item flex items-start gap-2.5 px-4 py-3 rounded-lg border ${borderClass} shadow-lg text-sm font-medium opacity-0 translate-y-2 pointer-events-auto bg-brand-card transition-all duration-300`;
   toast.innerHTML = `<i data-lucide="${icon}" class="w-4 h-4 shrink-0 mt-0.5"></i> <div class="flex-1 leading-snug">${escapeHtml(message)}</div>`;
 
   container.appendChild(toast);
@@ -154,11 +154,11 @@ function confirmDialog({ title = 'Confirmar ação', message = '', confirmLabel 
 
     if(danger) {
       okBtn.className = 'flex-1 py-2.5 px-4 text-xs font-bold rounded-xl bg-red-600 hover:bg-red-700 text-white transition';
-      iconWrap.className = 'w-10 h-10 rounded-lg flex items-center justify-center mx-auto mb-4 bg-red-500/15 text-red-500';
+      iconWrap.className = 'w-10 h-10 rounded-lg flex items-center justify-center mx-auto mb-4 bg-red-100 text-red-600';
       iconWrap.innerHTML = `<i data-lucide="trash-2" class="w-5 h-5"></i>`;
     } else {
-      okBtn.className = 'flex-1 py-2.5 px-4 text-xs font-bold rounded-xl bg-brand-gold hover:bg-brand-goldHover text-brand-dark transition';
-      iconWrap.className = 'w-10 h-10 rounded-lg flex items-center justify-center mx-auto mb-4 bg-brand-gold/15 text-brand-gold';
+      okBtn.className = 'flex-1 py-2.5 px-4 text-xs font-bold rounded-xl bg-brand-dark hover:bg-slate-800 text-brand-cream transition';
+      iconWrap.className = 'w-10 h-10 rounded-lg flex items-center justify-center mx-auto mb-4 bg-amber-100 text-amber-700';
       iconWrap.innerHTML = `<i data-lucide="help-circle" class="w-5 h-5"></i>`;
     }
 
@@ -224,9 +224,6 @@ function triggerRealtimeSync() {
 }
 
 async function fetchFromGoogleSheets(isManual = false) {
-  const btn = document.getElementById('btn-manual-reload');
-  if (btn) { btn.disabled = true; btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin text-brand-gold"></i>'; lucide.createIcons(); }
-
   try {
     const response = await fetch(WEB_APP_URL, { method: 'GET', redirect: 'follow' });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -241,11 +238,8 @@ async function fetchFromGoogleSheets(isManual = false) {
 
     if (hasData) saveLocalCache();
     refreshData();
-    if (isManual) showToast('Dados sincronizados com sucesso!', 'success');
   } catch (err) {
-    if (isManual) showToast('Não foi possível conectar à planilha. Dados locais mantidos.', 'warning');
-  } finally {
-    if (btn) { btn.disabled = false; btn.innerHTML = '<i data-lucide="rotate-cw" class="w-4 h-4"></i>'; lucide.createIcons(); }
+    console.warn("Conexão automática com planilha em segundo plano indisponível.", err);
   }
 }
 
@@ -331,13 +325,13 @@ function calculateOrderFinancials(orderId) {
 }
 
 function calculateOrderDeadline(deadlineStr, orderStatus) {
-  if (orderStatus === 'Entregue') return { label: 'Entregue', class: 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' };
+  if (orderStatus === 'Entregue') return { label: 'Entregue', class: 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200' };
   const today = getTodayIsoString();
-  if (!deadlineStr) return { label: 'Sem prazo', class: 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-500/10 text-slate-400 border border-slate-500/20' };
+  if (!deadlineStr) return { label: 'Sem prazo', class: 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200' };
   const cleanDeadline = String(deadlineStr).split('T')[0];
-  if (cleanDeadline < today) return { label: 'Atrasado', class: 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-500/10 text-red-500 border border-red-500/20' };
-  if (cleanDeadline === today) return { label: 'Entrega hoje', class: 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-500 border border-amber-500/30' };
-  return { label: 'No prazo', class: 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20' };
+  if (cleanDeadline < today) return { label: 'Atrasado', class: 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800 border border-red-200' };
+  if (cleanDeadline === today) return { label: 'Entrega hoje', class: 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200' };
+  return { label: 'No prazo', class: 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200' };
 }
 
 function calculateClientFinancials(clientId) {
@@ -364,14 +358,14 @@ function switchTab(tabName) {
 
     if (btn) {
       btn.className = t === tabName
-        ? "nav-tab w-full px-3 py-2.5 rounded-lg text-sm font-medium text-brand-gold bg-brand-darkBorder transition-all flex items-center gap-3 shadow-sm"
-        : "nav-tab w-full px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-brand-slate/40 transition-all flex items-center gap-3";
+        ? "nav-tab w-full px-3 py-2.5 rounded-lg text-sm font-semibold text-brand-dark bg-brand-slate transition-all flex items-center gap-3 shadow-sm border border-brand-border"
+        : "nav-tab w-full px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:text-brand-dark hover:bg-brand-slate transition-all flex items-center gap-3";
       btn.setAttribute('aria-current', t === tabName ? 'page' : 'false');
     }
     if (mBtn) {
       mBtn.className = t === tabName
-        ? "flex flex-col items-center text-[10px] text-brand-gold font-medium py-1"
-        : "flex flex-col items-center text-[10px] text-slate-400 font-medium py-1";
+        ? "flex flex-col items-center text-[10px] text-brand-dark font-bold py-1"
+        : "flex flex-col items-center text-[10px] text-slate-700 font-medium py-1";
     }
   });
 
@@ -426,21 +420,21 @@ function renderAlertBanner(atrasados, hoje) {
   if (atrasados <= 0 && hoje <= 0) return;
 
   const box = document.createElement('div');
-  box.className = "bg-amber-500/10 border border-amber-500/30 p-4 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm";
+  box.className = "bg-amber-50 border border-amber-200 p-4 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm";
   box.innerHTML = `
     <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-lg bg-amber-500/20 text-amber-500 flex items-center justify-center shrink-0">
+      <div class="w-10 h-10 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
         <i data-lucide="alert-triangle" class="w-5 h-5"></i>
       </div>
       <div>
-        <h4 class="text-sm font-bold text-slate-100">Atenção aos Prazos</h4>
-        <p class="text-xs text-slate-400 mt-0.5">
+        <h4 class="text-sm font-bold text-amber-900">Atenção aos Prazos</h4>
+        <p class="text-xs text-amber-700 font-medium mt-0.5">
           ${atrasados > 0 ? `<strong>${atrasados} pedido(s) atrasado(s)</strong>. ` : ''}
           ${hoje > 0 ? `<strong>${hoje} entrega(s) para hoje</strong>.` : ''}
         </p>
       </div>
     </div>
-    <button onclick="switchTab('pedidos')" class="text-xs font-semibold px-4 py-2 rounded-lg bg-brand-dark hover:bg-brand-darkBorder text-brand-gold border border-brand-darkBorder transition-colors shadow-sm">
+    <button onclick="switchTab('pedidos')" class="text-xs font-semibold px-4 py-2 rounded-lg bg-brand-dark text-brand-cream hover:bg-slate-800 transition-colors shadow-sm">
       Ver Pedidos
     </button>`;
   container.appendChild(box);
@@ -448,8 +442,8 @@ function renderAlertBanner(atrasados, hoje) {
 }
 
 function updateCharts(noPrazo, hoje, atrasado, entregue) {
-  const mutedColor = '#94A3B8';
-  const gridColor = '#1E293B';
+  const mutedColor = '#475569';
+  const gridColor = '#E2D9C5';
   
   const successColor = '#10B981';
   const dangerColor = '#EF4444';
@@ -469,16 +463,16 @@ function updateCharts(noPrazo, hoje, atrasado, entregue) {
       data: {
         labels: labels.length ? labels : ['Sem pedidos'],
         datasets: [
-          { label: 'Valor Total (R$)', data: dataTotal.length ? dataTotal : [0], backgroundColor: '#DCC9A366', borderColor: '#DCC9A3', borderWidth: 1.5, borderRadius: 4 },
-          { label: 'Valor Pago (R$)', data: dataPaid.length ? dataPaid : [0], backgroundColor: '#10B98166', borderColor: '#10B981', borderWidth: 1.5, borderRadius: 4 }
+          { label: 'Valor Total (R$)', data: dataTotal.length ? dataTotal : [0], backgroundColor: '#0F1826CC', borderColor: '#0F1826', borderWidth: 1.5, borderRadius: 4 },
+          { label: 'Valor Pago (R$)', data: dataPaid.length ? dataPaid : [0], backgroundColor: '#10B981CC', borderColor: '#10B981', borderWidth: 1.5, borderRadius: 4 }
         ]
       },
       options: {
         responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { labels: { color: mutedColor, font: { family: 'Inter', size: 11, weight: '500' } } } },
+        plugins: { legend: { labels: { color: mutedColor, font: { family: 'Inter', size: 11, weight: '600' } } } },
         scales: {
-          x: { grid: { color: gridColor }, ticks: { color: mutedColor, font: { weight: '500' } } },
-          y: { grid: { color: gridColor }, ticks: { color: mutedColor, font: { weight: '500' }, callback: (v) => 'R$ ' + v } }
+          x: { grid: { color: gridColor }, ticks: { color: mutedColor, font: { weight: '600' } } },
+          y: { grid: { color: gridColor }, ticks: { color: mutedColor, font: { weight: '600' }, callback: (v) => 'R$ ' + v } }
         }
       }
     });
@@ -494,13 +488,13 @@ function updateCharts(noPrazo, hoje, atrasado, entregue) {
         datasets: [{
           data: [noPrazo, hoje, atrasado, entregue],
           backgroundColor: [infoColor, warningColor, dangerColor, successColor],
-          borderColor: '#131C2E',
+          borderColor: '#FFFFFF',
           borderWidth: 2
         }]
       },
       options: {
         responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { position: 'bottom', labels: { color: mutedColor, font: { family: 'Inter', size: 11, weight: '500' } } } },
+        plugins: { legend: { position: 'bottom', labels: { color: mutedColor, font: { family: 'Inter', size: 11, weight: '600' } } } },
         cutout: '70%'
       }
     });
@@ -537,39 +531,39 @@ function renderOrdersTable() {
     const { paid, remaining, status: payStatus } = calculateOrderFinancials(order.id);
     const dl = calculateOrderDeadline(order.deadline, order.status);
 
-    let payBadgeClass = "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-500/10 text-red-500 border border-red-500/20";
-    if (payStatus === 'Pago') payBadgeClass = "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20";
-    if (payStatus === 'Parcial') payBadgeClass = "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-500 border border-amber-500/30";
+    let payBadgeClass = "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800 border border-red-200";
+    if (payStatus === 'Pago') payBadgeClass = "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200";
+    if (payStatus === 'Parcial') payBadgeClass = "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200";
 
     const tr = document.createElement('tr');
-    tr.className = "hover:bg-brand-slate/40 transition-colors";
+    tr.className = "hover:bg-brand-slate/50 transition-colors";
     tr.innerHTML = `
       <td class="py-3 px-4 text-xs">
-        <span class="font-bold font-mono text-brand-gold cursor-pointer hover:underline" onclick="openOrderDetailsModal('${order.id}')">${escapeHtml(order.code)}</span>
-        <span class="block text-[11px] font-medium text-slate-400 mt-0.5 truncate max-w-[180px]">${escapeHtml(order.category)}</span>
+        <span class="font-bold font-mono text-brand-dark cursor-pointer hover:underline" onclick="openOrderDetailsModal('${order.id}')">${escapeHtml(order.code)}</span>
+        <span class="block text-[11px] font-semibold text-slate-600 mt-0.5 truncate max-w-[180px]">${escapeHtml(order.category)}</span>
       </td>
-      <td class="py-3 px-4 font-medium text-slate-200">
-        ${client ? escapeHtml(client.name) : '<span class="text-slate-500">Removido</span>'}
+      <td class="py-3 px-4 font-bold text-brand-dark">
+        ${client ? escapeHtml(client.name) : '<span class="text-slate-400">Removido</span>'}
       </td>
-      <td class="py-3 px-4 text-xs font-medium text-slate-300">
-        <span class="inline-flex items-center px-2.5 py-1 rounded bg-brand-dark border border-brand-darkBorder text-[11px]">${escapeHtml(order.status)}</span>
+      <td class="py-3 px-4 text-xs font-medium text-slate-800">
+        <span class="inline-flex items-center px-2.5 py-1 rounded bg-brand-slate border border-brand-border text-[11px] font-medium">${escapeHtml(order.status)}</span>
       </td>
       <td class="py-3 px-4 text-xs">
-        <div class="font-medium text-slate-200">${formatDate(order.deadline)}</div>
+        <div class="font-bold text-brand-dark">${formatDate(order.deadline)}</div>
         <span class="mt-1 ${dl.class}">${dl.label}</span>
       </td>
-      <td class="py-3 px-4 text-right font-medium text-slate-200">${formatBRL(order.totalValue)}</td>
-      <td class="py-3 px-4 text-right font-medium text-emerald-500">${formatBRL(paid)}</td>
-      <td class="py-3 px-4 text-right font-semibold ${remaining > 0 ? 'text-amber-500' : 'text-slate-500'}">${formatBRL(remaining)}</td>
+      <td class="py-3 px-4 text-right font-bold text-brand-dark">${formatBRL(order.totalValue)}</td>
+      <td class="py-3 px-4 text-right font-bold text-emerald-700">${formatBRL(paid)}</td>
+      <td class="py-3 px-4 text-right font-bold ${remaining > 0 ? 'text-amber-700' : 'text-slate-400'}">${formatBRL(remaining)}</td>
       <td class="py-3 px-4 text-center">
         <span class="${payBadgeClass}">${payStatus}</span>
       </td>
       <td class="py-3 px-4 text-center">
         <div class="flex items-center justify-center gap-1.5">
-          <button onclick="openOrderDetailsModal('${order.id}')" title="Ver Detalhes" class="p-1.5 rounded hover:bg-brand-dark text-slate-400 hover:text-brand-gold transition"><i data-lucide="eye" class="w-4 h-4"></i></button>
-          <button onclick="openPaymentForOrder('${order.id}')" title="Registrar Pagamento" class="p-1.5 rounded hover:bg-brand-gold/10 text-brand-gold transition"><i data-lucide="dollar-sign" class="w-4 h-4"></i></button>
-          <button onclick="editOrder('${order.id}')" title="Editar Pedido" class="p-1.5 rounded hover:bg-brand-dark text-slate-400 hover:text-slate-200 transition"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
-          <button onclick="deleteOrder('${order.id}')" title="Excluir" class="p-1.5 rounded hover:bg-red-500/10 text-red-400 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+          <button onclick="openOrderDetailsModal('${order.id}')" title="Ver Detalhes" class="p-1.5 rounded hover:bg-brand-border text-slate-700 hover:text-brand-dark transition"><i data-lucide="eye" class="w-4 h-4"></i></button>
+          <button onclick="openPaymentForOrder('${order.id}')" title="Registrar Pagamento" class="p-1.5 rounded hover:bg-amber-100 text-amber-800 transition"><i data-lucide="dollar-sign" class="w-4 h-4"></i></button>
+          <button onclick="editOrder('${order.id}')" title="Editar Pedido" class="p-1.5 rounded hover:bg-brand-border text-slate-700 hover:text-brand-dark transition"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+          <button onclick="deleteOrder('${order.id}')" title="Excluir" class="p-1.5 rounded hover:bg-red-100 text-red-700 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
         </div>
       </td>`;
     tbody.appendChild(tr);
@@ -598,32 +592,32 @@ function renderClientsTable() {
     const waLink = cleanPhone ? `https://wa.me/55${cleanPhone}` : null;
 
     const tr = document.createElement('tr');
-    tr.className = "hover:bg-brand-slate/40 transition-colors";
+    tr.className = "hover:bg-brand-slate/50 transition-colors";
     tr.innerHTML = `
       <td class="py-3 px-4">
         <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-full bg-brand-dark border border-brand-darkBorder text-brand-gold font-bold flex items-center justify-center text-xs shrink-0">${escapeHtml(getInitials(client.name))}</div>
+          <div class="w-9 h-9 rounded-full bg-brand-dark text-brand-cream font-bold flex items-center justify-center text-xs shrink-0 shadow-sm">${escapeHtml(getInitials(client.name))}</div>
           <div>
-            <div class="font-medium text-slate-100">${escapeHtml(client.name)}</div>
-            <div class="text-xs text-slate-400 font-mono">${escapeHtml(client.phone || '-')}</div>
-            ${client.email ? `<div class="text-[11px] text-slate-500">${escapeHtml(client.email)}</div>` : ''}
+            <div class="font-bold text-brand-dark text-sm">${escapeHtml(client.name)}</div>
+            <div class="text-xs text-slate-600 font-mono font-medium">${escapeHtml(client.phone || '-')}</div>
+            ${client.email ? `<div class="text-[11px] text-slate-500 font-medium">${escapeHtml(client.email)}</div>` : ''}
           </div>
         </div>
       </td>
-      <td class="py-3 px-4 text-center font-medium text-slate-200">${ordersCount}</td>
-      <td class="py-3 px-4 text-right font-medium text-slate-200">${formatBRL(totalBought)}</td>
-      <td class="py-3 px-4 text-right font-medium text-emerald-500">${formatBRL(totalPaid)}</td>
-      <td class="py-3 px-4 text-right font-semibold ${balance > 0 ? 'text-amber-500' : 'text-slate-500'}">${formatBRL(balance)}</td>
+      <td class="py-3 px-4 text-center font-bold text-brand-dark">${ordersCount}</td>
+      <td class="py-3 px-4 text-right font-bold text-brand-dark">${formatBRL(totalBought)}</td>
+      <td class="py-3 px-4 text-right font-bold text-emerald-700">${formatBRL(totalPaid)}</td>
+      <td class="py-3 px-4 text-right font-bold ${balance > 0 ? 'text-amber-700' : 'text-slate-400'}">${formatBRL(balance)}</td>
       <td class="py-3 px-4 text-center">
         ${waLink
-          ? `<a href="${waLink}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 hover:bg-emerald-500/20 transition"><i data-lucide="message-square" class="w-3 h-3"></i> WhatsApp</a>`
-          : `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-500/10 text-slate-400 border border-slate-500/20">Sem telefone</span>`}
+          ? `<a href="${waLink}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200 hover:bg-emerald-200 transition"><i data-lucide="message-square" class="w-3 h-3"></i> WhatsApp</a>`
+          : `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">Sem telefone</span>`}
       </td>
       <td class="py-3 px-4 text-center">
         <div class="flex items-center justify-center gap-1.5">
-          <button onclick="openMeasurementsModal('${client.id}')" title="Medidas & PDF" class="p-1.5 rounded hover:bg-brand-gold/10 text-brand-gold transition"><i data-lucide="ruler" class="w-4 h-4"></i></button>
-          <button onclick="editClient('${client.id}')" title="Editar" class="p-1.5 rounded hover:bg-brand-dark text-slate-400 hover:text-slate-200 transition"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
-          <button onclick="deleteClient('${client.id}')" title="Excluir" class="p-1.5 rounded hover:bg-red-500/10 text-red-400 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+          <button onclick="openMeasurementsModal('${client.id}')" title="Medidas & PDF" class="p-1.5 rounded hover:bg-amber-100 text-amber-800 transition"><i data-lucide="ruler" class="w-4 h-4"></i></button>
+          <button onclick="editClient('${client.id}')" title="Editar" class="p-1.5 rounded hover:bg-brand-border text-slate-700 hover:text-brand-dark transition"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+          <button onclick="deleteClient('${client.id}')" title="Excluir" class="p-1.5 rounded hover:bg-red-100 text-red-700 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
         </div>
       </td>`;
     tbody.appendChild(tr);
@@ -646,18 +640,18 @@ function renderPaymentsTable() {
     const order = appState.orders.find(o => o.id === pay.orderId);
     const client = order ? appState.clients.find(c => c.id === order.clientId) : null;
     const tr = document.createElement('tr');
-    tr.className = "hover:bg-brand-slate/40 transition-colors";
+    tr.className = "hover:bg-brand-slate/50 transition-colors";
     tr.innerHTML = `
-      <td class="py-3 px-4 text-xs font-mono text-slate-300">${formatDate(pay.date)}</td>
-      <td class="py-3 px-4 font-mono text-xs font-semibold text-brand-gold">${order ? escapeHtml(order.code) : 'Avulso'}</td>
-      <td class="py-3 px-4 font-medium text-slate-200">${client ? escapeHtml(client.name) : '-'}</td>
-      <td class="py-3 px-4"><span class="inline-flex items-center px-2 py-0.5 rounded bg-brand-dark border border-brand-darkBorder text-[11px] font-medium text-slate-300">${escapeHtml(pay.method)}</span></td>
-      <td class="py-3 px-4 text-xs text-slate-400 truncate max-w-[200px]">${escapeHtml(pay.notes || '-')}</td>
-      <td class="py-3 px-4 text-right font-semibold text-emerald-500">${formatBRL(pay.amount)}</td>
+      <td class="py-3 px-4 text-xs font-mono text-slate-700 font-medium">${formatDate(pay.date)}</td>
+      <td class="py-3 px-4 font-mono text-xs font-bold text-brand-dark">${order ? escapeHtml(order.code) : 'Avulso'}</td>
+      <td class="py-3 px-4 font-bold text-brand-dark">${client ? escapeHtml(client.name) : '-'}</td>
+      <td class="py-3 px-4"><span class="inline-flex items-center px-2 py-0.5 rounded bg-brand-slate border border-brand-border text-[11px] font-semibold text-slate-800">${escapeHtml(pay.method)}</span></td>
+      <td class="py-3 px-4 text-xs text-slate-600 font-medium truncate max-w-[200px]">${escapeHtml(pay.notes || '-')}</td>
+      <td class="py-3 px-4 text-right font-bold text-emerald-700">${formatBRL(pay.amount)}</td>
       <td class="py-3 px-4 text-center">
         <div class="flex items-center justify-center gap-1.5">
-          <button onclick="editPayment('${pay.id}')" title="Editar" class="p-1.5 rounded hover:bg-brand-dark text-slate-400 hover:text-brand-gold transition"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
-          <button onclick="deletePayment('${pay.id}')" title="Excluir" class="p-1.5 rounded hover:bg-red-500/10 text-red-400 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+          <button onclick="editPayment('${pay.id}')" title="Editar" class="p-1.5 rounded hover:bg-brand-border text-slate-700 hover:text-brand-dark transition"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+          <button onclick="deletePayment('${pay.id}')" title="Excluir" class="p-1.5 rounded hover:bg-red-100 text-red-700 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
         </div>
       </td>`;
     tbody.appendChild(tr);
@@ -881,7 +875,7 @@ function generateMeasurementsPDF() {
   container.style.fontFamily = 'Inter, sans-serif';
 
   let html = `
-    <div style="text-align: center; border-bottom: 2px solid #DCC9A3; padding-bottom: 20px; margin-bottom: 30px;">
+    <div style="text-align: center; border-bottom: 2px solid #C5B288; padding-bottom: 20px; margin-bottom: 30px;">
       <h1 style="font-family: 'Cinzel', serif; font-size: 28px; font-weight: 700; margin: 0; letter-spacing: 2px; color: #0F1826;">O SEU ALFAIATE</h1>
       <p style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 3px; color: #0F1826; margin-top: 5px;">Atelier & Alta Alfaiataria</p>
     </div>
@@ -909,7 +903,7 @@ function generateMeasurementsPDF() {
 
   if (obs.trim()) {
      html += `
-      <div style="margin-top: 40px; border-top: 1px dashed #DCC9A3; padding-top: 20px;">
+      <div style="margin-top: 40px; border-top: 1px dashed #C5B288; padding-top: 20px;">
         <h3 style="font-size: 13px; font-weight: bold; margin-bottom: 10px; color: #0F1826;">Observações Adicionais</h3>
         <div style="font-size: 14px; line-height: 1.6; white-space: pre-wrap; color: #2E415A;">${escapeHtml(obs)}</div>
       </div>
@@ -1057,22 +1051,22 @@ function openOrderDetailsModal(orderId) {
   const orderPayments = appState.payments.filter(p => p.orderId === order.id).sort((a, b) => new Date(b.date) - new Date(a.date));
   
   if (orderPayments.length === 0) {
-    listContainer.innerHTML = '<p class="text-xs text-slate-400 italic">Nenhum pagamento registrado.</p>';
+    listContainer.innerHTML = '<p class="text-xs text-slate-500 italic font-medium">Nenhum pagamento registrado.</p>';
   } else {
     orderPayments.forEach(p => {
       const item = document.createElement('div');
-      item.className = "flex justify-between items-center p-3 rounded-xl bg-brand-dark border border-brand-darkBorder text-sm shadow-sm";
+      item.className = "flex justify-between items-center p-3 rounded-xl bg-brand-slate border border-brand-border text-sm shadow-sm";
       item.innerHTML = `
         <div>
-          <span class="font-medium text-slate-200">${formatDate(p.date)}</span> — 
-          <span class="inline-flex items-center px-2 py-0.5 rounded bg-brand-darkBorder text-[11px] font-medium text-slate-300">${escapeHtml(p.method)}</span>
-          ${p.notes ? `<span class="text-slate-400 block text-[11px] mt-1">${escapeHtml(p.notes)}</span>` : ''}
+          <span class="font-bold text-brand-dark">${formatDate(p.date)}</span> — 
+          <span class="inline-flex items-center px-2 py-0.5 rounded bg-white border border-brand-border text-[11px] font-semibold text-slate-800">${escapeHtml(p.method)}</span>
+          ${p.notes ? `<span class="text-slate-600 block text-[11px] mt-1 font-medium">${escapeHtml(p.notes)}</span>` : ''}
         </div>
         <div class="flex items-center gap-3">
-          <span class="font-bold text-emerald-500">${formatBRL(p.amount)}</span>
-          <div class="flex items-center gap-1 border-l border-brand-darkBorder pl-2">
-             <button onclick="editPayment('${p.id}')" class="p-1 text-slate-400 hover:text-brand-gold transition"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
-             <button onclick="deletePayment('${p.id}')" class="p-1 text-slate-400 hover:text-red-400 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+          <span class="font-bold text-emerald-700">${formatBRL(p.amount)}</span>
+          <div class="flex items-center gap-1 border-l border-brand-border pl-2">
+             <button onclick="editPayment('${p.id}')" class="p-1 text-slate-600 hover:text-brand-dark transition"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+             <button onclick="deletePayment('${p.id}')" class="p-1 text-slate-600 hover:text-red-700 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
           </div>
         </div>`;
       listContainer.appendChild(item);
