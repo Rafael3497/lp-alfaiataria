@@ -1,6 +1,6 @@
 /* ============================================================
    O SEU ALFAIATE — CRM & Gestão de Atelier
-   Estilos Customizados & Identidade Visual
+   Estilos Customizados & Identidade Visual (Tema Claro)
    ============================================================ */
 
 /* Scrollbar Personalizada */
@@ -9,14 +9,14 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0F1826;
+  background: #F5EEDF;
 }
 ::-webkit-scrollbar-thumb {
-  background: #DCC9A3;
+  background: #C5B288;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #C5B288;
+  background: #A39068;
 }
 
 /* Transições suaves globais */
@@ -27,8 +27,8 @@
 }
 
 body {
-  background-color: #0F1826;
-  color: #F5EEDF;
+  background-color: #F5EEDF;
+  color: #0F1826;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
@@ -55,6 +55,6 @@ body {
 /* Efeitos de foco refinados */
 input:focus, select:focus, textarea:focus {
   outline: none;
-  border-color: #DCC9A3 !important;
-  box-shadow: 0 0 0 2px rgba(220, 201, 163, 0.2);
+  border-color: #0F1826 !important;
+  box-shadow: 0 0 0 2px rgba(15, 24, 38, 0.15);
 }
