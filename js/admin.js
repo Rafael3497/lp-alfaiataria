@@ -599,8 +599,6 @@ function renderClientsTable() {
           <div class="w-9 h-9 rounded-full bg-brand-dark text-brand-cream font-black flex items-center justify-center text-xs shrink-0 shadow-sm">${escapeHtml(getInitials(client.name))}</div>
           <div>
             <div class="font-black text-brand-dark text-sm">${escapeHtml(client.name)}</div>
-            <div class="text-xs text-slate-900 font-mono font-bold">${escapeHtml(client.phone || '-')}</div>
-            ${client.email ? `<div class="text-[11px] text-slate-900 font-bold">${escapeHtml(client.email)}</div>` : ''}
           </div>
         </div>
       </td>
