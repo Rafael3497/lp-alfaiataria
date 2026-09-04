@@ -1,21 +1,32 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>O Seu Alfaiate — Sistema de Gestão & CRM</title>
-  
+  <meta name="description" content="Painel de gestão do atelier O Seu Alfaiate: pedidos, provas, clientes e pagamentos em um só lugar, sincronizado com o Google Sheets.">
+  <meta name="theme-color" content="#EADBC6">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png">
+  <link rel="apple-touch-icon" href="assets/favicon-512.png">
+
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Google Fonts: Playfair Display + Cinzel + Inter -->
+  <!-- html2pdf for PDF Generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <!-- Estilos customizados da marca -->
+  <link rel="stylesheet" href="css/admin.css">
 
   <script>
     tailwind.config = {
@@ -24,14 +35,23 @@
         extend: {
           colors: {
             brand: {
-              gold: '#C5A059',
-              goldHover: '#B38F46',
-              goldLight: '#F4EBD9',
-              dark: '#0B0F19',
-              darkCard: '#131A2B',
-              darkBorder: '#1E293B',
-              slate: '#1E2433'
-            }
+              dark: '#F5EEDF',       // Fundo geral do app (creme claro)
+              darkCard: '#EADBC6',    // Fundo dos cartões (creme da logo)
+              darkBorder: '#DCC9A3',  // Bordas refinadas
+              slate: '#DCC9A3',       // Superfície de hover
+              gold: '#0F1826',        // Azul marinho institucional para destaques e CTAs
+              goldHover: '#1B2A3E',   // Hover do azul institucional
+              goldLight: '#2E415A'    
+            },
+            slate: {
+              100: '#0F1826',
+              200: '#1B2A3E',
+              300: '#2E415A',
+              400: '#475B75',
+              500: '#64748B',
+              700: '#DCC9A3'
+            },
+            white: '#000000'
           },
           fontFamily: {
             serif: ['"Playfair Display"', 'serif'],
@@ -42,60 +62,22 @@
       }
     }
   </script>
-
-  <style>
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #0B0F19;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #1E293B;
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #C5A059;
-    }
-    .badge-atrasado {
-      background-color: rgba(239, 68, 68, 0.15);
-      color: #f87171;
-      border: 1px solid rgba(239, 68, 68, 0.3);
-    }
-    .badge-hoje {
-      background-color: rgba(245, 158, 11, 0.15);
-      color: #fbbf24;
-      border: 1px solid rgba(245, 158, 11, 0.3);
-    }
-    .badge-prazo {
-      background-color: rgba(59, 130, 246, 0.15);
-      color: #60a5fa;
-      border: 1px solid rgba(59, 130, 246, 0.3);
-    }
-    .badge-entregue {
-      background-color: rgba(16, 185, 129, 0.15);
-      color: #34d399;
-      border: 1px solid rgba(16, 185, 129, 0.3);
-    }
-  </style>
 </head>
 
-<body class="bg-brand-dark text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-brand-gold selection:text-black">
+<body class="bg-brand-dark text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-brand-gold selection:text-brand-darkCard">
 
   <!-- Toast Notification Container -->
   <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none max-w-sm w-full"></div>
 
   <!-- Header / Navigation Bar -->
-  <header class="bg-brand-darkCard border-b border-brand-darkBorder sticky top-0 z-40">
+  <header class="bg-brand-darkCard border-b border-brand-darkBorder sticky top-0 z-40 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
-        
-        <!-- Brand Monogram & Title -->
+
+        <!-- Brand Mark & Title -->
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-gold to-brand-goldHover flex items-center justify-center shadow-lg shadow-brand-gold/10">
-            <span class="font-cinzel text-black font-bold text-lg">OA</span>
+          <div class="brand-mark w-10 h-10 rounded-lg overflow-hidden border border-brand-darkBorder flex items-center justify-center bg-brand-dark">
+            <img src="assets/logo.jpg" alt="Logo O Seu Alfaiate" class="w-full h-full object-cover">
           </div>
           <div>
             <span class="font-cinzel tracking-wider text-base sm:text-lg font-bold text-slate-100 block leading-tight">O SEU ALFAIATE</span>
@@ -104,25 +86,28 @@
         </div>
 
         <!-- Desktop Navigation Items -->
-        <nav class="hidden md:flex items-center space-x-1 lg:space-x-2">
-          <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="nav-tab px-3 py-2 rounded-md text-sm font-medium text-brand-gold bg-brand-darkBorder transition-all flex items-center gap-2">
+        <nav class="hidden md:flex items-center space-x-1 lg:space-x-2" aria-label="Navegação principal">
+          <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="nav-tab px-3 py-2 rounded-lg text-sm font-medium text-brand-gold bg-brand-darkBorder transition-all flex items-center gap-2">
             <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
           </button>
-          <button onclick="switchTab('pedidos')" id="tab-btn-pedidos" class="nav-tab px-3 py-2 rounded-md text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-brand-slate transition-all flex items-center gap-2">
+          <button onclick="switchTab('pedidos')" id="tab-btn-pedidos" class="nav-tab px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-brand-slate/40 transition-all flex items-center gap-2">
             <i data-lucide="scissors" class="w-4 h-4"></i> Pedidos
           </button>
-          <button onclick="switchTab('clientes')" id="tab-btn-clientes" class="nav-tab px-3 py-2 rounded-md text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-brand-slate transition-all flex items-center gap-2">
+          <button onclick="switchTab('clientes')" id="tab-btn-clientes" class="nav-tab px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-brand-slate/40 transition-all flex items-center gap-2">
             <i data-lucide="users" class="w-4 h-4"></i> Clientes
           </button>
-          <button onclick="switchTab('pagamentos')" id="tab-btn-pagamentos" class="nav-tab px-3 py-2 rounded-md text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-brand-slate transition-all flex items-center gap-2">
+          <button onclick="switchTab('pagamentos')" id="tab-btn-pagamentos" class="nav-tab px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-brand-slate/40 transition-all flex items-center gap-2">
             <i data-lucide="wallet" class="w-4 h-4"></i> Pagamentos
           </button>
         </nav>
 
         <!-- Action Buttons -->
         <div class="flex items-center gap-2">
-          <button onclick="openNewOrderModal()" class="bg-brand-gold hover:bg-brand-goldHover text-black text-xs sm:text-sm font-semibold px-3 sm:px-4 py-2 rounded-lg shadow-md flex items-center gap-1.5 transition-all">
-            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+          <button onclick="fetchFromGoogleSheets(true)" id="btn-manual-reload" class="p-2 rounded-lg bg-brand-dark hover:bg-brand-darkBorder text-slate-300 transition border border-brand-darkBorder" title="Sincronizar com a Planilha">
+            <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+          </button>
+          <button onclick="openNewOrderModal()" class="bg-brand-gold hover:bg-brand-goldHover text-brand-darkCard text-xs sm:text-sm font-semibold px-3 sm:px-4 py-2 rounded-lg shadow-md flex items-center gap-1.5 transition-all">
+            <i data-lucide="plus-circle" class="w-4 h-4 text-brand-darkCard"></i>
             <span class="hidden sm:inline">Novo</span> Pedido
           </button>
           <button onclick="openNewPaymentModal()" class="border border-brand-gold/40 hover:bg-brand-gold/10 text-brand-gold text-xs sm:text-sm font-medium px-3 sm:px-4 py-2 rounded-lg transition-all flex items-center gap-1.5">
@@ -136,7 +121,7 @@
   </header>
 
   <!-- Mobile Bottom Nav -->
-  <div class="md:hidden fixed bottom-0 left-0 right-0 bg-brand-darkCard border-t border-brand-darkBorder z-40 flex justify-around py-2 px-1">
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-brand-darkCard border-t border-brand-darkBorder z-40 flex justify-around py-2 px-1 shadow-lg" aria-label="Navegação móvel">
     <button onclick="switchTab('dashboard')" id="m-tab-dashboard" class="flex flex-col items-center text-[10px] text-brand-gold py-1">
       <i data-lucide="layout-dashboard" class="w-5 h-5 mb-1"></i> Dashboard
     </button>
@@ -149,145 +134,87 @@
     <button onclick="switchTab('pagamentos')" id="m-tab-pagamentos" class="flex flex-col items-center text-[10px] text-slate-400 py-1">
       <i data-lucide="wallet" class="w-5 h-5 mb-1"></i> Pagamentos
     </button>
-  </div>
+  </nav>
 
   <!-- Main Content Wrapper -->
-  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 pb-20 md:pb-8">
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 pb-20 md:pb-8 space-y-6">
 
     <!-- ==================== TAB: DASHBOARD ==================== -->
     <section id="view-dashboard" class="space-y-6">
-      
-      <!-- Welcome & Real-Time Sync Banner -->
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gradient-to-r from-brand-darkCard to-brand-slate p-6 rounded-2xl border border-brand-darkBorder">
+
+      <!-- Welcome Banner -->
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gradient-to-r from-brand-darkCard to-brand-slate p-6 rounded-2xl border border-brand-darkBorder shadow-sm">
         <div>
           <h1 class="text-2xl sm:text-3xl font-serif font-bold text-slate-100">Painel Geral do Atelier</h1>
           <p class="text-slate-400 text-sm mt-1">Acompanhamento executivo de alfaiataria sob medida, caixa e prazos.</p>
-        </div>
-        <div class="flex items-center gap-3">
-          <!-- Real-time sync status indicator badge -->
-          <div id="sync-status-badge" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-            <span id="sync-dot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
-            <span id="sync-text">Planilha Conectada</span>
-          </div>
-
-          <button onclick="fetchFromGoogleSheets(true)" id="btn-manual-reload" class="p-2 rounded-lg bg-brand-slate hover:bg-slate-700 text-slate-300 transition border border-brand-darkBorder" title="Atualizar dados da Planilha">
-            <i data-lucide="rotate-cw" class="w-4 h-4"></i>
-          </button>
         </div>
       </div>
 
       <!-- Financial Metrics Grid -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        
-        <!-- Total Faturado -->
-        <div class="bg-brand-darkCard p-5 rounded-xl border border-brand-darkBorder shadow-sm relative overflow-hidden">
-          <div class="flex items-center justify-between text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">
+        <div class="metric-card bg-brand-darkCard p-5 rounded-xl border border-brand-darkBorder shadow-sm">
+          <div class="flex items-center justify-between text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">
             <span>Faturamento Total</span>
             <i data-lucide="trending-up" class="w-4 h-4 text-brand-gold"></i>
           </div>
-          <div id="metric-faturamento" class="text-2xl font-bold text-white tracking-tight">R$ 0,00</div>
-          <p class="text-xs text-slate-500 mt-1">Total bruto em pedidos fechados</p>
-          <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-brand-gold to-amber-300"></div>
+          <div id="metric-faturamento" class="text-2xl font-bold text-slate-100 tracking-tight">R$ 0,00</div>
+          <p class="text-xs text-slate-500 mt-1">Total bruto em pedidos</p>
         </div>
-
-        <!-- Total Recebido -->
-        <div class="bg-brand-darkCard p-5 rounded-xl border border-brand-darkBorder shadow-sm relative overflow-hidden">
-          <div class="flex items-center justify-between text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">
+        <div class="metric-card bg-brand-darkCard p-5 rounded-xl border border-brand-darkBorder shadow-sm">
+          <div class="flex items-center justify-between text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">
             <span>Total Recebido</span>
-            <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
+            <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
           </div>
-          <div id="metric-recebido" class="text-2xl font-bold text-emerald-400 tracking-tight">R$ 0,00</div>
+          <div id="metric-recebido" class="text-2xl font-bold text-emerald-600 tracking-tight">R$ 0,00</div>
           <p id="metric-taxa-recebimento" class="text-xs text-slate-500 mt-1">0% já liquidado em caixa</p>
-          <div class="absolute bottom-0 left-0 right-0 h-1 bg-emerald-500"></div>
         </div>
-
-        <!-- Saldo em Aberto -->
-        <div class="bg-brand-darkCard p-5 rounded-xl border border-brand-darkBorder shadow-sm relative overflow-hidden">
-          <div class="flex items-center justify-between text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">
-            <span>A Receber (Restante)</span>
-            <i data-lucide="clock" class="w-4 h-4 text-amber-400"></i>
+        <div class="metric-card bg-brand-darkCard p-5 rounded-xl border border-brand-darkBorder shadow-sm">
+          <div class="flex items-center justify-between text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">
+            <span>A Receber</span>
+            <i data-lucide="clock" class="w-4 h-4 text-amber-600"></i>
           </div>
-          <div id="metric-aberto" class="text-2xl font-bold text-amber-400 tracking-tight">R$ 0,00</div>
-          <p class="text-xs text-slate-500 mt-1">Saldo pendente de quitação</p>
-          <div class="absolute bottom-0 left-0 right-0 h-1 bg-amber-500"></div>
+          <div id="metric-aberto" class="text-2xl font-bold text-amber-600 tracking-tight">R$ 0,00</div>
+          <p class="text-xs text-slate-500 mt-1">Saldo pendente</p>
         </div>
-
-        <!-- Clientes Ativos -->
-        <div class="bg-brand-darkCard p-5 rounded-xl border border-brand-darkBorder shadow-sm relative overflow-hidden">
-          <div class="flex items-center justify-between text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">
-            <span>Clientes & Alfaiataria</span>
-            <i data-lucide="users" class="w-4 h-4 text-blue-400"></i>
+        <div class="metric-card bg-brand-darkCard p-5 rounded-xl border border-brand-darkBorder shadow-sm">
+          <div class="flex items-center justify-between text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">
+            <span>Clientes & Peças</span>
+            <i data-lucide="users" class="w-4 h-4 text-blue-600"></i>
           </div>
-          <div id="metric-clientes" class="text-2xl font-bold text-white tracking-tight">0</div>
+          <div id="metric-clientes" class="text-2xl font-bold text-slate-100 tracking-tight">0</div>
           <p id="metric-pedidos-count" class="text-xs text-slate-500 mt-1">0 pedidos cadastrados</p>
-          <div class="absolute bottom-0 left-0 right-0 h-1 bg-blue-500"></div>
         </div>
-
       </div>
 
       <!-- Operational Status Cards (Deadlines) -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-        <div class="bg-brand-darkCard/60 border border-brand-darkBorder rounded-xl p-4 flex items-center gap-3">
-          <div class="w-10 h-10 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center shrink-0">
-            <i data-lucide="calendar-check" class="w-5 h-5"></i>
-          </div>
-          <div>
-            <div id="metric-no-prazo" class="text-xl font-bold text-slate-100">0</div>
-            <div class="text-xs text-slate-400">No Prazo</div>
-          </div>
+        <div class="bg-brand-darkCard/80 border border-brand-darkBorder rounded-xl p-4 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center shrink-0"><i data-lucide="calendar-check" class="w-5 h-5"></i></div>
+          <div><div id="metric-no-prazo" class="text-xl font-bold text-slate-100">0</div><div class="text-xs text-slate-400 font-medium">No Prazo</div></div>
         </div>
-
-        <div class="bg-brand-darkCard/60 border border-brand-darkBorder rounded-xl p-4 flex items-center gap-3">
-          <div class="w-10 h-10 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0">
-            <i data-lucide="bell-ring" class="w-5 h-5"></i>
-          </div>
-          <div>
-            <div id="metric-hoje" class="text-xl font-bold text-amber-400">0</div>
-            <div class="text-xs text-slate-400">Entrega Hoje</div>
-          </div>
+        <div class="bg-brand-darkCard/80 border border-brand-darkBorder rounded-xl p-4 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-amber-500/20 text-amber-600 flex items-center justify-center shrink-0"><i data-lucide="bell-ring" class="w-5 h-5"></i></div>
+          <div><div id="metric-hoje" class="text-xl font-bold text-amber-600">0</div><div class="text-xs text-slate-400 font-medium">Entrega Hoje</div></div>
         </div>
-
-        <div class="bg-brand-darkCard/60 border border-brand-darkBorder rounded-xl p-4 flex items-center gap-3">
-          <div class="w-10 h-10 rounded-lg bg-red-500/10 text-red-400 flex items-center justify-center shrink-0">
-            <i data-lucide="alert-triangle" class="w-5 h-5"></i>
-          </div>
-          <div>
-            <div id="metric-atrasado" class="text-xl font-bold text-red-400">0</div>
-            <div class="text-xs text-slate-400">Atrasados</div>
-          </div>
+        <div class="bg-brand-darkCard/80 border border-brand-darkBorder rounded-xl p-4 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center shrink-0"><i data-lucide="alert-triangle" class="w-5 h-5"></i></div>
+          <div><div id="metric-atrasado" class="text-xl font-bold text-red-600">0</div><div class="text-xs text-slate-400 font-medium">Atrasados</div></div>
         </div>
-
-        <div class="bg-brand-darkCard/60 border border-brand-darkBorder rounded-xl p-4 flex items-center gap-3">
-          <div class="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
-            <i data-lucide="check" class="w-5 h-5"></i>
-          </div>
-          <div>
-            <div id="metric-entregues" class="text-xl font-bold text-emerald-400">0</div>
-            <div class="text-xs text-slate-400">Entregues</div>
-          </div>
+        <div class="bg-brand-darkCard/80 border border-brand-darkBorder rounded-xl p-4 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0"><i data-lucide="check" class="w-5 h-5"></i></div>
+          <div><div id="metric-entregues" class="text-xl font-bold text-emerald-600">0</div><div class="text-xs text-slate-400 font-medium">Entregues</div></div>
         </div>
       </div>
 
       <!-- Charts Section -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="lg:col-span-2 bg-brand-darkCard border border-brand-darkBorder rounded-xl p-5 shadow-sm">
-          <h2 class="text-base font-semibold text-slate-200 mb-4 flex items-center gap-2">
-            <i data-lucide="bar-chart-3" class="w-4 h-4 text-brand-gold"></i>
-            Balanço Financeiro por Pedido (Recentes)
-          </h2>
-          <div class="h-64 sm:h-72">
-            <canvas id="chartFinancial"></canvas>
-          </div>
+          <h2 class="text-base font-semibold text-slate-100 mb-4 flex items-center gap-2"><i data-lucide="bar-chart-3" class="w-4 h-4 text-brand-gold"></i> Balanço Financeiro por Pedido (Recentes)</h2>
+          <div class="h-64 sm:h-72"><canvas id="chartFinancial"></canvas></div>
         </div>
-
         <div class="bg-brand-darkCard border border-brand-darkBorder rounded-xl p-5 shadow-sm">
-          <h2 class="text-base font-semibold text-slate-200 mb-4 flex items-center gap-2">
-            <i data-lucide="pie-chart" class="w-4 h-4 text-brand-gold"></i>
-            Situação dos Prazos
-          </h2>
-          <div class="h-64 flex items-center justify-center">
-            <canvas id="chartStatus"></canvas>
-          </div>
+          <h2 class="text-base font-semibold text-slate-100 mb-4 flex items-center gap-2"><i data-lucide="pie-chart" class="w-4 h-4 text-brand-gold"></i> Situação dos Prazos</h2>
+          <div class="h-64 flex items-center justify-center"><canvas id="chartStatus"></canvas></div>
         </div>
       </div>
 
@@ -297,33 +224,30 @@
 
     <!-- ==================== TAB: PEDIDOS ==================== -->
     <section id="view-pedidos" class="space-y-4 hidden">
-      
-      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-brand-darkCard p-4 rounded-xl border border-brand-darkBorder">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-brand-darkCard p-4 rounded-xl border border-brand-darkBorder shadow-sm">
         <div>
           <h2 class="text-xl font-serif font-bold text-slate-100">Controle de Pedidos & Provas</h2>
-          <p class="text-xs text-slate-400">Acompanhamento dos ternos, camisas e ajustes em confecção.</p>
+          <p class="text-xs text-slate-400 mt-1">Acompanhamento dos ternos, camisas e ajustes em confecção.</p>
         </div>
         <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
           <div class="relative flex-1 md:w-64">
             <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-            <input type="text" id="order-search" oninput="renderOrdersTable()" placeholder="Buscar cliente ou peça..." class="w-full pl-9 pr-3 py-1.5 bg-brand-dark border border-brand-darkBorder rounded-lg text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-brand-gold">
+            <input type="text" id="order-search" placeholder="Buscar cliente ou peça..." class="w-full pl-9 pr-3 py-1.5 bg-brand-dark border border-brand-darkBorder rounded-lg text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-brand-gold">
           </div>
-          <select id="order-filter-deadline" onchange="renderOrdersTable()" class="bg-brand-dark border border-brand-darkBorder rounded-lg text-xs py-2 px-3 text-slate-300 focus:outline-none focus:border-brand-gold">
+          <select id="order-filter-deadline" onchange="renderOrdersTable()" class="bg-brand-dark border border-brand-darkBorder rounded-lg text-xs py-2 px-3 text-slate-100 focus:outline-none focus:border-brand-gold font-medium">
             <option value="ALL">Todos os Prazos</option>
             <option value="Atrasado">Apenas Atrasados</option>
             <option value="Entrega hoje">Entrega Hoje</option>
             <option value="No prazo">No Prazo</option>
             <option value="Entregue">Entregues</option>
           </select>
-          <select id="order-filter-payment" onchange="renderOrdersTable()" class="bg-brand-dark border border-brand-darkBorder rounded-lg text-xs py-2 px-3 text-slate-300 focus:outline-none focus:border-brand-gold">
+          <select id="order-filter-payment" onchange="renderOrdersTable()" class="bg-brand-dark border border-brand-darkBorder rounded-lg text-xs py-2 px-3 text-slate-100 focus:outline-none focus:border-brand-gold font-medium">
             <option value="ALL">Todos Pagamentos</option>
             <option value="Em aberto">Em Aberto</option>
             <option value="Parcial">Parcial</option>
             <option value="Pago">Quitados</option>
           </select>
-          <button onclick="openNewOrderModal()" class="bg-brand-gold hover:bg-brand-goldHover text-black text-xs font-semibold px-3 py-2 rounded-lg flex items-center gap-1">
-            <i data-lucide="plus" class="w-4 h-4"></i> Novo
-          </button>
+          <button onclick="openNewOrderModal()" class="bg-brand-gold hover:bg-brand-goldHover text-brand-darkCard text-xs font-semibold px-3 py-2 rounded-lg flex items-center gap-1"><i data-lucide="plus" class="w-4 h-4"></i> Novo</button>
         </div>
       </div>
 
@@ -332,45 +256,40 @@
           <table class="w-full text-left text-sm">
             <thead class="bg-brand-dark/80 text-[11px] uppercase tracking-wider text-slate-400 border-b border-brand-darkBorder">
               <tr>
-                <th class="py-3 px-4">Código / Peça</th>
-                <th class="py-3 px-4">Cliente</th>
-                <th class="py-3 px-4">Etapa Produção</th>
-                <th class="py-3 px-4">Prazo / Entrega</th>
-                <th class="py-3 px-4 text-right">Valor Total</th>
-                <th class="py-3 px-4 text-right">Valor Pago</th>
-                <th class="py-3 px-4 text-right">Saldo Restante</th>
-                <th class="py-3 px-4 text-center">Pagamento</th>
-                <th class="py-3 px-4 text-center">Ações</th>
+                <th class="py-3 px-4 font-bold">Código / Peça</th>
+                <th class="py-3 px-4 font-bold">Cliente</th>
+                <th class="py-3 px-4 font-bold">Etapa Produção</th>
+                <th class="py-3 px-4 font-bold">Prazo / Entrega</th>
+                <th class="py-3 px-4 font-bold text-right">Valor Total</th>
+                <th class="py-3 px-4 font-bold text-right">Valor Pago</th>
+                <th class="py-3 px-4 font-bold text-right">Saldo Restante</th>
+                <th class="py-3 px-4 font-bold text-center">Pagamento</th>
+                <th class="py-3 px-4 font-bold text-center">Ações</th>
               </tr>
             </thead>
-            <tbody id="orders-table-body" class="divide-y divide-brand-darkBorder text-slate-300">
-            </tbody>
+            <tbody id="orders-table-body" class="divide-y divide-brand-darkBorder text-slate-200"></tbody>
           </table>
         </div>
         <div id="orders-empty-state" class="py-12 text-center text-slate-500 hidden">
-          <i data-lucide="package-open" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+          <div class="empty-state-icon"><i data-lucide="package-open" class="w-6 h-6 text-brand-gold"></i></div>
           Nenhum pedido encontrado para os filtros selecionados.
         </div>
       </div>
-
     </section>
 
     <!-- ==================== TAB: CLIENTES ==================== -->
     <section id="view-clientes" class="space-y-4 hidden">
-      
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-brand-darkCard p-4 rounded-xl border border-brand-darkBorder">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-brand-darkCard p-4 rounded-xl border border-brand-darkBorder shadow-sm">
         <div>
           <h2 class="text-xl font-serif font-bold text-slate-100">Carteira de Clientes</h2>
-          <p class="text-xs text-slate-400">Consolidação automática de compras, histórico e saldos em aberto.</p>
+          <p class="text-xs text-slate-400 mt-1">Consolidação automática de compras, histórico e saldos em aberto.</p>
         </div>
         <div class="flex items-center gap-2 w-full sm:w-auto">
           <div class="relative flex-1 sm:w-64">
             <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-            <input type="text" id="client-search" oninput="renderClientsTable()" placeholder="Buscar por nome, telefone..." class="w-full pl-9 pr-3 py-1.5 bg-brand-dark border border-brand-darkBorder rounded-lg text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-brand-gold">
+            <input type="text" id="client-search" placeholder="Buscar por nome, telefone..." class="w-full pl-9 pr-3 py-1.5 bg-brand-dark border border-brand-darkBorder rounded-lg text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-brand-gold">
           </div>
-          <button onclick="openNewClientModal()" class="bg-brand-gold hover:bg-brand-goldHover text-black text-xs font-semibold px-3 py-2 rounded-lg flex items-center gap-1 shrink-0">
-            <i data-lucide="user-plus" class="w-4 h-4"></i> Novo Cliente
-          </button>
+          <button onclick="openNewClientModal()" class="bg-brand-gold hover:bg-brand-goldHover text-brand-darkCard text-xs font-semibold px-3 py-2 rounded-lg flex items-center gap-1 shrink-0"><i data-lucide="user-plus" class="w-4 h-4"></i> Novo Cliente</button>
         </div>
       </div>
 
@@ -379,40 +298,33 @@
           <table class="w-full text-left text-sm">
             <thead class="bg-brand-dark/80 text-[11px] uppercase tracking-wider text-slate-400 border-b border-brand-darkBorder">
               <tr>
-                <th class="py-3 px-4">Cliente / Contato</th>
-                <th class="py-3 px-4 text-center">Pedidos</th>
-                <th class="py-3 px-4 text-right">Total Comprado</th>
-                <th class="py-3 px-4 text-right">Total Pago</th>
-                <th class="py-3 px-4 text-right">Saldo em Aberto</th>
-                <th class="py-3 px-4 text-center">Contato Rápido</th>
-                <th class="py-3 px-4 text-center">Ações</th>
+                <th class="py-3 px-4 font-bold">Cliente / Contato</th>
+                <th class="py-3 px-4 font-bold text-center">Pedidos</th>
+                <th class="py-3 px-4 font-bold text-right">Total Comprado</th>
+                <th class="py-3 px-4 font-bold text-right">Total Pago</th>
+                <th class="py-3 px-4 font-bold text-right">Saldo em Aberto</th>
+                <th class="py-3 px-4 font-bold text-center">Contato Rápido</th>
+                <th class="py-3 px-4 font-bold text-center">Ações</th>
               </tr>
             </thead>
-            <tbody id="clients-table-body" class="divide-y divide-brand-darkBorder text-slate-300">
-            </tbody>
+            <tbody id="clients-table-body" class="divide-y divide-brand-darkBorder text-slate-200"></tbody>
           </table>
         </div>
         <div id="clients-empty-state" class="py-12 text-center text-slate-500 hidden">
-          <i data-lucide="user-x" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+          <div class="empty-state-icon"><i data-lucide="user-x" class="w-6 h-6 text-brand-gold"></i></div>
           Nenhum cliente cadastrado.
         </div>
       </div>
-
     </section>
 
     <!-- ==================== TAB: PAGAMENTOS ==================== -->
     <section id="view-pagamentos" class="space-y-4 hidden">
-      
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-brand-darkCard p-4 rounded-xl border border-brand-darkBorder">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-brand-darkCard p-4 rounded-xl border border-brand-darkBorder shadow-sm">
         <div>
           <h2 class="text-xl font-serif font-bold text-slate-100">Livro de Pagamentos & Entradas</h2>
-          <p class="text-xs text-slate-400">Registro detalhado de cada sinal, parcela ou quitação de pedidos.</p>
+          <p class="text-xs text-slate-400 mt-1">Registro detalhado de cada sinal, parcela ou quitação de pedidos.</p>
         </div>
-        <div class="flex items-center gap-2">
-          <button onclick="openNewPaymentModal()" class="bg-brand-gold hover:bg-brand-goldHover text-black text-xs font-semibold px-3 py-2 rounded-lg flex items-center gap-1.5 shadow">
-            <i data-lucide="plus-circle" class="w-4 h-4"></i> Registrar Pagamento
-          </button>
-        </div>
+        <button onclick="openNewPaymentModal()" class="bg-brand-gold hover:bg-brand-goldHover text-brand-darkCard text-xs font-semibold px-3 py-2 rounded-lg flex items-center gap-1.5 shadow"><i data-lucide="plus-circle" class="w-4 h-4 text-brand-darkCard"></i> Registrar Pagamento</button>
       </div>
 
       <div class="bg-brand-darkCard border border-brand-darkBorder rounded-xl overflow-hidden shadow-sm">
@@ -420,25 +332,23 @@
           <table class="w-full text-left text-sm">
             <thead class="bg-brand-dark/80 text-[11px] uppercase tracking-wider text-slate-400 border-b border-brand-darkBorder">
               <tr>
-                <th class="py-3 px-4">Data</th>
-                <th class="py-3 px-4">Pedido Vinculado</th>
-                <th class="py-3 px-4">Cliente</th>
-                <th class="py-3 px-4">Forma de Pagamento</th>
-                <th class="py-3 px-4">Observações</th>
-                <th class="py-3 px-4 text-right">Valor Pago</th>
-                <th class="py-3 px-4 text-center">Ações</th>
+                <th class="py-3 px-4 font-bold">Data</th>
+                <th class="py-3 px-4 font-bold">Pedido Vinculado</th>
+                <th class="py-3 px-4 font-bold">Cliente</th>
+                <th class="py-3 px-4 font-bold">Forma de Pagamento</th>
+                <th class="py-3 px-4 font-bold">Observações</th>
+                <th class="py-3 px-4 font-bold text-right">Valor Pago</th>
+                <th class="py-3 px-4 font-bold text-center">Ações</th>
               </tr>
             </thead>
-            <tbody id="payments-table-body" class="divide-y divide-brand-darkBorder text-slate-300">
-            </tbody>
+            <tbody id="payments-table-body" class="divide-y divide-brand-darkBorder text-slate-200"></tbody>
           </table>
         </div>
         <div id="payments-empty-state" class="py-12 text-center text-slate-500 hidden">
-          <i data-lucide="credit-card" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+          <div class="empty-state-icon"><i data-lucide="credit-card" class="w-6 h-6 text-brand-gold"></i></div>
           Nenhum pagamento registrado até o momento.
         </div>
       </div>
-
     </section>
 
   </main>
@@ -446,32 +356,25 @@
   <!-- ==================== MODALS ==================== -->
 
   <!-- MODAL: NOVO / EDITAR PEDIDO -->
-  <div id="modal-order" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-brand-darkCard border border-brand-darkBorder rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl">
-      <div class="p-5 border-b border-brand-darkBorder flex justify-between items-center">
+  <div id="modal-order" class="modal-overlay fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="modal-panel bg-brand-darkCard border border-brand-darkBorder rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="modal-order-title">
+      <div class="p-5 border-b border-brand-darkBorder flex justify-between items-center bg-brand-dark">
         <h3 id="modal-order-title" class="font-serif font-bold text-lg text-slate-100">Novo Pedido de Alfaiataria</h3>
-        <button onclick="closeModal('modal-order')" class="text-slate-400 hover:text-white">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
+        <button onclick="closeModal('modal-order')" aria-label="Fechar" class="text-slate-400 hover:text-brand-gold"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
 
       <form id="order-form" onsubmit="handleSaveOrder(event)" class="p-5 space-y-4">
         <input type="hidden" id="order-id">
-
         <div>
           <div class="flex justify-between items-center mb-1">
-            <label class="text-xs font-medium text-slate-300">Cliente *</label>
-            <button type="button" onclick="openNewClientModal(true)" class="text-[11px] text-brand-gold hover:underline flex items-center gap-0.5">
-              + Cadastrar Novo
-            </button>
+            <label class="text-xs font-bold text-slate-300" for="order-client-id">Cliente *</label>
+            <button type="button" onclick="openNewClientModal(true)" class="text-[11px] font-bold text-brand-gold hover:underline flex items-center gap-0.5">+ Cadastrar Novo</button>
           </div>
-          <select id="order-client-id" required class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
-          </select>
+          <select id="order-client-id" required class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 font-medium focus:outline-none focus:border-brand-gold"></select>
         </div>
-
         <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">Peça / Produto *</label>
-          <select id="order-category" required class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
+          <label class="block text-xs font-bold text-slate-300 mb-1" for="order-category">Peça / Produto *</label>
+          <select id="order-category" required class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 font-medium focus:outline-none focus:border-brand-gold">
             <option value="Costume 2 Peças">Costume 2 Peças (Paletó e Calça)</option>
             <option value="Terno 3 Peças">Terno 3 Peças (Paletó, Colete e Calça)</option>
             <option value="Blazer Sob Medida">Blazer Sob Medida</option>
@@ -482,26 +385,26 @@
             <option value="Ajustes / Reformas">Ajustes & Reformas Premium</option>
           </select>
         </div>
-
         <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">Especificações do Tecido / Detalhes</label>
+          <label class="block text-xs font-bold text-slate-300 mb-1" for="order-description">Especificações do Tecido / Detalhes</label>
           <input type="text" id="order-description" placeholder="Ex: Lã Fria Super 130s Marinho, Forro Bemberg, Pesponto manual" class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
         </div>
-
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-medium text-slate-300 mb-1">Valor Total (R$) *</label>
-            <input type="number" step="0.01" min="0" id="order-total" required placeholder="0.00" class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
+            <label class="block text-xs font-bold text-slate-300 mb-1" for="order-total">Valor Total (R$) *</label>
+            <div class="relative">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-500">R$</span>
+              <input type="text" id="order-total" required placeholder="0,00" class="input-currency font-bold w-full bg-brand-dark border border-brand-darkBorder rounded-lg pl-9 pr-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
+            </div>
           </div>
           <div>
-            <label class="block text-xs font-medium text-slate-300 mb-1">Data Prometida de Entrega *</label>
-            <input type="date" id="order-deadline" required class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
+            <label class="block text-xs font-bold text-slate-300 mb-1" for="order-deadline">Data Prometida de Entrega *</label>
+            <input type="date" id="order-deadline" required class="w-full font-medium bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
           </div>
         </div>
-
         <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">Etapa de Produção</label>
-          <select id="order-status" class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
+          <label class="block text-xs font-bold text-slate-300 mb-1" for="order-status">Etapa de Produção</label>
+          <select id="order-status" class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm font-medium text-slate-100 focus:outline-none focus:border-brand-gold">
             <option value="Medição">1. Medição & Escolha de Tecido</option>
             <option value="Corte & Modelagem">2. Corte & Modelagem Individual</option>
             <option value="1ª Prova">3. 1ª Prova (Estrutura)</option>
@@ -511,109 +414,79 @@
             <option value="Entregue">7. Entregue ao Cliente</option>
           </select>
         </div>
-
         <div class="pt-4 border-t border-brand-darkBorder flex justify-end gap-3">
-          <button type="button" onclick="closeModal('modal-order')" class="px-4 py-2 text-xs font-medium text-slate-400 hover:text-slate-200">
-            Cancelar
-          </button>
-          <button type="submit" class="bg-brand-gold hover:bg-brand-goldHover text-black text-xs font-semibold px-5 py-2.5 rounded-lg">
-            Salvar Pedido
-          </button>
+          <button type="button" onclick="closeModal('modal-order')" class="px-4 py-2 text-xs font-bold text-slate-400 hover:text-slate-100 transition-colors">Cancelar</button>
+          <button type="submit" class="bg-brand-gold hover:bg-brand-goldHover text-brand-darkCard text-xs font-bold px-5 py-2.5 rounded-lg transition-colors">Salvar Pedido</button>
         </div>
       </form>
     </div>
   </div>
 
   <!-- MODAL: NOVO CLIENTE -->
-  <div id="modal-client" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-brand-darkCard border border-brand-darkBorder rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
-      <div class="p-5 border-b border-brand-darkBorder flex justify-between items-center">
+  <div id="modal-client" class="modal-overlay fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="modal-panel bg-brand-darkCard border border-brand-darkBorder rounded-2xl w-full max-w-md overflow-hidden shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="modal-client-title">
+      <div class="p-5 border-b border-brand-darkBorder flex justify-between items-center bg-brand-dark">
         <h3 id="modal-client-title" class="font-serif font-bold text-lg text-slate-100">Cadastrar Cliente</h3>
-        <button onclick="closeModal('modal-client')" class="text-slate-400 hover:text-white">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
+        <button onclick="closeModal('modal-client')" aria-label="Fechar" class="text-slate-400 hover:text-brand-gold"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
-
       <form id="client-form" onsubmit="handleSaveClient(event)" class="p-5 space-y-4">
         <input type="hidden" id="client-id">
-
         <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">Nome Completo *</label>
+          <label class="block text-xs font-bold text-slate-300 mb-1" for="client-name">Nome Completo *</label>
           <input type="text" id="client-name" required placeholder="Ex: Dr. Roberto Guimarães" class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
         </div>
-
         <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">WhatsApp / Telefone *</label>
-          <input type="tel" id="client-phone" required placeholder="(11) 98765-4321" class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
+          <label class="block text-xs font-bold text-slate-300 mb-1" for="client-phone">WhatsApp / Telefone *</label>
+          <input type="tel" id="client-phone" required placeholder="(11) 98765-4321" class="input-phone w-full font-medium bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
         </div>
-
         <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">E-mail</label>
+          <label class="block text-xs font-bold text-slate-300 mb-1" for="client-email">E-mail</label>
           <input type="email" id="client-email" placeholder="cliente@email.com" class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
         </div>
-
         <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">Observações de Medidas / Preferências</label>
-          <textarea id="client-notes" rows="2" placeholder="Ex: Preferência por ombros desestruturados, corte slim, forro monogramado." class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold"></textarea>
+          <label class="block text-xs font-bold text-slate-300 mb-1" for="client-notes">Observações e Preferências</label>
+          <textarea id="client-notes" rows="2" placeholder="Ex: Preferência por corte slim." class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold"></textarea>
         </div>
-
         <div class="pt-4 border-t border-brand-darkBorder flex justify-end gap-3">
-          <button type="button" onclick="closeModal('modal-client')" class="px-4 py-2 text-xs font-medium text-slate-400 hover:text-slate-200">
-            Cancelar
-          </button>
-          <button type="submit" class="bg-brand-gold hover:bg-brand-goldHover text-black text-xs font-semibold px-5 py-2.5 rounded-lg">
-            Salvar Cliente
-          </button>
+          <button type="button" onclick="closeModal('modal-client')" class="px-4 py-2 text-xs font-bold text-slate-400 hover:text-slate-100 transition-colors">Cancelar</button>
+          <button type="submit" class="bg-brand-gold hover:bg-brand-goldHover text-brand-darkCard text-xs font-bold px-5 py-2.5 rounded-lg transition-colors">Salvar Cliente</button>
         </div>
       </form>
     </div>
   </div>
 
   <!-- MODAL: REGISTRAR PAGAMENTO -->
-  <div id="modal-payment" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-brand-darkCard border border-brand-darkBorder rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
-      <div class="p-5 border-b border-brand-darkBorder flex justify-between items-center">
-        <h3 class="font-serif font-bold text-lg text-slate-100">Registrar Pagamento</h3>
-        <button onclick="closeModal('modal-payment')" class="text-slate-400 hover:text-white">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
+  <div id="modal-payment" class="modal-overlay fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="modal-panel bg-brand-darkCard border border-brand-darkBorder rounded-2xl w-full max-w-md overflow-hidden shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="modal-payment-title">
+      <div class="p-5 border-b border-brand-darkBorder flex justify-between items-center bg-brand-dark">
+        <h3 id="modal-payment-title" class="font-serif font-bold text-lg text-slate-100">Registrar Pagamento</h3>
+        <button onclick="closeModal('modal-payment')" aria-label="Fechar" class="text-slate-400 hover:text-brand-gold"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
-
       <form id="payment-form" onsubmit="handleSavePayment(event)" class="p-5 space-y-4">
+        <input type="hidden" id="payment-id">
         <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">Vincular ao Pedido *</label>
-          <select id="payment-order-id" onchange="updatePaymentHelperInfo()" required class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
-          </select>
+          <label class="block text-xs font-bold text-slate-300 mb-1" for="payment-order-id">Vincular ao Pedido *</label>
+          <select id="payment-order-id" onchange="updatePaymentHelperInfo()" required class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm font-medium text-slate-100 focus:outline-none focus:border-brand-gold"></select>
         </div>
-
         <div id="payment-order-summary" class="bg-brand-dark p-3 rounded-lg border border-brand-darkBorder text-xs space-y-1">
-          <div class="flex justify-between text-slate-400">
-            <span>Valor do Pedido:</span>
-            <span id="pay-sum-total" class="font-semibold text-slate-200">R$ 0,00</span>
-          </div>
-          <div class="flex justify-between text-slate-400">
-            <span>Já Pago anteriormente:</span>
-            <span id="pay-sum-paid" class="font-semibold text-emerald-400">R$ 0,00</span>
-          </div>
-          <div class="flex justify-between pt-1 border-t border-brand-darkBorder">
-            <span class="text-brand-gold font-medium">Saldo a Pagar:</span>
-            <span id="pay-sum-remaining" class="font-bold text-brand-gold">R$ 0,00</span>
+          <div class="flex justify-between text-slate-400 font-medium"><span>Valor do Pedido:</span><span id="pay-sum-total" class="font-bold text-slate-100">R$ 0,00</span></div>
+          <div class="flex justify-between text-slate-400 font-medium"><span>Já Pago anteriormente:</span><span id="pay-sum-paid" class="font-bold text-emerald-600">R$ 0,00</span></div>
+          <div class="flex justify-between pt-1 border-t border-brand-darkBorder"><span class="text-brand-gold font-bold">Saldo a Pagar:</span><span id="pay-sum-remaining" class="font-bold text-brand-gold">R$ 0,00</span></div>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1" for="payment-amount">Valor Deste Pagamento (R$) *</label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-500">R$</span>
+            <input type="text" id="payment-amount" required placeholder="0,00" class="input-currency font-bold w-full bg-brand-dark border border-brand-darkBorder rounded-lg pl-9 pr-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
           </div>
         </div>
-
         <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">Valor Deste Pagamento (R$) *</label>
-          <input type="number" step="0.01" min="0.01" id="payment-amount" required placeholder="0.00" class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
+          <label class="block text-xs font-bold text-slate-300 mb-1" for="payment-date">Data do Recebimento *</label>
+          <input type="date" id="payment-date" required class="w-full font-medium bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
         </div>
-
         <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">Data do Recebimento *</label>
-          <input type="date" id="payment-date" required class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
-        </div>
-
-        <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">Forma de Pagamento</label>
-          <select id="payment-method" class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
+          <label class="block text-xs font-bold text-slate-300 mb-1" for="payment-method">Forma de Pagamento</label>
+          <select id="payment-method" class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm font-medium text-slate-100 focus:outline-none focus:border-brand-gold">
             <option value="Pix">Pix (Instantâneo)</option>
             <option value="Cartão de Crédito">Cartão de Crédito</option>
             <option value="Cartão de Débito">Cartão de Débito</option>
@@ -621,1390 +494,148 @@
             <option value="Transferência Bancária">Transferência / TED</option>
           </select>
         </div>
-
         <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">Observações (Opcional)</label>
+          <label class="block text-xs font-bold text-slate-300 mb-1" for="payment-notes">Observações (Opcional)</label>
           <input type="text" id="payment-notes" placeholder="Ex: Entrada de 50% / Parcela 1 de 2" class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold">
         </div>
-
         <div class="pt-4 border-t border-brand-darkBorder flex justify-end gap-3">
-          <button type="button" onclick="closeModal('modal-payment')" class="px-4 py-2 text-xs font-medium text-slate-400 hover:text-slate-200">
-            Cancelar
-          </button>
-          <button type="submit" class="bg-brand-gold hover:bg-brand-goldHover text-black text-xs font-semibold px-5 py-2.5 rounded-lg">
-            Confirmar Pagamento
-          </button>
+          <button type="button" onclick="closeModal('modal-payment')" class="px-4 py-2 text-xs font-bold text-slate-400 hover:text-slate-100 transition-colors">Cancelar</button>
+          <button type="submit" class="bg-brand-gold hover:bg-brand-goldHover text-brand-darkCard text-xs font-bold px-5 py-2.5 rounded-lg transition-colors">Confirmar Pagamento</button>
         </div>
       </form>
     </div>
   </div>
 
   <!-- MODAL: DETALHES DO PEDIDO -->
-  <div id="modal-order-details" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-brand-darkCard border border-brand-darkBorder rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+  <div id="modal-order-details" class="modal-overlay fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="modal-panel bg-brand-darkCard border border-brand-darkBorder rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]" role="dialog" aria-modal="true">
       <div class="p-5 border-b border-brand-darkBorder flex justify-between items-center bg-brand-dark">
         <div>
           <span id="detail-order-code" class="text-xs font-mono font-bold text-brand-gold">PED-000</span>
           <h3 id="detail-order-title" class="font-serif font-bold text-lg text-slate-100">Detalhes do Pedido</h3>
         </div>
-        <button onclick="closeModal('modal-order-details')" class="text-slate-400 hover:text-white">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
+        <button onclick="closeModal('modal-order-details')" aria-label="Fechar" class="text-slate-400 hover:text-brand-gold"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
-
       <div class="p-6 space-y-6 overflow-y-auto flex-1">
-        <div class="grid grid-cols-2 gap-4 bg-brand-dark p-4 rounded-xl border border-brand-darkBorder text-xs">
+        <div class="grid grid-cols-2 gap-4 bg-brand-dark p-4 rounded-xl border border-brand-darkBorder text-xs shadow-sm">
           <div>
-            <span class="text-slate-500 uppercase tracking-wider block text-[10px]">Cliente</span>
-            <span id="detail-client-name" class="font-semibold text-slate-200 text-sm block mt-0.5">-</span>
-            <span id="detail-client-phone" class="text-slate-400 block">-</span>
+            <span class="text-slate-500 font-bold uppercase tracking-wider block text-[10px]">Cliente</span>
+            <span id="detail-client-name" class="font-bold text-slate-100 text-sm block mt-0.5">-</span>
+            <span id="detail-client-phone" class="text-slate-400 font-mono block">-</span>
           </div>
           <div>
-            <span class="text-slate-500 uppercase tracking-wider block text-[10px]">Peça / Tecido</span>
-            <span id="detail-category" class="font-semibold text-brand-gold text-sm block mt-0.5">-</span>
+            <span class="text-slate-500 font-bold uppercase tracking-wider block text-[10px]">Peça / Tecido</span>
+            <span id="detail-category" class="font-bold text-brand-gold text-sm block mt-0.5">-</span>
             <span id="detail-description" class="text-slate-400 block">-</span>
           </div>
           <div>
-            <span class="text-slate-500 uppercase tracking-wider block text-[10px]">Prazo de Entrega</span>
-            <span id="detail-deadline" class="font-medium text-slate-200 block mt-0.5">-</span>
+            <span class="text-slate-500 font-bold uppercase tracking-wider block text-[10px]">Prazo de Entrega</span>
+            <span id="detail-deadline" class="font-bold text-slate-100 block mt-0.5">-</span>
             <span id="detail-deadline-badge" class="mt-1 inline-block">-</span>
           </div>
           <div>
-            <span class="text-slate-500 uppercase tracking-wider block text-[10px]">Etapa de Alfaiataria</span>
-            <span id="detail-status" class="font-semibold text-slate-200 block mt-0.5">-</span>
+            <span class="text-slate-500 font-bold uppercase tracking-wider block text-[10px]">Etapa de Alfaiataria</span>
+            <span id="detail-status" class="font-bold text-slate-100 block mt-0.5">-</span>
           </div>
         </div>
-
         <div class="bg-brand-slate/40 p-4 rounded-xl border border-brand-darkBorder">
-          <h4 class="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-            <i data-lucide="receipt" class="w-4 h-4 text-brand-gold"></i>
-            Resumo Financeiro do Pedido
-          </h4>
+          <h4 class="text-xs font-bold text-slate-100 uppercase tracking-wider mb-3 flex items-center gap-1.5"><i data-lucide="receipt" class="w-4 h-4 text-brand-gold"></i> Resumo Financeiro do Pedido</h4>
           <div class="grid grid-cols-3 gap-2 text-center">
-            <div class="bg-brand-dark p-2.5 rounded-lg border border-brand-darkBorder">
-              <span class="text-[10px] text-slate-400 block">Total do Pedido</span>
-              <span id="detail-total-val" class="font-bold text-sm text-slate-100">R$ 0,00</span>
-            </div>
-            <div class="bg-brand-dark p-2.5 rounded-lg border border-brand-darkBorder">
-              <span class="text-[10px] text-slate-400 block">Total Já Pago</span>
-              <span id="detail-paid-val" class="font-bold text-sm text-emerald-400">R$ 0,00</span>
-            </div>
-            <div class="bg-brand-dark p-2.5 rounded-lg border border-brand-darkBorder">
-              <span class="text-[10px] text-slate-400 block">Saldo Restante</span>
-              <span id="detail-remaining-val" class="font-bold text-sm text-amber-400">R$ 0,00</span>
-            </div>
+            <div class="bg-brand-dark p-2.5 rounded-lg border border-brand-darkBorder"><span class="text-[10px] font-bold text-slate-400 block">Total do Pedido</span><span id="detail-total-val" class="font-bold text-sm text-slate-100">R$ 0,00</span></div>
+            <div class="bg-brand-dark p-2.5 rounded-lg border border-brand-darkBorder"><span class="text-[10px] font-bold text-slate-400 block">Total Já Pago</span><span id="detail-paid-val" class="font-bold text-sm text-emerald-600">R$ 0,00</span></div>
+            <div class="bg-brand-dark p-2.5 rounded-lg border border-brand-darkBorder"><span class="text-[10px] font-bold text-slate-400 block">Saldo Restante</span><span id="detail-remaining-val" class="font-bold text-sm text-amber-600">R$ 0,00</span></div>
           </div>
         </div>
-
         <div>
           <div class="flex justify-between items-center mb-2">
-            <h4 class="text-xs font-semibold text-slate-300 uppercase tracking-wider">
-              Histórico de Pagamentos Deste Pedido
-            </h4>
-            <button id="btn-add-payment-to-this-order" class="text-xs text-brand-gold hover:underline flex items-center gap-1">
-              <i data-lucide="plus" class="w-3 h-3"></i> Adicionar Pagamento
-            </button>
+            <h4 class="text-xs font-bold text-slate-100 uppercase tracking-wider">Histórico de Pagamentos</h4>
+            <button id="btn-add-payment-to-this-order" class="text-xs font-bold text-brand-gold hover:underline flex items-center gap-1"><i data-lucide="plus" class="w-3 h-3"></i> Adicionar Pagamento</button>
           </div>
-          <div id="detail-payments-list" class="space-y-2">
-          </div>
+          <div id="detail-payments-list" class="space-y-2"></div>
         </div>
       </div>
-
       <div class="p-4 border-t border-brand-darkBorder flex justify-end gap-2 bg-brand-dark">
-        <button onclick="closeModal('modal-order-details')" class="bg-brand-slate hover:bg-slate-700 text-slate-200 text-xs font-medium px-4 py-2 rounded-lg">
-          Fechar
-        </button>
+        <button onclick="closeModal('modal-order-details')" class="bg-brand-slate hover:bg-brand-darkBorder text-slate-100 text-xs font-bold px-4 py-2 rounded-lg transition-colors">Fechar</button>
       </div>
     </div>
   </div>
 
-  <!-- ==================== JAVASCRIPT APPLICATION LOGIC ==================== -->
-  <script>
-    // URL OFICIAL FORNECIDA DO GOOGLE APPS SCRIPT
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzakRzQJnIMTYRvkMwU40hEy5PDZHIQV6PblEsj2j1gmhdO38ZqTKWpoHALiqGD6ZYMcw/exec";
-
-    // Dados Iniciais Fictícios de Demonstração (Fallback)
-    const INITIAL_DATA = {
-      clients: [
-        {
-          id: "cli-1",
-          name: "Dr. Eduardo Alencar",
-          phone: "11998765432",
-          email: "eduardo.alencar@advocacia.com.br",
-          notes: "Gosta de corte clássico inglês, ombro estruturado.",
-          createdAt: "2026-02-15"
-        },
-        {
-          id: "cli-2",
-          name: "Gabriel Vasconcelos",
-          phone: "11987651234",
-          email: "gabriel.v@invest.com.br",
-          notes: "Noivo. Casamento em breve. Detalhe bordado no bolso interno.",
-          createdAt: "2026-02-20"
-        },
-        {
-          id: "cli-3",
-          name: "Carlos Henrique Siqueira",
-          phone: "21991234567",
-          email: "carlos.siqueira@construtora.com",
-          notes: "Cliente de camisaria sob medida frequente. Gola italiana.",
-          createdAt: "2026-02-28"
-        },
-        {
-          id: "cli-4",
-          name: "Marcos Vinicius Prado",
-          phone: "11977778888",
-          email: "marcos.prado@tech.io",
-          notes: "Blazer informal desestruturado e calças de sarja.",
-          createdAt: "2026-03-01"
-        }
-      ],
-      orders: [
-        {
-          id: "ord-1",
-          code: "PED-101",
-          clientId: "cli-1",
-          category: "Costume 2 Peças",
-          description: "Lã Fria Super 130s Azul Marinho Pinstripe",
-          totalValue: 5800.00,
-          deadline: "2026-03-01",
-          status: "Ajustes Finais",
-          createdAt: "2026-02-16"
-        },
-        {
-          id: "ord-2",
-          code: "PED-102",
-          clientId: "cli-2",
-          category: "Terno 3 Peças",
-          description: "Terno de Gala Cinza Chumbo com Colete Seda e Forro Jacquard",
-          totalValue: 7500.00,
-          deadline: getTodayIsoString(),
-          status: "Pronto p/ Entrega",
-          createdAt: "2026-02-20"
-        },
-        {
-          id: "ord-3",
-          code: "PED-103",
-          clientId: "cli-3",
-          category: "Camisa Sob Medida",
-          description: "Kit com 3 Camisas Puro Algodão Egípcio 200 fios Branco e Azul Céu",
-          totalValue: 2400.00,
-          deadline: getFutureIsoDate(10),
-          status: "1ª Prova",
-          createdAt: "2026-02-28"
-        },
-        {
-          id: "ord-4",
-          code: "PED-104",
-          clientId: "cli-4",
-          category: "Blazer Sob Medida",
-          description: "Blazer Italiano Verde Oliva em Linho com Seda",
-          totalValue: 3900.00,
-          deadline: getFutureIsoDate(15),
-          status: "Corte & Modelagem",
-          createdAt: "2026-03-02"
-        }
-      ],
-      payments: [
-        {
-          id: "pay-1",
-          orderId: "ord-1",
-          amount: 3000.00,
-          date: "2026-02-16",
-          method: "Pix",
-          notes: "Sinal de 50% no fechamento do corte"
-        },
-        {
-          id: "pay-2",
-          orderId: "ord-2",
-          amount: 4000.00,
-          date: "2026-02-20",
-          method: "Cartão de Crédito",
-          notes: "Entrada na medição"
-        },
-        {
-          id: "pay-3",
-          orderId: "ord-2",
-          amount: 3500.00,
-          date: getTodayIsoString(),
-          method: "Pix",
-          notes: "Quitação final no ato da liberação"
-        },
-        {
-          id: "pay-4",
-          orderId: "ord-3",
-          amount: 1200.00,
-          date: "2026-02-28",
-          method: "Pix",
-          notes: "Entrada"
-        }
-      ]
-    };
-
-    // Application State
-    let appState = {
-      clients: [],
-      orders: [],
-      payments: []
-    };
-
-    let financialChartInstance = null;
-    let statusChartInstance = null;
-    let syncTimeout = null;
-
-    // Helpers
-    function getTodayIsoString() {
-      const now = new Date();
-      return now.toISOString().split('T')[0];
-    }
-
-    function getFutureIsoDate(daysAhead) {
-      const d = new Date();
-      d.setDate(d.getDate() + daysAhead);
-      return d.toISOString().split('T')[0];
-    }
-
-    function formatBRL(value) {
-      return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-      }).format(Number(value) || 0);
-    }
-
-    function formatDate(dateStr) {
-      if (!dateStr) return '-';
-      const clean = String(dateStr).split('T')[0];
-      const parts = clean.split('-');
-      if (parts.length === 3) {
-        return `${parts[2]}/${parts[1]}/${parts[0]}`;
-      }
-      return dateStr;
-    }
-
-    function showToast(message, type = 'info') {
-      const container = document.getElementById('toast-container');
-      const toast = document.createElement('div');
+  <!-- MODAL: Ficha de Medidas & PDF -->
+  <div id="modal-measurements" class="modal-overlay fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="modal-panel bg-brand-darkCard border border-brand-darkBorder rounded-2xl w-full max-w-4xl overflow-hidden shadow-2xl flex flex-col max-h-[95vh]" role="dialog" aria-modal="true" aria-labelledby="modal-measurements-title">
       
-      let borderClass = 'border-slate-700 bg-brand-darkCard text-slate-100';
-      let icon = 'info';
+      <div class="p-5 border-b border-brand-darkBorder flex justify-between items-center bg-brand-dark">
+        <div>
+          <h3 id="modal-measurements-title" class="font-serif font-bold text-lg text-slate-100">Ficha de Medidas</h3>
+          <span id="meas-client-name" class="text-xs font-bold text-brand-gold mt-0.5 block">Nome do Cliente</span>
+        </div>
+        <button onclick="closeModal('modal-measurements')" aria-label="Fechar" class="text-slate-400 hover:text-brand-gold"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
 
-      if (type === 'success') {
-        borderClass = 'border-emerald-500/50 bg-brand-darkCard text-emerald-300';
-        icon = 'check-circle';
-      } else if (type === 'error') {
-        borderClass = 'border-red-500/50 bg-brand-darkCard text-red-300';
-        icon = 'alert-triangle';
-      }
-
-      toast.className = `flex items-start gap-2.5 px-4 py-3 rounded-xl border ${borderClass} shadow-2xl text-xs font-medium transition-all transform duration-300 opacity-0 translate-y-2 pointer-events-auto`;
-      toast.innerHTML = `<i data-lucide="${icon}" class="w-4 h-4 shrink-0 mt-0.5"></i> <div class="flex-1 leading-snug">${message}</div>`;
-      
-      container.appendChild(toast);
-      lucide.createIcons();
-
-      requestAnimationFrame(() => {
-        toast.classList.remove('opacity-0', 'translate-y-2');
-      });
-
-      setTimeout(() => {
-        toast.classList.add('opacity-0', '-translate-y-2');
-        setTimeout(() => toast.remove(), 400);
-      }, 4000);
-    }
-
-    // Indicator Controller
-    function updateSyncIndicator(state, message) {
-      const badge = document.getElementById('sync-status-badge');
-      const dot = document.getElementById('sync-dot');
-      const text = document.getElementById('sync-text');
-
-      if (!badge || !dot || !text) return;
-
-      if (state === 'syncing') {
-        badge.className = "inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20";
-        dot.className = "w-2 h-2 rounded-full bg-amber-400 animate-ping";
-        text.textContent = message || "Gravando na planilha...";
-      } else if (state === 'success') {
-        badge.className = "inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
-        dot.className = "w-2 h-2 rounded-full bg-emerald-400";
-        text.textContent = message || "Planilha Conectada";
-      } else if (state === 'error') {
-        badge.className = "inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium bg-red-500/10 text-red-400 border border-red-500/20";
-        dot.className = "w-2 h-2 rounded-full bg-red-400";
-        text.textContent = message || "Falha na conexão";
-      }
-    }
-
-    // Repository: Local Cache
-    function loadLocalCache() {
-      try {
-        const stored = localStorage.getItem('OSeuAlfaiate_CRM_Data');
-        if (stored) {
-          appState = JSON.parse(stored);
-        } else {
-          appState = JSON.parse(JSON.stringify(INITIAL_DATA));
-          saveLocalCache();
-        }
-      } catch (err) {
-        appState = JSON.parse(JSON.stringify(INITIAL_DATA));
-      }
-    }
-
-    function saveLocalCache() {
-      try {
-        localStorage.setItem('OSeuAlfaiate_CRM_Data', JSON.stringify(appState));
-      } catch (err) {
-        console.error("Erro ao salvar cache local:", err);
-      }
-    }
-
-    // ================= REAL-TIME GOOGLE SHEETS ENGINE =================
-
-    // 1. PUSH: Transmite alterações em tempo real para a planilha
-    function triggerRealtimeSync() {
-      saveLocalCache();
-      updateSyncIndicator('syncing', 'Gravando na planilha...');
-
-      if (syncTimeout) clearTimeout(syncTimeout);
-
-      syncTimeout = setTimeout(async () => {
-        try {
-          const response = await fetch(WEB_APP_URL, {
-            method: 'POST',
-            redirect: 'follow',
-            headers: {
-              'Content-Type': 'text/plain;charset=utf-8'
-            },
-            body: JSON.stringify({
-              action: 'SYNC_ALL',
-              clients: appState.clients,
-              orders: appState.orders,
-              payments: appState.payments
-            })
-          });
-
-          if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-          }
-
-          const res = await response.json();
-          if (res.status === 'success') {
-            updateSyncIndicator('success', 'Planilha Atualizada');
-          } else {
-            throw new Error(res.message || 'Erro no retorno do script');
-          }
-        } catch (err) {
-          console.warn("Aviso de sincronização remota:", err);
-          updateSyncIndicator('success', 'Salvo (Cache Local)');
-        }
-      }, 400);
-    }
-
-    // 2. PULL: Busca dados atualizados da planilha
-    async function fetchFromGoogleSheets(isManual = false) {
-      const btn = document.getElementById('btn-manual-reload');
-      if (btn) btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin text-brand-gold"></i>';
-      lucide.createIcons();
-
-      updateSyncIndicator('syncing', 'Carregando planilha...');
-
-      try {
-        const response = await fetch(WEB_APP_URL, {
-          method: 'GET',
-          redirect: 'follow'
-        });
-
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const data = await response.json();
-
-        if (data.status === 'error') {
-          throw new Error(data.message || 'Erro retornado pela planilha');
-        }
-
-        const normalized = normalizeGoogleSheetData(data);
-
-        let hasData = false;
-        if (normalized.clients.length > 0) {
-          appState.clients = normalized.clients;
-          hasData = true;
-        }
-        if (normalized.orders.length > 0) {
-          appState.orders = normalized.orders;
-          hasData = true;
-        }
-        if (normalized.payments.length > 0) {
-          appState.payments = normalized.payments;
-          hasData = true;
-        }
-
-        if (hasData) {
-          saveLocalCache();
-        }
-
-        updateSyncIndicator('success', 'Planilha Conectada');
-        refreshData();
-        if (isManual) showToast('Dados atualizados com a planilha do Google!', 'success');
-
-      } catch (err) {
-        console.warn("Erro ao buscar dados da planilha:", err);
-        updateSyncIndicator('success', 'Modo Offline (Dados Locais)');
-        if (isManual) showToast('Usando dados em memória local.', 'info');
-      } finally {
-        if (btn) btn.innerHTML = '<i data-lucide="rotate-cw" class="w-4 h-4"></i>';
-        lucide.createIcons();
-      }
-    }
-
-    // Normalizador de Cabeçalhos e Formatos
-    function normalizeGoogleSheetData(remoteData) {
-      let normalizedClients = [];
-      let normalizedOrders = [];
-      let normalizedPayments = [];
-
-      // Clientes
-      if (Array.isArray(remoteData.clients) && remoteData.clients.length > 0) {
-        normalizedClients = remoteData.clients.map((c, index) => {
-          const id = String(c.id || c['ID'] || c['Código'] || `cli-${index + 1}`).trim();
-          const name = String(c.name || c['Nome'] || c['Cliente'] || c['NOME'] || `Cliente ${index + 1}`).trim();
-          const phone = String(c.phone || c['Telefone'] || c['WhatsApp'] || c['Celular'] || '').trim();
-          const email = String(c.email || c['E-mail'] || c['Email'] || '').trim();
-          const notes = String(c.notes || c['Observações'] || c['Notas'] || '').trim();
-          return { id, name, phone, email, notes, createdAt: getTodayIsoString() };
-        });
-      }
-
-      // Pedidos
-      if (Array.isArray(remoteData.orders) && remoteData.orders.length > 0) {
-        normalizedOrders = remoteData.orders.map((o, index) => {
-          const id = String(o.id || o['ID'] || `ord-${index + 1}`).trim();
-          const code = String(o.code || o['Código'] || o['CODIGO'] || o['Pedido'] || `PED-${100 + index + 1}`).trim();
-          
-          let clientId = String(o.clientId || o['Cliente ID'] || o['ID Cliente'] || '').trim();
-          if (!clientId && (o['Cliente'] || o['Nome'])) {
-            const clientName = String(o['Cliente'] || o['Nome']).toLowerCase();
-            const found = normalizedClients.find(c => c.name.toLowerCase() === clientName);
-            if (found) clientId = found.id;
-          }
-          if (!clientId && normalizedClients.length > 0) {
-            clientId = normalizedClients[0].id;
-          }
-
-          const category = String(o.category || o['Produto'] || o['Peça'] || o['Categoria'] || 'Costume 2 Peças').trim();
-          const description = String(o.description || o['Descrição'] || o['Tecido'] || '').trim();
-          
-          let rawVal = o.totalValue || o['Valor'] || o['Valor Total'] || o['Total'] || 0;
-          if (typeof rawVal === 'string') {
-            rawVal = rawVal.replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
-          }
-          const totalValue = parseFloat(rawVal) || 0;
-
-          let deadline = String(o.deadline || o['Prazo'] || o['Data de Entrega'] || o['Entrega'] || getFutureIsoDate(10)).trim();
-          if (deadline.includes('T')) deadline = deadline.split('T')[0];
-
-          const status = String(o.status || o['Status'] || o['Etapa'] || '1ª Prova').trim();
-
-          return {
-            id,
-            code,
-            clientId: clientId || 'cli-1',
-            category,
-            description,
-            totalValue,
-            deadline,
-            status,
-            createdAt: getTodayIsoString()
-          };
-        });
-      }
-
-      // Pagamentos
-      if (Array.isArray(remoteData.payments) && remoteData.payments.length > 0) {
-        normalizedPayments = remoteData.payments.map((p, index) => {
-          const id = String(p.id || p['ID'] || `pay-${index + 1}`).trim();
-          let orderId = String(p.orderId || p['Pedido ID'] || p['ID Pedido'] || '').trim();
-          
-          if (!orderId && (p['Pedido'] || p['Código'])) {
-            const orderCode = String(p['Pedido'] || p['Código']).trim();
-            const found = normalizedOrders.find(o => o.code === orderCode);
-            if (found) orderId = found.id;
-          }
-          if (!orderId && normalizedOrders.length > 0) {
-            orderId = normalizedOrders[0].id;
-          }
-
-          let rawAmount = p.amount || p['Valor'] || p['Valor Pago'] || 0;
-          if (typeof rawAmount === 'string') {
-            rawAmount = rawAmount.replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
-          }
-          const amount = parseFloat(rawAmount) || 0;
-
-          let date = String(p.date || p['Data'] || getTodayIsoString()).trim();
-          if (date.includes('T')) date = date.split('T')[0];
-
-          const method = String(p.method || p['Forma de Pagamento'] || p['Método'] || 'Pix').trim();
-          const notes = String(p.notes || p['Observações'] || '').trim();
-
-          return { id, orderId, amount, date, method, notes };
-        });
-      }
-
-      return {
-        clients: normalizedClients,
-        orders: normalizedOrders,
-        payments: normalizedPayments
-      };
-    }
-
-    // Cálculos
-    function calculateOrderFinancials(orderId) {
-      const order = appState.orders.find(o => o.id === orderId);
-      if (!order) return { paid: 0, remaining: 0, status: 'Em aberto' };
-
-      const orderPayments = appState.payments.filter(p => p.orderId === orderId);
-      const paid = orderPayments.reduce((acc, curr) => acc + Number(curr.amount || 0), 0);
-      const remaining = Math.max(0, Number(order.totalValue) - paid);
-
-      let status = 'Em aberto';
-      if (paid >= Number(order.totalValue)) {
-        status = 'Pago';
-      } else if (paid > 0) {
-        status = 'Parcial';
-      }
-
-      return { paid, remaining, status };
-    }
-
-    function calculateOrderDeadline(deadlineStr, orderStatus) {
-      if (orderStatus === 'Entregue') {
-        return { label: 'Entregue', class: 'badge-entregue' };
-      }
-
-      const today = getTodayIsoString();
-      if (!deadlineStr) return { label: 'Sem prazo', class: 'bg-slate-800 text-slate-400' };
-
-      const cleanDeadline = String(deadlineStr).split('T')[0];
-
-      if (cleanDeadline < today) {
-        return { label: 'Atrasado', class: 'badge-atrasado' };
-      } else if (cleanDeadline === today) {
-        return { label: 'Entrega hoje', class: 'badge-hoje' };
-      } else {
-        return { label: 'No prazo', class: 'badge-prazo' };
-      }
-    }
-
-    function calculateClientFinancials(clientId) {
-      const clientOrders = appState.orders.filter(o => o.clientId === clientId);
-      const ordersCount = clientOrders.length;
-      
-      let totalBought = 0;
-      let totalPaid = 0;
-
-      clientOrders.forEach(o => {
-        totalBought += Number(o.totalValue || 0);
-        const { paid } = calculateOrderFinancials(o.id);
-        totalPaid += paid;
-      });
-
-      const balance = Math.max(0, totalBought - totalPaid);
-      return { ordersCount, totalBought, totalPaid, balance };
-    }
-
-    // Controle de Abas
-    function switchTab(tabName) {
-      const tabs = ['dashboard', 'pedidos', 'clientes', 'pagamentos'];
-      tabs.forEach(t => {
-        const view = document.getElementById(`view-${t}`);
-        const btn = document.getElementById(`tab-btn-${t}`);
-        const mBtn = document.getElementById(`m-tab-${t}`);
-
-        if (view) {
-          if (t === tabName) view.classList.remove('hidden');
-          else view.classList.add('hidden');
-        }
-        if (btn) {
-          if (t === tabName) {
-            btn.className = "nav-tab px-3 py-2 rounded-md text-sm font-medium text-brand-gold bg-brand-darkBorder transition-all flex items-center gap-2";
-          } else {
-            btn.className = "nav-tab px-3 py-2 rounded-md text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-brand-slate transition-all flex items-center gap-2";
-          }
-        }
-        if (mBtn) {
-          if (t === tabName) {
-            mBtn.className = "flex flex-col items-center text-[10px] text-brand-gold py-1";
-          } else {
-            mBtn.className = "flex flex-col items-center text-[10px] text-slate-400 py-1";
-          }
-        }
-      });
-
-      if (tabName === 'dashboard') renderDashboard();
-      else if (tabName === 'pedidos') renderOrdersTable();
-      else if (tabName === 'clientes') renderClientsTable();
-      else if (tabName === 'pagamentos') renderPaymentsTable();
-
-      lucide.createIcons();
-    }
-
-    // Dashboard
-    function renderDashboard() {
-      let totalFaturado = 0;
-      let totalRecebido = 0;
-      let totalEmAberto = 0;
-
-      let noPrazoCount = 0;
-      let hojeCount = 0;
-      let atrasadoCount = 0;
-      let entreguesCount = 0;
-
-      appState.orders.forEach(order => {
-        totalFaturado += Number(order.totalValue || 0);
-        const fin = calculateOrderFinancials(order.id);
-        totalRecebido += fin.paid;
-        totalEmAberto += fin.remaining;
-
-        const dl = calculateOrderDeadline(order.deadline, order.status);
-        if (dl.label === 'No prazo') noPrazoCount++;
-        else if (dl.label === 'Entrega hoje') hojeCount++;
-        else if (dl.label === 'Atrasado') atrasadoCount++;
-        else if (dl.label === 'Entregue') entreguesCount++;
-      });
-
-      const taxa = totalFaturado > 0 ? ((totalRecebido / totalFaturado) * 100).toFixed(0) : 0;
-
-      document.getElementById('metric-faturamento').textContent = formatBRL(totalFaturado);
-      document.getElementById('metric-recebido').textContent = formatBRL(totalRecebido);
-      document.getElementById('metric-taxa-recebimento').textContent = `${taxa}% já liquidado em caixa`;
-      document.getElementById('metric-aberto').textContent = formatBRL(totalEmAberto);
-      
-      document.getElementById('metric-clientes').textContent = appState.clients.length;
-      document.getElementById('metric-pedidos-count').textContent = `${appState.orders.length} pedidos cadastrados`;
-
-      document.getElementById('metric-no-prazo').textContent = noPrazoCount;
-      document.getElementById('metric-hoje').textContent = hojeCount;
-      document.getElementById('metric-atrasado').textContent = atrasadoCount;
-      document.getElementById('metric-entregues').textContent = entreguesCount;
-
-      renderAlertBanner(atrasadoCount, hojeCount);
-      updateCharts(totalRecebido, totalEmAberto, noPrazoCount, hojeCount, atrasadoCount, entreguesCount);
-    }
-
-    function renderAlertBanner(atrasados, hoje) {
-      const container = document.getElementById('alert-box-container');
-      container.innerHTML = '';
-
-      if (atrasados > 0 || hoje > 0) {
-        const box = document.createElement('div');
-        box.className = "bg-brand-darkCard border border-amber-500/30 p-4 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg";
-        box.innerHTML = `
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
-              <i data-lucide="alert-octagon" class="w-5 h-5"></i>
-            </div>
-            <div>
-              <h4 class="text-sm font-semibold text-slate-100">Atenção aos Prazos do Atelier</h4>
-              <p class="text-xs text-slate-400 mt-0.5">
-                ${atrasados > 0 ? `<strong class="text-red-400 font-bold">${atrasados} pedido(s) atrasado(s)</strong>. ` : ''}
-                ${hoje > 0 ? `<strong class="text-amber-400 font-bold">${hoje} entrega(s) para hoje</strong>.` : ''}
-              </p>
-            </div>
+      <div class="p-5 overflow-y-auto flex-1 space-y-5">
+        <!-- Checklist para o PDF -->
+        <div class="bg-brand-dark p-4 rounded-xl border border-brand-darkBorder shadow-sm">
+          <h4 class="text-xs font-bold text-slate-100 uppercase tracking-wider mb-3">Selecione as peças para incluir no PDF:</h4>
+          <div class="flex flex-wrap gap-5 text-sm font-bold text-slate-300">
+            <label class="flex items-center gap-2 cursor-pointer hover:text-brand-gold transition"><input type="checkbox" id="chk-paleto" class="accent-brand-gold w-4 h-4" checked> Paletó</label>
+            <label class="flex items-center gap-2 cursor-pointer hover:text-brand-gold transition"><input type="checkbox" id="chk-calca" class="accent-brand-gold w-4 h-4" checked> Calça</label>
+            <label class="flex items-center gap-2 cursor-pointer hover:text-brand-gold transition"><input type="checkbox" id="chk-colete" class="accent-brand-gold w-4 h-4" checked> Colete</label>
+            <label class="flex items-center gap-2 cursor-pointer hover:text-brand-gold transition"><input type="checkbox" id="chk-camisa" class="accent-brand-gold w-4 h-4" checked> Camisa</label>
           </div>
-          <button onclick="switchTab('pedidos')" class="text-xs font-semibold px-4 py-2 rounded-lg bg-brand-slate hover:bg-slate-700 text-brand-gold border border-brand-gold/30 shrink-0">
-            Verificar Pedidos & Provas
-          </button>
-        `;
-        container.appendChild(box);
-      }
-    }
-
-    function updateCharts(recebido, aberto, noPrazo, hoje, atrasado, entregue) {
-      const ctxFin = document.getElementById('chartFinancial')?.getContext('2d');
-      if (ctxFin) {
-        if (financialChartInstance) financialChartInstance.destroy();
-
-        const recentOrders = [...appState.orders].slice(-6);
-        const labels = recentOrders.map(o => o.code);
-        const dataTotal = recentOrders.map(o => o.totalValue);
-        const dataPaid = recentOrders.map(o => calculateOrderFinancials(o.id).paid);
-
-        financialChartInstance = new Chart(ctxFin, {
-          type: 'bar',
-          data: {
-            labels: labels.length ? labels : ['Sem dados'],
-            datasets: [
-              {
-                label: 'Valor Total (R$)',
-                data: dataTotal.length ? dataTotal : [0],
-                backgroundColor: 'rgba(197, 160, 89, 0.4)',
-                borderColor: '#C5A059',
-                borderWidth: 1.5,
-                borderRadius: 4
-              },
-              {
-                label: 'Valor Pago (R$)',
-                data: dataPaid.length ? dataPaid : [0],
-                backgroundColor: 'rgba(16, 185, 129, 0.5)',
-                borderColor: '#10B981',
-                borderWidth: 1.5,
-                borderRadius: 4
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                labels: { color: '#94a3b8', font: { family: 'Inter', size: 11 } }
-              }
-            },
-            scales: {
-              x: {
-                grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                ticks: { color: '#94a3b8' }
-              },
-              y: {
-                grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                ticks: {
-                  color: '#94a3b8',
-                  callback: (v) => 'R$ ' + v
-                }
-              }
-            }
-          }
-        });
-      }
-
-      const ctxStat = document.getElementById('chartStatus')?.getContext('2d');
-      if (ctxStat) {
-        if (statusChartInstance) statusChartInstance.destroy();
-
-        statusChartInstance = new Chart(ctxStat, {
-          type: 'doughnut',
-          data: {
-            labels: ['No Prazo', 'Hoje', 'Atrasado', 'Entregue'],
-            datasets: [{
-              data: [noPrazo, hoje, atrasado, entregue],
-              backgroundColor: ['#3b82f6', '#f59e0b', '#ef4444', '#10b981'],
-              borderColor: '#131A2B',
-              borderWidth: 3
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                position: 'bottom',
-                labels: { color: '#94a3b8', font: { family: 'Inter', size: 11 } }
-              }
-            },
-            cutout: '70%'
-          }
-        });
-      }
-    }
-
-    // Pedidos
-    function renderOrdersTable() {
-      const tbody = document.getElementById('orders-table-body');
-      const emptyState = document.getElementById('orders-empty-state');
-      const query = (document.getElementById('order-search')?.value || '').toLowerCase();
-      const filterDeadline = document.getElementById('order-filter-deadline')?.value || 'ALL';
-      const filterPayment = document.getElementById('order-filter-payment')?.value || 'ALL';
-
-      tbody.innerHTML = '';
-
-      const filtered = appState.orders.filter(order => {
-        const client = appState.clients.find(c => c.id === order.clientId);
-        const clientName = client ? client.name.toLowerCase() : '';
-        const matchesQuery = order.code.toLowerCase().includes(query) ||
-                             order.category.toLowerCase().includes(query) ||
-                             order.description.toLowerCase().includes(query) ||
-                             clientName.includes(query);
-
-        if (!matchesQuery) return false;
-
-        const dl = calculateOrderDeadline(order.deadline, order.status);
-        if (filterDeadline !== 'ALL' && dl.label !== filterDeadline) return false;
-
-        const fin = calculateOrderFinancials(order.id);
-        if (filterPayment !== 'ALL' && fin.status !== filterPayment) return false;
-
-        return true;
-      });
-
-      if (filtered.length === 0) {
-        emptyState.classList.remove('hidden');
-        return;
-      }
-      emptyState.classList.add('hidden');
-
-      filtered.forEach(order => {
-        const client = appState.clients.find(c => c.id === order.clientId);
-        const { paid, remaining, status: payStatus } = calculateOrderFinancials(order.id);
-        const dl = calculateOrderDeadline(order.deadline, order.status);
-
-        let payBadgeClass = "bg-red-500/10 text-red-400 border border-red-500/20";
-        if (payStatus === 'Pago') payBadgeClass = "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
-        if (payStatus === 'Parcial') payBadgeClass = "bg-amber-500/10 text-amber-400 border border-amber-500/20";
-
-        const tr = document.createElement('tr');
-        tr.className = "hover:bg-brand-slate/40 transition-colors";
-        tr.innerHTML = `
-          <td class="py-3 px-4 font-mono text-xs">
-            <span class="font-bold text-brand-gold cursor-pointer hover:underline" onclick="openOrderDetailsModal('${order.id}')">${order.code}</span>
-            <span class="block text-[11px] text-slate-400 font-sans mt-0.5 truncate max-w-[180px]">${order.category}</span>
-          </td>
-          <td class="py-3 px-4 font-medium text-slate-200">
-            ${client ? client.name : '<span class="text-slate-500">Cliente Removido</span>'}
-          </td>
-          <td class="py-3 px-4 text-xs text-slate-300">
-            <span class="inline-flex items-center px-2 py-0.5 rounded bg-brand-slate border border-slate-700 text-[11px]">
-              ${order.status}
-            </span>
-          </td>
-          <td class="py-3 px-4 text-xs">
-            <div class="font-medium text-slate-300">${formatDate(order.deadline)}</div>
-            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full inline-block mt-0.5 ${dl.class}">
-              ${dl.label}
-            </span>
-          </td>
-          <td class="py-3 px-4 text-right font-medium text-slate-100">
-            ${formatBRL(order.totalValue)}
-          </td>
-          <td class="py-3 px-4 text-right text-emerald-400 font-medium">
-            ${formatBRL(paid)}
-          </td>
-          <td class="py-3 px-4 text-right font-semibold ${remaining > 0 ? 'text-amber-400' : 'text-slate-500'}">
-            ${formatBRL(remaining)}
-          </td>
-          <td class="py-3 px-4 text-center">
-            <span class="text-[10px] uppercase tracking-wider font-semibold px-2 py-1 rounded ${payBadgeClass}">
-              ${payStatus}
-            </span>
-          </td>
-          <td class="py-3 px-4 text-center">
-            <div class="flex items-center justify-center gap-1.5">
-              <button onclick="openOrderDetailsModal('${order.id}')" title="Ver Detalhes" class="p-1.5 rounded hover:bg-brand-slate text-slate-400 hover:text-white transition">
-                <i data-lucide="eye" class="w-4 h-4"></i>
-              </button>
-              <button onclick="openPaymentForOrder('${order.id}')" title="Registrar Pagamento" class="p-1.5 rounded hover:bg-brand-slate text-brand-gold transition">
-                <i data-lucide="dollar-sign" class="w-4 h-4"></i>
-              </button>
-              <button onclick="editOrder('${order.id}')" title="Editar Pedido" class="p-1.5 rounded hover:bg-brand-slate text-slate-400 hover:text-slate-200 transition">
-                <i data-lucide="edit-3" class="w-4 h-4"></i>
-              </button>
-              <button onclick="deleteOrder('${order.id}')" title="Excluir" class="p-1.5 rounded hover:bg-brand-slate text-red-400 hover:text-red-300 transition">
-                <i data-lucide="trash-2" class="w-4 h-4"></i>
-              </button>
-            </div>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      lucide.createIcons();
-    }
-
-    // Clientes
-    function renderClientsTable() {
-      const tbody = document.getElementById('clients-table-body');
-      const emptyState = document.getElementById('clients-empty-state');
-      const query = (document.getElementById('client-search')?.value || '').toLowerCase();
-
-      tbody.innerHTML = '';
-
-      const filtered = appState.clients.filter(c => 
-        c.name.toLowerCase().includes(query) || 
-        c.phone.includes(query) || 
-        (c.email && c.email.toLowerCase().includes(query))
-      );
-
-      if (filtered.length === 0) {
-        emptyState.classList.remove('hidden');
-        return;
-      }
-      emptyState.classList.add('hidden');
-
-      filtered.forEach(client => {
-        const { ordersCount, totalBought, totalPaid, balance } = calculateClientFinancials(client.id);
-        const cleanPhone = client.phone.replace(/\D/g, '');
-        const waLink = `https://wa.me/55${cleanPhone}?text=Ol%C3%A1%20${encodeURIComponent(client.name)},%20aqui%20%C3%A9%20d'O%20Seu%20Alfaiate.`;
-
-        const tr = document.createElement('tr');
-        tr.className = "hover:bg-brand-slate/40 transition-colors";
-        tr.innerHTML = `
-          <td class="py-3 px-4">
-            <div class="font-medium text-slate-100">${client.name}</div>
-            <div class="text-xs text-slate-400 font-mono">${client.phone}</div>
-            ${client.email ? `<div class="text-[11px] text-slate-500">${client.email}</div>` : ''}
-          </td>
-          <td class="py-3 px-4 text-center font-semibold text-slate-300">
-            ${ordersCount}
-          </td>
-          <td class="py-3 px-4 text-right font-medium text-slate-100">
-            ${formatBRL(totalBought)}
-          </td>
-          <td class="py-3 px-4 text-right text-emerald-400 font-medium">
-            ${formatBRL(totalPaid)}
-          </td>
-          <td class="py-3 px-4 text-right font-bold ${balance > 0 ? 'text-amber-400' : 'text-slate-500'}">
-            ${formatBRL(balance)}
-          </td>
-          <td class="py-3 px-4 text-center">
-            <a href="${waLink}" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 text-xs transition">
-              <i data-lucide="message-square" class="w-3.5 h-3.5"></i> WhatsApp
-            </a>
-          </td>
-          <td class="py-3 px-4 text-center">
-            <div class="flex items-center justify-center gap-1.5">
-              <button onclick="editClient('${client.id}')" title="Editar" class="p-1.5 rounded hover:bg-brand-slate text-slate-400 hover:text-white transition">
-                <i data-lucide="edit-3" class="w-4 h-4"></i>
-              </button>
-              <button onclick="deleteClient('${client.id}')" title="Excluir" class="p-1.5 rounded hover:bg-brand-slate text-red-400 hover:text-red-300 transition">
-                <i data-lucide="trash-2" class="w-4 h-4"></i>
-              </button>
-            </div>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      lucide.createIcons();
-    }
-
-    // Pagamentos
-    function renderPaymentsTable() {
-      const tbody = document.getElementById('payments-table-body');
-      const emptyState = document.getElementById('payments-empty-state');
-      tbody.innerHTML = '';
-
-      if (appState.payments.length === 0) {
-        emptyState.classList.remove('hidden');
-        return;
-      }
-      emptyState.classList.add('hidden');
-
-      const sorted = [...appState.payments].sort((a, b) => new Date(b.date) - new Date(a.date));
-
-      sorted.forEach(pay => {
-        const order = appState.orders.find(o => o.id === pay.orderId);
-        const client = order ? appState.clients.find(c => c.id === order.clientId) : null;
-
-        const tr = document.createElement('tr');
-        tr.className = "hover:bg-brand-slate/40 transition-colors";
-        tr.innerHTML = `
-          <td class="py-3 px-4 text-xs font-mono text-slate-300">
-            ${formatDate(pay.date)}
-          </td>
-          <td class="py-3 px-4 font-mono text-xs font-bold text-brand-gold">
-            ${order ? order.code : 'Avulso'}
-          </td>
-          <td class="py-3 px-4 text-slate-200">
-            ${client ? client.name : '-'}
-          </td>
-          <td class="py-3 px-4 text-xs">
-            <span class="inline-flex items-center px-2 py-0.5 rounded bg-brand-slate border border-slate-700 text-slate-300">
-              ${pay.method}
-            </span>
-          </td>
-          <td class="py-3 px-4 text-xs text-slate-400 truncate max-w-[200px]">
-            ${pay.notes || '-'}
-          </td>
-          <td class="py-3 px-4 text-right font-bold text-emerald-400">
-            ${formatBRL(pay.amount)}
-          </td>
-          <td class="py-3 px-4 text-center">
-            <button onclick="deletePayment('${pay.id}')" title="Excluir Pagamento" class="p-1.5 rounded hover:bg-brand-slate text-red-400 hover:text-red-300 transition">
-              <i data-lucide="trash-2" class="w-4 h-4"></i>
-            </button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      lucide.createIcons();
-    }
-
-    // Modais e Formulários
-    function openModal(modalId) {
-      const el = document.getElementById(modalId);
-      if (el) {
-        el.classList.remove('hidden');
-        el.classList.add('flex');
-      }
-      lucide.createIcons();
-    }
-
-    function closeModal(modalId) {
-      const el = document.getElementById(modalId);
-      if (el) {
-        el.classList.add('hidden');
-        el.classList.remove('flex');
-      }
-    }
-
-    function openNewOrderModal() {
-      document.getElementById('order-form').reset();
-      document.getElementById('order-id').value = '';
-      document.getElementById('modal-order-title').textContent = 'Novo Pedido de Alfaiataria';
-      document.getElementById('order-deadline').value = getFutureIsoDate(15);
-      populateClientDropdown();
-      openModal('modal-order');
-    }
-
-    function populateClientDropdown(selectedClientId = null) {
-      const select = document.getElementById('order-client-id');
-      select.innerHTML = '';
-
-      if (appState.clients.length === 0) {
-        select.innerHTML = '<option value="">Nenhum cliente cadastrado ainda</option>';
-        return;
-      }
-
-      appState.clients.forEach(c => {
-        const opt = document.createElement('option');
-        opt.value = c.id;
-        opt.textContent = `${c.name} (${c.phone})`;
-        if (c.id === selectedClientId) opt.selected = true;
-        select.appendChild(opt);
-      });
-    }
-
-    function handleSaveOrder(e) {
-      e.preventDefault();
-      const id = document.getElementById('order-id').value;
-      const clientId = document.getElementById('order-client-id').value;
-      const category = document.getElementById('order-category').value;
-      const description = document.getElementById('order-description').value;
-      const totalValue = parseFloat(document.getElementById('order-total').value) || 0;
-      const deadline = document.getElementById('order-deadline').value;
-      const status = document.getElementById('order-status').value;
-
-      if (!clientId) {
-        showToast('Selecione ou cadastre um cliente primeiro.', 'error');
-        return;
-      }
-
-      if (id) {
-        const order = appState.orders.find(o => o.id === id);
-        if (order) {
-          order.clientId = clientId;
-          order.category = category;
-          order.description = description;
-          order.totalValue = totalValue;
-          order.deadline = deadline;
-          order.status = status;
-          showToast(`Pedido ${order.code} atualizado! Sincronizando...`, 'success');
-        }
-      } else {
-        const newCode = `PED-${100 + appState.orders.length + 1}`;
-        const newOrder = {
-          id: 'ord-' + Date.now(),
-          code: newCode,
-          clientId,
-          category,
-          description,
-          totalValue,
-          deadline,
-          status,
-          createdAt: getTodayIsoString()
-        };
-        appState.orders.push(newOrder);
-        showToast(`Pedido ${newCode} criado! Sincronizando...`, 'success');
-      }
-
-      closeModal('modal-order');
-      renderOrdersTable();
-      renderDashboard();
-
-      // Gravação em tempo real na planilha
-      triggerRealtimeSync();
-    }
-
-    function editOrder(orderId) {
-      const order = appState.orders.find(o => o.id === orderId);
-      if (!order) return;
-
-      document.getElementById('order-id').value = order.id;
-      document.getElementById('modal-order-title').textContent = `Editar Pedido ${order.code}`;
-      populateClientDropdown(order.clientId);
-      document.getElementById('order-category').value = order.category;
-      document.getElementById('order-description').value = order.description;
-      document.getElementById('order-total').value = order.totalValue;
-      document.getElementById('order-deadline').value = order.deadline;
-      document.getElementById('order-status').value = order.status;
-
-      openModal('modal-order');
-    }
-
-    function deleteOrder(orderId) {
-      const order = appState.orders.find(o => o.id === orderId);
-      if (!order) return;
-
-      if (confirm(`Tem certeza que deseja remover o pedido ${order.code}?`)) {
-        appState.orders = appState.orders.filter(o => o.id !== orderId);
-        appState.payments = appState.payments.filter(p => p.orderId !== orderId);
-        renderOrdersTable();
-        renderDashboard();
-        showToast(`Pedido ${order.code} excluído. Sincronizando...`, 'info');
-        triggerRealtimeSync();
-      }
-    }
-
-    function openNewClientModal(fromOrderModal = false) {
-      document.getElementById('client-form').reset();
-      document.getElementById('client-id').value = '';
-      document.getElementById('modal-client-title').textContent = 'Cadastrar Cliente';
-      openModal('modal-client');
-    }
-
-    function handleSaveClient(e) {
-      e.preventDefault();
-      const id = document.getElementById('client-id').value;
-      const name = document.getElementById('client-name').value.trim();
-      const phone = document.getElementById('client-phone').value.trim();
-      const email = document.getElementById('client-email').value.trim();
-      const notes = document.getElementById('client-notes').value.trim();
-
-      if (!name || !phone) {
-        showToast('Nome e telefone são obrigatórios.', 'error');
-        return;
-      }
-
-      if (id) {
-        const client = appState.clients.find(c => c.id === id);
-        if (client) {
-          client.name = name;
-          client.phone = phone;
-          client.email = email;
-          client.notes = notes;
-          showToast(`Cliente ${name} atualizado! Sincronizando...`, 'success');
-        }
-      } else {
-        const newClient = {
-          id: 'cli-' + Date.now(),
-          name,
-          phone,
-          email,
-          notes,
-          createdAt: getTodayIsoString()
-        };
-        appState.clients.push(newClient);
-        showToast(`Cliente ${name} cadastrado! Sincronizando...`, 'success');
-      }
-
-      closeModal('modal-client');
-      populateClientDropdown();
-      renderClientsTable();
-      renderDashboard();
-
-      // Gravação em tempo real na planilha
-      triggerRealtimeSync();
-    }
-
-    function editClient(clientId) {
-      const client = appState.clients.find(c => c.id === clientId);
-      if (!client) return;
-
-      document.getElementById('client-id').value = client.id;
-      document.getElementById('modal-client-title').textContent = 'Editar Cliente';
-      document.getElementById('client-name').value = client.name;
-      document.getElementById('client-phone').value = client.phone;
-      document.getElementById('client-email').value = client.email || '';
-      document.getElementById('client-notes').value = client.notes || '';
-
-      openModal('modal-client');
-    }
-
-    function deleteClient(clientId) {
-      const client = appState.clients.find(c => c.id === clientId);
-      if (!client) return;
-
-      const hasOrders = appState.orders.some(o => o.clientId === clientId);
-      if (hasOrders) {
-        showToast('Não é possível excluir: existem pedidos vinculados a este cliente.', 'error');
-        return;
-      }
-
-      if (confirm(`Deseja realmente remover o cliente ${client.name}?`)) {
-        appState.clients = appState.clients.filter(c => c.id !== clientId);
-        renderClientsTable();
-        renderDashboard();
-        showToast('Cliente removido. Sincronizando...', 'info');
-        triggerRealtimeSync();
-      }
-    }
-
-    function openNewPaymentModal(preselectedOrderId = null) {
-      document.getElementById('payment-form').reset();
-      document.getElementById('payment-date').value = getTodayIsoString();
-
-      const select = document.getElementById('payment-order-id');
-      select.innerHTML = '';
-
-      if (appState.orders.length === 0) {
-        select.innerHTML = '<option value="">Nenhum pedido cadastrado</option>';
-        return;
-      }
-
-      appState.orders.forEach(order => {
-        const client = appState.clients.find(c => c.id === order.clientId);
-        const { remaining } = calculateOrderFinancials(order.id);
-        const opt = document.createElement('option');
-        opt.value = order.id;
-        opt.textContent = `${order.code} - ${client ? client.name : ''} (${order.category}) - Falta: ${formatBRL(remaining)}`;
-        if (order.id === preselectedOrderId) opt.selected = true;
-        select.appendChild(opt);
-      });
-
-      updatePaymentHelperInfo();
-      openModal('modal-payment');
-    }
-
-    function openPaymentForOrder(orderId) {
-      openNewPaymentModal(orderId);
-    }
-
-    function updatePaymentHelperInfo() {
-      const orderId = document.getElementById('payment-order-id')?.value;
-      if (!orderId) return;
-
-      const order = appState.orders.find(o => o.id === orderId);
-      if (!order) return;
-
-      const { paid, remaining } = calculateOrderFinancials(orderId);
-      document.getElementById('pay-sum-total').textContent = formatBRL(order.totalValue);
-      document.getElementById('pay-sum-paid').textContent = formatBRL(paid);
-      document.getElementById('pay-sum-remaining').textContent = formatBRL(remaining);
-
-      const amountInput = document.getElementById('payment-amount');
-      if (!amountInput.value && remaining > 0) {
-        amountInput.value = remaining.toFixed(2);
-      }
-    }
-
-    function handleSavePayment(e) {
-      e.preventDefault();
-      const orderId = document.getElementById('payment-order-id').value;
-      const amount = parseFloat(document.getElementById('payment-amount').value) || 0;
-      const date = document.getElementById('payment-date').value;
-      const method = document.getElementById('payment-method').value;
-      const notes = document.getElementById('payment-notes').value.trim();
-
-      if (!orderId || amount <= 0) {
-        showToast('Informe um valor de pagamento válido.', 'error');
-        return;
-      }
-
-      const newPayment = {
-        id: 'pay-' + Date.now(),
-        orderId,
-        amount,
-        date,
-        method,
-        notes
-      };
-
-      appState.payments.push(newPayment);
-      closeModal('modal-payment');
-
-      showToast(`Pagamento de ${formatBRL(amount)} registrado! Sincronizando...`, 'success');
-
-      renderOrdersTable();
-      renderPaymentsTable();
-      renderClientsTable();
-      renderDashboard();
-
-      // Gravação em tempo real na planilha
-      triggerRealtimeSync();
-    }
-
-    function deletePayment(payId) {
-      if (confirm('Deseja cancelar o registro deste pagamento?')) {
-        appState.payments = appState.payments.filter(p => p.id !== payId);
-        renderPaymentsTable();
-        renderOrdersTable();
-        renderDashboard();
-        showToast('Pagamento removido. Sincronizando...', 'info');
-        triggerRealtimeSync();
-      }
-    }
-
-    function openOrderDetailsModal(orderId) {
-      const order = appState.orders.find(o => o.id === orderId);
-      if (!order) return;
-
-      const client = appState.clients.find(c => c.id === order.clientId);
-      const { paid, remaining } = calculateOrderFinancials(order.id);
-      const dl = calculateOrderDeadline(order.deadline, order.status);
-
-      document.getElementById('detail-order-code').textContent = order.code;
-      document.getElementById('detail-client-name').textContent = client ? client.name : 'Não informado';
-      document.getElementById('detail-client-phone').textContent = client ? client.phone : '-';
-      document.getElementById('detail-category').textContent = order.category;
-      document.getElementById('detail-description').textContent = order.description || 'Sem observações adicionais';
-      document.getElementById('detail-deadline').textContent = formatDate(order.deadline);
-      document.getElementById('detail-status').textContent = order.status;
-
-      const dlBadge = document.getElementById('detail-deadline-badge');
-      dlBadge.className = `text-[10px] font-semibold px-2 py-0.5 rounded-full inline-block ${dl.class}`;
-      dlBadge.textContent = dl.label;
-
-      document.getElementById('detail-total-val').textContent = formatBRL(order.totalValue);
-      document.getElementById('detail-paid-val').textContent = formatBRL(paid);
-      document.getElementById('detail-remaining-val').textContent = formatBRL(remaining);
-
-      const listContainer = document.getElementById('detail-payments-list');
-      listContainer.innerHTML = '';
-
-      const orderPayments = appState.payments.filter(p => p.orderId === order.id);
-      if (orderPayments.length === 0) {
-        listContainer.innerHTML = '<p class="text-xs text-slate-500 italic">Nenhum pagamento registrado para este pedido.</p>';
-      } else {
-        orderPayments.forEach(p => {
-          const item = document.createElement('div');
-          item.className = "flex justify-between items-center p-2.5 rounded-lg bg-brand-dark border border-brand-darkBorder text-xs";
-          item.innerHTML = `
-            <div>
-              <span class="font-bold text-slate-200">${formatDate(p.date)}</span> — 
-              <span class="text-brand-gold font-medium">${p.method}</span>
-              ${p.notes ? `<span class="text-slate-400 block text-[11px]">${p.notes}</span>` : ''}
-            </div>
-            <div class="font-bold text-emerald-400">
-              ${formatBRL(p.amount)}
-            </div>
-          `;
-          listContainer.appendChild(item);
-        });
-      }
-
-      const btnAddPay = document.getElementById('btn-add-payment-to-this-order');
-      btnAddPay.onclick = () => {
-        closeModal('modal-order-details');
-        openNewPaymentModal(order.id);
-      };
-
-      openModal('modal-order-details');
-    }
-
-    function refreshData() {
-      renderDashboard();
-      renderOrdersTable();
-      renderClientsTable();
-      renderPaymentsTable();
-    }
-
-    // Inicialização da Aplicação
-    window.addEventListener('DOMContentLoaded', () => {
-      loadLocalCache();
-      refreshData();
-      lucide.createIcons();
-
-      // Carrega automaticamente da planilha em segundo plano
-      fetchFromGoogleSheets(false);
-    });
-  </script>
+        </div>
+
+        <!-- Campos de Medida -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1 uppercase tracking-wider">Paletó</label>
+            <textarea id="meas-paleto" rows="4" placeholder="Ex: Ombro a ombro: 45cm..." class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold resize-y shadow-inner"></textarea>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1 uppercase tracking-wider">Calça</label>
+            <textarea id="meas-calca" rows="4" placeholder="Ex: Cintura: 90cm..." class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold resize-y shadow-inner"></textarea>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1 uppercase tracking-wider">Colete</label>
+            <textarea id="meas-colete" rows="4" placeholder="Ex: Comprimento: 60cm..." class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold resize-y shadow-inner"></textarea>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1 uppercase tracking-wider">Camisa</label>
+            <textarea id="meas-camisa" rows="4" placeholder="Ex: Colarinho: 41cm..." class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold resize-y shadow-inner"></textarea>
+          </div>
+        </div>
+
+        <!-- Observação para PDF -->
+        <div class="bg-brand-slate/30 p-4 rounded-xl border border-brand-darkBorder">
+          <label class="block text-xs font-bold text-slate-100 mb-1 uppercase tracking-wider">Observação Especial para o PDF</label>
+          <p class="text-[10px] text-slate-500 font-medium mb-2">Este texto aparecerá no documento final (não fica salvo de forma definitiva no perfil).</p>
+          <textarea id="meas-pdf-obs" rows="2" placeholder="Ex: Fazer bainha italiana na calça. Prova agendada para dia 15..." class="w-full bg-brand-dark border border-brand-darkBorder rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-gold resize-y"></textarea>
+        </div>
+      </div>
+
+      <div class="p-4 border-t border-brand-darkBorder flex flex-col sm:flex-row justify-between items-center gap-3 bg-brand-dark">
+        <button onclick="closeModal('modal-measurements')" class="px-4 py-2 text-xs font-bold text-slate-400 hover:text-slate-100 transition-colors w-full sm:w-auto">Fechar</button>
+        <div class="flex gap-2 w-full sm:w-auto">
+          <button onclick="handleSaveMeasurements()" class="border border-brand-gold text-brand-gold hover:bg-brand-gold/10 text-xs font-bold px-5 py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2 w-full sm:w-auto"><i data-lucide="save" class="w-4 h-4"></i> Salvar Medidas</button>
+          <button onclick="generateMeasurementsPDF()" class="bg-brand-gold hover:bg-brand-goldHover text-brand-darkCard text-xs font-bold px-5 py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2 w-full sm:w-auto shadow-md"><i data-lucide="file-down" class="w-4 h-4"></i> Gerar PDF</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CONFIRMAÇÃO GENÉRICA -->
+  <div id="modal-confirm" class="modal-overlay fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="modal-panel bg-brand-darkCard border border-brand-darkBorder rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl p-6" role="dialog" aria-modal="true">
+      <div id="confirm-icon" class="confirm-icon bg-brand-gold/15 text-brand-gold mb-4"><i data-lucide="help-circle" class="w-5 h-5"></i></div>
+      <h3 id="confirm-title" class="font-serif font-bold text-lg text-slate-100 mb-1.5">Confirmar ação</h3>
+      <p id="confirm-message" class="text-sm font-medium text-slate-400 leading-relaxed">Tem certeza?</p>
+      <div class="pt-5 flex justify-end gap-3">
+        <button id="confirm-cancel-btn" type="button" class="px-4 py-2 text-xs font-bold text-slate-400 hover:text-slate-100 transition-colors">Cancelar</button>
+        <button id="confirm-ok-btn" type="button" class="bg-brand-gold hover:bg-brand-goldHover text-brand-darkCard text-xs font-bold px-5 py-2.5 rounded-lg transition-colors">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lógica da aplicação -->
+  <script src="js/admin.js" defer></script>
 </body>
 </html>
