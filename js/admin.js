@@ -179,7 +179,7 @@ function confirmDialog({ title = 'Confirmar ação', message = '', confirmLabel 
   });
 }
 
-// ================= CACHE LOCAL & SINCRONIZAÇÃO AUTOMÁTICA COM GOOGLE SHEETS =================
+// ================= CACHE LOCAL & SINCRONIZAÇÃO =================
 
 function loadLocalCache() {
   try {
@@ -206,24 +206,48 @@ function saveLocalCache() {
   catch (err) { console.error("Erro ao salvar cache local:", err); }
 }
 
+function updateSyncUI(status) {
+  const dot = document.querySelector('#sync-indicator-dot');
+  const text = document.querySelector('#sync-indicator-text');
+  if (!dot || !text) return;
+  
+  dot.className = 'w-2.5 h-2.5 rounded-full'; // reseta classes extras
+  if (status === 'syncing') {
+    dot.classList.add('bg-amber-500', 'animate-pulse');
+    text.textContent = 'Sincronizando...';
+  } else if (status === 'error') {
+    dot.classList.add('bg-red-600');
+    text.textContent = 'Modo Offline';
+  } else {
+    dot.classList.add('bg-emerald-600', 'animate-pulse');
+    text.textContent = 'Sincronizado';
+  }
+}
+
 function triggerRealtimeSync() {
   saveLocalCache();
   if (syncTimeout) clearTimeout(syncTimeout);
-
+  
+  updateSyncUI('syncing');
   syncTimeout = setTimeout(async () => {
     try {
-      await fetch(WEB_APP_URL, {
+      const response = await fetch(WEB_APP_URL, {
         method: 'POST', redirect: 'follow',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({ action: 'SYNC_ALL', clients: appState.clients, orders: appState.orders, payments: appState.payments })
       });
+      if (!response.ok) throw new Error('Falha na rede');
+      updateSyncUI('success');
     } catch (err) {
-      console.warn("Sincronização em segundo plano adiada (modo offline detectado).", err);
+      console.warn("Sincronização falhou. Operando em modo offline.", err);
+      updateSyncUI('error');
+      showToast('Alteração salva localmente. Sincronização em nuvem falhou.', 'warning');
     }
-  }, 300);
+  }, 1500); // Debounce estendido para proteger contra concorrência imediata
 }
 
 async function fetchFromGoogleSheets(isManual = false) {
+  updateSyncUI('syncing');
   try {
     const response = await fetch(WEB_APP_URL, { method: 'GET', redirect: 'follow' });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -237,9 +261,12 @@ async function fetchFromGoogleSheets(isManual = false) {
     if (normalized.payments.length > 0) { appState.payments = normalized.payments; hasData = true; }
 
     if (hasData) saveLocalCache();
+    updateSyncUI('success');
     refreshData();
   } catch (err) {
-    console.warn("Conexão automática com planilha em segundo plano indisponível.", err);
+    console.warn("Conexão automática com planilha falhou.", err);
+    updateSyncUI('error');
+    if (isManual) showToast('Não foi possível baixar os dados da planilha.', 'error');
   }
 }
 
@@ -346,6 +373,68 @@ function calculateClientFinancials(clientId) {
   return { ordersCount, totalBought, totalPaid, balance };
 }
 
+// ================= FILTRO DE PERÍODO GLOBAL =================
+
+function getFilteredData() {
+  const periodElement = document.getElementById('global-period');
+  const period = periodElement ? periodElement.value : 'last3'; // Padrão ajustado
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth(); // 0-11
+
+  const filteredOrders = appState.orders.filter(order => {
+    if (period === 'all') return true;
+    const dateStr = order.createdAt || order.deadline;
+    if (!dateStr) return true;
+    const orderDate = new Date(dateStr);
+    if (isNaN(orderDate)) return true;
+
+    if (period === 'current') {
+      return orderDate.getFullYear() === currentYear && orderDate.getMonth() === currentMonth;
+    } else if (period === 'last3') {
+      const diffTime = now - orderDate;
+      const diffMonths = diffTime / (1000 * 60 * 60 * 24 * 30.44);
+      return diffMonths <= 3 && diffMonths >= 0;
+    } else if (period === 'last6') {
+      const diffTime = now - orderDate;
+      const diffMonths = diffTime / (1000 * 60 * 60 * 24 * 30.44);
+      return diffMonths <= 6 && diffMonths >= 0;
+    } else if (period === 'year') {
+      return orderDate.getFullYear() === currentYear;
+    }
+    return true;
+  });
+
+  const filteredPayments = appState.payments.filter(pay => {
+    if (period === 'all') return true;
+    if (!pay.date) return true;
+    const payDate = new Date(pay.date);
+    if (isNaN(payDate)) return true;
+
+    if (period === 'current') {
+      return payDate.getFullYear() === currentYear && payDate.getMonth() === currentMonth;
+    } else if (period === 'last3') {
+      const diffTime = now - payDate;
+      const diffMonths = diffTime / (1000 * 60 * 60 * 24 * 30.44);
+      return diffMonths <= 3 && diffMonths >= 0;
+    } else if (period === 'last6') {
+      const diffTime = now - payDate;
+      const diffMonths = diffTime / (1000 * 60 * 60 * 24 * 30.44);
+      return diffMonths <= 6 && diffMonths >= 0;
+    } else if (period === 'year') {
+      return payDate.getFullYear() === currentYear;
+    }
+    return true;
+  });
+
+  return { filteredOrders, filteredPayments, period };
+}
+
+function onGlobalPeriodChange() {
+  refreshData();
+  showToast('Período atualizado!', 'info');
+}
+
 // ================= NAVEGAÇÃO =================
 
 function switchTab(tabName) {
@@ -381,14 +470,17 @@ function switchTab(tabName) {
 // ================= DASHBOARD =================
 
 function renderDashboard() {
+  const { filteredOrders } = getFilteredData();
   let totalFaturado = 0, totalRecebido = 0, totalEmAberto = 0;
   let noPrazoCount = 0, hojeCount = 0, atrasadoCount = 0, entreguesCount = 0;
 
-  appState.orders.forEach(order => {
+  filteredOrders.forEach(order => {
     totalFaturado += Number(order.totalValue || 0);
     const fin = calculateOrderFinancials(order.id);
-    totalRecebido += fin.paid;
     totalEmAberto += fin.remaining;
+    
+    // Agora o valor recebido conta apenas o dinheiro atrelado aos pedidos deste período (evita métrica quebrada >100%)
+    totalRecebido += fin.paid; 
 
     const dl = calculateOrderDeadline(order.deadline, order.status);
     if (dl.label === 'No prazo') noPrazoCount++;
@@ -401,17 +493,17 @@ function renderDashboard() {
 
   document.getElementById('metric-faturamento').textContent = formatBRL(totalFaturado);
   document.getElementById('metric-recebido').textContent = formatBRL(totalRecebido);
-  document.getElementById('metric-taxa-recebimento').textContent = `${taxa}% já liquidado em caixa`;
+  document.getElementById('metric-taxa-recebimento').textContent = `${taxa}% já liquidado no período`;
   document.getElementById('metric-aberto').textContent = formatBRL(totalEmAberto);
   document.getElementById('metric-clientes').textContent = appState.clients.length;
-  document.getElementById('metric-pedidos-count').textContent = `${appState.orders.length} pedidos cadastrados`;
+  document.getElementById('metric-pedidos-count').textContent = `${filteredOrders.length} pedidos no período`;
   document.getElementById('metric-no-prazo').textContent = noPrazoCount;
   document.getElementById('metric-hoje').textContent = hojeCount;
   document.getElementById('metric-atrasado').textContent = atrasadoCount;
   document.getElementById('metric-entregues').textContent = entreguesCount;
 
   renderAlertBanner(atrasadoCount, hojeCount);
-  updateCharts(noPrazoCount, hojeCount, atrasadoCount, entreguesCount);
+  updateCharts(filteredOrders, noPrazoCount, hojeCount, atrasadoCount, entreguesCount);
 }
 
 function renderAlertBanner(atrasados, hoje) {
@@ -441,7 +533,7 @@ function renderAlertBanner(atrasados, hoje) {
   lucide.createIcons();
 }
 
-function updateCharts(noPrazo, hoje, atrasado, entregue) {
+function updateCharts(filteredOrders, noPrazo, hoje, atrasado, entregue) {
   const mutedColor = '#0F1826';
   const gridColor = '#E2D9C5';
   
@@ -453,7 +545,15 @@ function updateCharts(noPrazo, hoje, atrasado, entregue) {
   const ctxFin = document.getElementById('chartFinancial')?.getContext('2d');
   if (ctxFin) {
     if (financialChartInstance) financialChartInstance.destroy();
-    const recentOrders = [...appState.orders].slice(-6);
+    
+    // Ordenar de forma correta (do mais antigo pro mais novo dentro do período) antes do slice
+    const sortedOrders = [...filteredOrders].sort((a, b) => {
+      const dateA = new Date(a.createdAt || a.deadline || 0);
+      const dateB = new Date(b.createdAt || b.deadline || 0);
+      return dateA - dateB;
+    });
+
+    const recentOrders = sortedOrders.slice(-6);
     const labels = recentOrders.map(o => o.code);
     const dataTotal = recentOrders.map(o => o.totalValue);
     const dataPaid = recentOrders.map(o => calculateOrderFinancials(o.id).paid);
@@ -501,6 +601,105 @@ function updateCharts(noPrazo, hoje, atrasado, entregue) {
   }
 }
 
+// ================= GERAÇÃO DE RELATÓRIO FINANCEIRO EM PDF =================
+
+function generateFinancialReportPDF() {
+  const { filteredOrders, filteredPayments, period } = getFilteredData();
+  const periodNames = {
+    'all': 'Geral (Todos os Períodos)',
+    'current': 'Mês Atual',
+    'last3': 'Últimos 3 Meses',
+    'last6': 'Últimos 6 Meses',
+    'year': 'Ano Atual (2026)'
+  };
+
+  let totalFat = filteredOrders.reduce((acc, o) => acc + Number(o.totalValue || 0), 0);
+  let totalRec = filteredOrders.reduce((acc, o) => acc + calculateOrderFinancials(o.id).paid, 0);
+  let totalAberto = Math.max(0, totalFat - totalRec);
+
+  showToast('Gerando Relatório Financeiro em PDF...', 'info');
+
+  const container = document.createElement('div');
+  container.style.padding = '30px';
+  container.style.color = '#0F1826';
+  container.style.fontFamily = 'Inter, sans-serif';
+
+  let ordersHtml = '';
+  filteredOrders.forEach(o => {
+    const client = appState.clients.find(c => c.id === o.clientId);
+    const fin = calculateOrderFinancials(o.id);
+    ordersHtml += `
+      <tr>
+        <td style="padding: 8px; border-bottom: 1px solid #E2D9C5; font-weight: bold;">${escapeHtml(o.code)}</td>
+        <td style="padding: 8px; border-bottom: 1px solid #E2D9C5;">${client ? escapeHtml(client.name) : '-'}</td>
+        <td style="padding: 8px; border-bottom: 1px solid #E2D9C5;">${escapeHtml(o.category)}</td>
+        <td style="padding: 8px; border-bottom: 1px solid #E2D9C5;">${escapeHtml(o.status)}</td>
+        <td style="padding: 8px; border-bottom: 1px solid #E2D9C5; text-align: right; font-weight: bold;">${formatBRL(o.totalValue)}</td>
+        <td style="padding: 8px; border-bottom: 1px solid #E2D9C5; text-align: right; color: #059669; font-weight: bold;">${formatBRL(fin.paid)}</td>
+      </tr>
+    `;
+  });
+
+  container.innerHTML = `
+    <div style="text-align: center; border-bottom: 2px solid #C5B288; padding-bottom: 15px; margin-bottom: 25px;">
+      <h1 style="font-family: 'Cinzel', serif; font-size: 24px; font-weight: 700; margin: 0; color: #0F1826; letter-spacing: 1px;">O SEU ALFAIATE</h1>
+      <p style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: #0F1826; margin-top: 4px;">Relatório de Desempenho Financeiro</p>
+    </div>
+    
+    <div style="margin-bottom: 20px; font-size: 12px; line-height: 1.5; background: #FAF6EE; padding: 12px; border-radius: 6px; border: 1px solid #E2D9C5;">
+      <strong>Período Analisado:</strong> ${periodNames[period] || period}<br>
+      <strong>Data de Emissão:</strong> ${new Date().toLocaleDateString('pt-BR')}
+    </div>
+
+    <div style="display: flex; gap: 10px; margin-bottom: 25px;">
+      <div style="flex: 1; background: #FFFFFF; padding: 12px; border: 1px solid #E2D9C5; border-radius: 8px; text-align: center;">
+        <div style="font-size: 9px; text-transform: uppercase; font-weight: bold; color: #475569;">Faturamento Total</div>
+        <div style="font-size: 15px; font-weight: 900; color: #0F1826; margin-top: 4px;">${formatBRL(totalFat)}</div>
+      </div>
+      <div style="flex: 1; background: #FFFFFF; padding: 12px; border: 1px solid #E2D9C5; border-radius: 8px; text-align: center;">
+        <div style="font-size: 9px; text-transform: uppercase; font-weight: bold; color: #475569;">Valor Recebido</div>
+        <div style="font-size: 15px; font-weight: 900; color: #059669; margin-top: 4px;">${formatBRL(totalRec)}</div>
+      </div>
+      <div style="flex: 1; background: #FFFFFF; padding: 12px; border: 1px solid #E2D9C5; border-radius: 8px; text-align: center;">
+        <div style="font-size: 9px; text-transform: uppercase; font-weight: bold; color: #475569;">Saldo em Aberto</div>
+        <div style="font-size: 15px; font-weight: 900; color: #D97706; margin-top: 4px;">${formatBRL(totalAberto)}</div>
+      </div>
+    </div>
+
+    <h3 style="font-size: 13px; font-weight: bold; background-color: #F5EEDF; padding: 6px 10px; border-left: 4px solid #0F1826; margin-bottom: 10px; text-transform: uppercase;">Detalhamento de Pedidos (${filteredOrders.length})</h3>
+    <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
+      <thead>
+        <tr style="background: #FAF6EE; text-align: left; border-bottom: 2px solid #C5B288;">
+          <th style="padding: 8px;">Código</th>
+          <th style="padding: 8px;">Cliente</th>
+          <th style="padding: 8px;">Peça</th>
+          <th style="padding: 8px;">Etapa</th>
+          <th style="padding: 8px; text-align: right;">Total</th>
+          <th style="padding: 8px; text-align: right;">Pago</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${ordersHtml || '<tr><td colspan="6" style="padding: 12px; text-align: center; color: #64748B;">Nenhum pedido registrado neste período.</td></tr>'}
+      </tbody>
+    </table>
+  `;
+
+  const opt = {
+    margin: 15,
+    filename: `Relatorio_Financeiro_${period}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+
+  html2pdf().set(opt).from(container).save().then(() => {
+    showToast('Relatório PDF gerado com sucesso!', 'success');
+  }).catch(err => {
+    console.error(err);
+    showToast('Houve um erro ao gerar o PDF.', 'error');
+  });
+}
+
 // ================= PEDIDOS =================
 
 function renderOrdersTable() {
@@ -511,7 +710,9 @@ function renderOrdersTable() {
   const filterPayment = document.getElementById('order-filter-payment')?.value || 'ALL';
 
   tbody.innerHTML = '';
-  const filtered = appState.orders.filter(order => {
+  const { filteredOrders } = getFilteredData();
+
+  const filtered = filteredOrders.filter(order => {
     const client = appState.clients.find(c => c.id === order.clientId);
     const clientName = client ? client.name.toLowerCase() : '';
     const matchesQuery = !query || order.code.toLowerCase().includes(query) || order.category.toLowerCase().includes(query) || order.description.toLowerCase().includes(query) || clientName.includes(query);
@@ -630,9 +831,11 @@ function renderPaymentsTable() {
   const emptyState = document.getElementById('payments-empty-state');
   tbody.innerHTML = '';
 
-  if (appState.payments.length === 0) { emptyState.classList.remove('hidden'); return; }
+  const { filteredPayments } = getFilteredData();
+
+  if (filteredPayments.length === 0) { emptyState.classList.remove('hidden'); return; }
   emptyState.classList.add('hidden');
-  const sorted = [...appState.payments].sort((a, b) => new Date(b.date) - new Date(a.date));
+  const sorted = [...filteredPayments].sort((a, b) => new Date(b.date) - new Date(a.date));
 
   sorted.forEach(pay => {
     const order = appState.orders.find(o => o.id === pay.orderId);
@@ -732,7 +935,14 @@ function handleSaveOrder(e) {
     const order = appState.orders.find(o => o.id === id);
     if (order) { Object.assign(order, { clientId, category, description, totalValue, deadline, status }); showToast(`Pedido ${order.code} atualizado!`, 'success'); }
   } else {
-    const newCode = `PED-${100 + appState.orders.length + 1}`;
+    // Calcula o maior número de pedido para evitar colisão ao invés de usar o length do array
+    let maxCode = 100;
+    appState.orders.forEach(o => {
+       const num = parseInt(o.code.replace(/\D/g, ''), 10);
+       if (!isNaN(num) && num > maxCode) maxCode = num;
+    });
+    const newCode = `PED-${maxCode + 1}`;
+    
     appState.orders.push({ id: 'ord-' + Date.now(), code: newCode, clientId, category, description, totalValue, deadline, status, createdAt: getTodayIsoString() });
     showToast(`Pedido ${newCode} criado!`, 'success');
   }
