@@ -72,9 +72,9 @@
     </div>
 
     <div class="pt-4 border-t border-brand-border flex items-center justify-between text-xs text-slate-900 font-bold">
-      <div class="flex items-center gap-2">
-        <span class="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse"></span>
-        <span>Sincronizado</span>
+      <div class="flex items-center gap-2" id="sync-status-container">
+        <span id="sync-indicator-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse"></span>
+        <span id="sync-indicator-text">Sincronizado</span>
       </div>
     </div>
   </aside>
@@ -98,13 +98,22 @@
   <!-- Main Content Area -->
   <main class="flex-1 flex flex-col min-w-0 overflow-y-auto pb-20 md:pb-0">
     
-    <!-- Topbar -->
-    <header class="bg-brand-card border-b border-brand-border px-6 py-4 flex items-center justify-between sticky top-0 z-30 shadow-sm">
+    <!-- Topbar (Global Period Filter & Quick Actions) -->
+    <header class="bg-brand-card border-b border-brand-border px-6 py-3.5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sticky top-0 z-30 shadow-sm">
       <div class="flex items-center gap-3">
         <div class="md:hidden w-8 h-8 rounded-lg bg-brand-dark text-brand-cream font-bold flex items-center justify-center">
           <i data-lucide="scissors" class="w-4 h-4"></i>
         </div>
-        <h2 class="text-base font-bold text-brand-dark">Painel Administrativo</h2>
+        <div class="flex items-center gap-2 bg-brand-slate px-3 py-1.5 rounded-xl border border-brand-border shadow-sm">
+          <i data-lucide="calendar" class="w-3.5 h-3.5 text-brand-dark"></i>
+          <select id="global-period" onchange="onGlobalPeriodChange()" class="bg-transparent text-xs text-brand-dark font-bold focus:outline-none cursor-pointer">
+            <option value="all">Todos os Períodos (Geral)</option>
+            <option value="current">Mês Atual</option>
+            <option value="last3" selected>Últimos 3 Meses</option>
+            <option value="last6">Últimos 6 Meses</option>
+            <option value="year">Ano Atual (2026)</option>
+          </select>
+        </div>
       </div>
       <div class="flex items-center gap-2.5">
         <button onclick="openNewOrderModal()" class="bg-brand-dark hover:bg-slate-800 text-brand-cream px-3.5 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 shadow-sm">
@@ -123,11 +132,22 @@
       <section id="view-dashboard" class="space-y-6">
         <div id="alert-box-container"></div>
 
+        <!-- Report Action Bar -->
+        <div class="bg-brand-card p-4 rounded-2xl border border-brand-border flex items-center justify-between gap-4 shadow-sm">
+          <div class="flex items-center gap-2.5 text-xs font-bold text-brand-dark">
+            <i data-lucide="file-text" class="w-4 h-4 text-brand-gold"></i>
+            <span>Relatório executivo pronto para exportação com base no filtro de período ativo.</span>
+          </div>
+          <button onclick="generateFinancialReportPDF()" class="bg-brand-dark hover:bg-slate-800 text-brand-cream px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm shrink-0">
+            <i data-lucide="file-down" class="w-4 h-4"></i> Gerar Relatório em PDF
+          </button>
+        </div>
+
         <!-- Metrics Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div class="bg-brand-card p-5 rounded-2xl border border-brand-border shadow-sm">
             <div class="flex items-center justify-between text-slate-900 font-bold mb-2">
-              <span class="text-xs uppercase tracking-wider">Faturamento Total</span>
+              <span class="text-xs uppercase tracking-wider">Faturamento Período</span>
               <i data-lucide="trending-up" class="w-4 h-4 text-brand-gold"></i>
             </div>
             <div id="metric-faturamento" class="text-2xl font-black text-brand-dark">R$ 0,00</div>
@@ -180,7 +200,7 @@
         <!-- Charts Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div class="bg-brand-card p-6 rounded-2xl border border-brand-border lg:col-span-2 shadow-sm flex flex-col">
-            <h3 class="text-sm font-bold text-brand-dark mb-4 flex items-center gap-2"><i data-lucide="bar-chart-3" class="w-4 h-4 text-brand-gold"></i> Desempenho Financeiro (Últimos Pedidos)</h3>
+            <h3 class="text-sm font-bold text-brand-dark mb-4 flex items-center gap-2"><i data-lucide="bar-chart-3" class="w-4 h-4 text-brand-gold"></i> Desempenho Financeiro (Período Selecionado)</h3>
             <div class="relative flex-1 min-h-[260px]"><canvas id="chartFinancial"></canvas></div>
           </div>
           <div class="bg-brand-card p-6 rounded-2xl border border-brand-border shadow-sm flex flex-col">
@@ -236,7 +256,7 @@
               <tbody id="orders-table-body" class="divide-y divide-brand-border bg-brand-card"></tbody>
             </table>
           </div>
-          <div id="orders-empty-state" class="hidden text-center py-12 text-slate-900 text-xs font-bold">Nenhum pedido encontrado.</div>
+          <div id="orders-empty-state" class="hidden text-center py-12 text-slate-900 text-xs font-bold">Nenhum pedido encontrado para o período selecionado.</div>
         </div>
       </section>
 
@@ -299,7 +319,7 @@
               <tbody id="payments-table-body" class="divide-y divide-brand-border bg-brand-card"></tbody>
             </table>
           </div>
-          <div id="payments-empty-state" class="hidden text-center py-12 text-slate-900 text-xs font-bold">Nenhum pagamento registrado.</div>
+          <div id="payments-empty-state" class="hidden text-center py-12 text-slate-900 text-xs font-bold">Nenhum pagamento registrado para o período selecionado.</div>
         </div>
       </section>
 
